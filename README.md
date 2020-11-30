@@ -26,7 +26,7 @@ func(); // xxxxx
 - 头文件里的public函数暂且使用如下格式进行注释
 
 ```c++
-// int func(int a, int b)
+// func: xxx的函数
 //   a: xxxxx
 //   b: xxxxx
 //   返回xxxx
