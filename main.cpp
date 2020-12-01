@@ -2,12 +2,18 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+
+#include "GLObject.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+using namespace std;
+using namespace GLObj;
 
 int main()
 {
@@ -42,6 +48,12 @@ int main()
 		return -1;
 	}
 
+	// configure global opengl state
+	// -----------------------------
+	glEnable(GL_DEPTH_TEST);
+	
+
+
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -49,6 +61,13 @@ int main()
 		// input
 		// -----
 		processInput(window);
+
+		// render
+		// ------
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
