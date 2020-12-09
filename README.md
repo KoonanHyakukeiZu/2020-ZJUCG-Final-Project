@@ -30,6 +30,10 @@ func(); // xxxxx
 //   a: xxxxx
 //   b: xxxxx
 //   返回xxxx
+public void func(GLObj* a, GLObj* b)
+{
+  ... ...
+}
 ```
 
 ## 下次交流时间：12月20号左右
