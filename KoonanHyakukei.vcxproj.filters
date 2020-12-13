@@ -45,11 +45,11 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>源文件\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\imgui\imconfig.h">
       <Filter>头文件\imgui</Filter>
     </ClInclude>
@@ -73,6 +73,15 @@
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_truetype.h">
       <Filter>头文件\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FileSystem.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
