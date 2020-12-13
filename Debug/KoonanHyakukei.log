@@ -1,103 +1,11 @@
-﻿  main.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(235,34): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(235,34): error C2143: 语法错误: 缺少“,”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(235,34): error C2182: “CALLBACK”: 非法使用“void”类型
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(235,41): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(235,42): error C2091: 函数返回函数
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(275,35): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(275,35): error C2143: 语法错误: 缺少“,”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(275,35): error C2182: “CALLBACK”: 非法使用“void”类型
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(275,41): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(275,42): error C2091: 函数返回函数
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(358,34): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(358,34): error C2143: 语法错误: 缺少“,”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(358,34): error C2182: “CALLBACK”: 非法使用“void”类型
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(358,42): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(358,43): error C2091: 函数返回函数
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(364,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(364,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(364,44): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(364,54): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(367,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(367,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(367,41): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(367,58): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(368,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(368,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(368,44): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(368,61): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(369,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(369,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(369,42): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(369,58): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(370,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(370,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(370,39): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(370,56): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(371,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(371,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(371,41): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(371,58): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(372,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(372,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(372,43): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(375,59): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(376,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(376,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(376,45): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(376,66): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(377,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(377,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(377,48): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(377,69): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(378,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(378,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(378,46): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(378,66): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(379,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(379,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(379,43): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(379,58): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(380,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(380,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(380,45): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(380,66): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(381,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(381,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(381,47): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(385,58): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(388,23): error C2143: 语法错误: 缺少“)”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(388,23): error C2143: 语法错误: 缺少“;”(在“*”的前面)
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(388,42): error C2059: 语法错误:“)”
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\GL\GLU.h(388,54): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(201,3): error C2365: “GLObj::GLObject::isVisible”: 重定义；以前的定义是“数据成员”
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(44): message : 参见“GLObj::GLObject::isVisible”的声明
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(201,3): error C2059: 语法错误:“return”
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(201,3): error C2238: 意外的标记位于“;”之前
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(202,4): error C2628: “GLObj::GLObject”后面接“bool”是非法的(是否忘记了“;”?)
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(202,4): error C2259: “GLObj::GLObject”: 无法实例化抽象类
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(14): message : 参见“GLObj::GLObject”的声明
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(202,4): message : 由于下列成员:
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(202,4): message : “void GLObj::GLObject::drawFunc(void)”: 是抽象的
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(48): message : 参见“GLObj::GLObject::drawFunc”的声明
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(202,4): error C2440: “return”: 无法从“GLObj::GLObject (__cdecl *)(void)”转换为“GLObj::GLObject”
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(202,4): message : 无构造函数可以接受源类型，或构造函数重载决策不明确
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(100,17): error C2065: “GL_MODELVIEW”: 未声明的标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(100,4): error C3861: “glMatrixMode”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(102,5): error C3861: “glLoadIdentity”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(104,5): error C3861: “glLoadMatrixf”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(108,5): error C3861: “glRotatef”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(110,4): error C3861: “glTranslatef”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(113,5): error C3861: “glRotatef”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(115,4): error C3861: “glScalef”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(117,16): error C2065: “GL_MODELVIEW_MATRIX”: 未声明的标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(132,17): error C2065: “GL_MODELVIEW”: 未声明的标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(132,4): error C3861: “glMatrixMode”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(133,4): error C3861: “glLoadMatrixf”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(136,4): error C3861: “glMultMatrixf”: 找不到标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(206,12): error C2065: “GLObject”: 未声明的标识符
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(206,21): error C2059: 语法错误:“>”
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(206,42): error C2653: “GLObject”: 不是类或命名空间名称
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(207,1): error C2059: 语法错误:“}”
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GLObject.h(207,1): error C2143: 语法错误: 缺少“;”(在“}”的前面)
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(55,41): error C2065: “framebuffer_size_callback”: 未声明的标识符
+﻿  Bezier.cpp
+D:\Work\repos\2020-ZJUCG-Final-Project\Shader.h(48,40): warning C4101: “e”: 未引用的局部变量
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  正在生成代码...
+  KoonanHyakukei.vcxproj -> D:\Work\repos\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.exe
