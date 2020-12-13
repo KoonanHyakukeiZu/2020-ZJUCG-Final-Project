@@ -1,11 +1,11 @@
 ﻿  main.cpp
 D:\Work\repos\2020-ZJUCG-Final-Project\include\Shader.h(56,40): warning C4101: “e”: 未引用的局部变量
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(220,28): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(314,17): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(315,17): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(319,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(320,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(322,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(323,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(332,31): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(226,22): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(322,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(323,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(327,16): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(328,16): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(330,10): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(331,10): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(340,28): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
   KoonanHyakukei.vcxproj -> D:\Work\repos\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.exe

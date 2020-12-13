@@ -19,6 +19,9 @@
     <Filter Include="源文件\imgui">
       <UniqueIdentifier>{64f98789-95c8-4f37-82d1-e7e9e1e4fafe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\gui">
+      <UniqueIdentifier>{dcc055eb-9d46-4c0e-8b7a-7172d8a32d57}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c">
@@ -82,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="include\FileSystem.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\gui.h">
+      <Filter>头文件\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\action.h">
+      <Filter>头文件\gui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
