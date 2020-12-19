@@ -20,6 +20,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
+void updateCursorMode(GLFWwindow* window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -27,9 +28,14 @@ const unsigned int SCR_HEIGHT = 600;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+//float lastX = SCR_WIDTH / 2.0f;
+//float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
+
+// gui
+enum class MouseMode { CameraMode, GUIMode };
+bool bLAltDown = false;
+MouseMode mouseMode = MouseMode::CameraMode;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -267,7 +273,7 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		KooNan::GUI::initFrame();
+		KooNan::GUI::newFrame();
 		KooNan::GUI::drawWidgets();
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -290,6 +296,8 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
+	static bool lastLAltDown = false;
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
@@ -301,6 +309,11 @@ void processInput(GLFWwindow* window)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+
+	lastLAltDown = bLAltDown;
+	bLAltDown = glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
+	if (lastLAltDown != bLAltDown) updateCursorMode(window);
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -317,20 +330,29 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (firstMouse)
-	{
+	static float lastX = SCR_WIDTH / 2.0f;
+	static float lastY = SCR_HEIGHT / 2.0f;
+
+	if (mouseMode==MouseMode::GUIMode) {
+		KooNan::GUI::ProcessMouseMovement(xpos, ypos);
+		return;
+	}
+	else {
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+		}
+
+		float xoffset = xpos - lastX;
+		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
 		lastX = xpos;
 		lastY = ypos;
-		firstMouse = false;
+
+		camera.ProcessMouseMovement(xoffset, yoffset);
 	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-	lastX = xpos;
-	lastY = ypos;
-
-	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -338,4 +360,19 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
+}
+
+// updateCursorMode: for changing input mode ( whether the cursor is visible and who to deal with mouse input
+//	Causes a proble change in global var mouseMode and glfw's InputMode
+void updateCursorMode(GLFWwindow* window)
+{
+	if (bLAltDown || KooNan::GUI::getCurState() != KooNan::GUIState::Default) {
+		mouseMode = MouseMode::GUIMode;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		firstMouse = true;
+	}
+	else {
+		mouseMode = MouseMode::CameraMode;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
 }
