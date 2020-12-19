@@ -1,11 +1,14 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#define PI 3.14159265
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <math.h>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -40,7 +43,28 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
-
+	
+    // Added two constructors 
+    // constructor with the traditional "gluLookAt" style (vector)
+	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f)) : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+	{
+		Position = position;
+		Front = glm::normalize(center - position);
+		WorldUp = up;
+		Pitch = asin(Front.y) * 180.0 / PI;
+		Yaw = asin(Front.z / cos(Pitch / 180.0 * PI)) * 180.0 / PI;
+		updateCameraVectors();
+	}
+	// constructor with the traditional "gluLookAt" style (scalar)
+	Camera(float posX, float posY, float posZ, float centerX, float centerY, float centerZ, float upX, float upY, float upZ) : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+	{
+		Position = glm::vec3(posX, posY, posZ);
+		Front = glm::normalize(glm::vec3(centerX, centerY, centerZ) - Position);
+		WorldUp = glm::vec3(upX, upY, upZ);
+		Pitch = asin(Front.y) * 180.0 / PI;
+		Yaw = asin(Front.z / cos(Pitch / 180.0 * PI)) * 180.0 / PI;
+		updateCameraVectors();
+	}
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
     {
