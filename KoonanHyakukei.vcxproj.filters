@@ -22,6 +22,9 @@
     <Filter Include="头文件\gui">
       <UniqueIdentifier>{dcc055eb-9d46-4c0e-8b7a-7172d8a32d57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\basic">
+      <UniqueIdentifier>{0138651d-2e75-49c3-b9d2-ea051094736f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c">
@@ -89,8 +92,8 @@
     <ClInclude Include="gui\gui.h">
       <Filter>头文件\gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\action.h">
-      <Filter>头文件\gui</Filter>
+    <ClInclude Include="basic\GameController.h">
+      <Filter>头文件\basic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

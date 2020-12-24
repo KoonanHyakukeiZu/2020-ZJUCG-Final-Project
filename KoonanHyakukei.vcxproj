@@ -156,7 +156,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gui\action.h" />
+    <ClInclude Include="basic\GameController.h" />
     <ClInclude Include="gui\gui.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\FileSystem.h" />
