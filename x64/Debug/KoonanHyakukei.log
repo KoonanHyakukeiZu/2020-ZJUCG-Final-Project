@@ -1,0 +1,16 @@
+﻿  main.cpp
+d:\codes\2020-zjucg-final-project\include\shader.h(56): warning C4101: “e”: 未引用的局部变量
+d:\codes\2020-zjucg-final-project\include\camera.h(54): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\camera.h(55): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\camera.h(64): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\camera.h(65): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\filesystem.h(25): error C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdlib.h(1191): note: 参见“getenv”的声明
+d:\codes\2020-zjucg-final-project\main.cpp(220): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(314): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(315): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(319): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(320): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(322): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(323): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(332): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
