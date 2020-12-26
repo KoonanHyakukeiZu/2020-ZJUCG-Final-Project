@@ -12,27 +12,43 @@
 
 class Terrain{
     private:
-    const float size = 80;
-    const int vertex_count = 128;
+    const float size = 20;
+    const int vertex_count = 32;
     float world_x;
     float world_z;
+	bool flatten;
     Mesh terrain_mesh;
-    Mesh generateTerrain(vector<Texture> inp_textures)
+    Mesh generateTerrain(vector<Texture> inp_textures, bool flatten = true)
     {
+		this->flatten = flatten;
 		HeightsGenerator hei_gen;
         int count = vertex_count * vertex_count;
         vector<Vertex_Simple>       vertices;
         vector<unsigned int>		indices;
         vector<Texture>				textures = inp_textures;
 		Vertex_Simple* tmp_vertex = new Vertex_Simple;
-        for(int i=0;i<vertex_count;i++)
-            for(int j=0;j<vertex_count;j++)
-            {
-				tmp_vertex->Position = glm::vec3(((float)j - vertex_count / 2 + 0.5) / ((float)vertex_count - 1) * size, hei_gen.heightsGeneration(j, i), ((float)i - vertex_count / 2 + 0.5) / ((float)vertex_count - 1) * size);
-				tmp_vertex->Normal = calculateNormal(j, i, hei_gen);
-				tmp_vertex->TexCoords = glm::vec2((float)j / ((float)vertex_count - 1), (float)i / ((float)vertex_count - 1));
-                vertices.push_back(*tmp_vertex);
-            }
+		if (!flatten)
+		{
+			for (int i = 0; i < vertex_count; i++)
+				for (int j = 0; j < vertex_count; j++)
+				{
+					tmp_vertex->Position = glm::vec3(((float)j - vertex_count / 2 + 0.5) / ((float)vertex_count - 1) * size, hei_gen.heightsGeneration(j, i), ((float)i - vertex_count / 2 + 0.5) / ((float)vertex_count - 1) * size);
+					tmp_vertex->Normal = calculateNormal(j, i, hei_gen);
+					tmp_vertex->TexCoords = glm::vec2((float)j / ((float)vertex_count - 1), (float)i / ((float)vertex_count - 1));
+					vertices.push_back(*tmp_vertex);
+				}
+		}
+		else
+		{
+			for (int i = 0; i < vertex_count; i++)
+				for (int j = 0; j < vertex_count; j++)
+				{
+					tmp_vertex->Position = glm::vec3(((float)j - vertex_count / 2 + 0.5) / ((float)vertex_count - 1) * size, 0, ((float)i - vertex_count / 2 + 0.5) / ((float)vertex_count - 1) * size);
+					tmp_vertex->Normal = glm::vec3(0.0f, 1.0f, 0.0f);
+					tmp_vertex->TexCoords = glm::vec2((float)j / ((float)vertex_count - 1), (float)i / ((float)vertex_count - 1));
+					vertices.push_back(*tmp_vertex);
+				}
+		}
         for(int gz=0;gz<vertex_count-1;gz++)
             for(int gx=0;gx<vertex_count-1;gx++)
             {
