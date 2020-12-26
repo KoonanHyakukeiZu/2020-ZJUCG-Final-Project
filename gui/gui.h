@@ -4,6 +4,8 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
+#include <GameController.h>
+
 namespace KooNan
 {
 	enum class GUIState {Pause, EditScene, EditBuilding};
@@ -42,10 +44,19 @@ namespace KooNan
 		// setWidgets: 绘制所有控件
 		//   在initEnv后调用
 		static void drawWidgets() {
-			/*
-			ImGui::Begin("Demo window");
-			ImGui::Button("Hello!");
-			ImGui::End();*/
+			ImGui::Begin("Menu");
+			if (GameController::gameMode == Creating)
+				if (ImGui::Button("Wandering"))
+					GameController::gameMode = Wandering;
+				else;
+			else if (GameController::gameMode == Wandering)
+				if (ImGui::Button("Creating"))
+				{
+					GameController::mainCamera = Camera();
+					GameController::gameMode = Creating;
+				}
+				else;
+			ImGui::End();
 
 			// Render dear imgui into screen
 			ImGui::Render();

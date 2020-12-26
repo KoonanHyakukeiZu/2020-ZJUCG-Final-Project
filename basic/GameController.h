@@ -6,6 +6,7 @@ namespace KooNan
 {
 	enum GameMode
 	{
+		Tile,
 		Pause,
 		Wandering,
 		Creating
@@ -15,7 +16,9 @@ namespace KooNan
 		// 全局状态
 	public:
 		static unsigned int SCR_WIDTH, SCR_HEIGHT;
-		static bool firstMouse;
+		
+		static bool firstMouse; // 是否是第一次点击（用于鼠标移动事件）
+		static bool altPressedLast; // 上一次循环是否按下alt键
 		static float deltaTime;
 		static float lastFrame;
 
@@ -42,9 +45,9 @@ namespace KooNan
 	float GameController::lastFrame = .0f;
 	float GameController::deltaTime = .0f;
 
-	Camera GameController::mainCamera = Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
+	Camera GameController::mainCamera = Camera();
 
-	GameMode GameController::gameMode = Pause;
+	GameMode GameController::gameMode = Wandering;
 	int GameController::sthSelected = 0;
 
 	// 函数定义
@@ -81,24 +84,38 @@ namespace KooNan
 
 	void GameController::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
-		mainCamera.ProcessMouseScroll(yoffset);
+		mainCamera.ProcessMouseScroll(gameMode == Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
 	}
 
 	void GameController::processInput(GLFWwindow* window)
 	{
-		static bool lastLAltDown = false;
+		
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			mainCamera.ProcessKeyboard(FORWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			mainCamera.ProcessKeyboard(BACKWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			mainCamera.ProcessKeyboard(LEFT, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			mainCamera.ProcessKeyboard(RIGHT, deltaTime);
+		if (gameMode == Creating)
+		{
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(NORTH, deltaTime);
+			else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(SOUTH, deltaTime);
+			else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(WEST, deltaTime);
+			else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(EAST, deltaTime);
+		}
+		else if (gameMode == Wandering)
+		{
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(FORWARD, deltaTime);
+			else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(BACKWARD, deltaTime);
+			else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(LEFT, deltaTime);
+			else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+				mainCamera.ProcessKeyboard(RIGHT, deltaTime);
+		}
 	}
 
 	void GameController::updateCursorMode(GLFWwindow* window)
