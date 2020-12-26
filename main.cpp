@@ -10,6 +10,7 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <FileSystem.h>
+#include <terrain.h>
 
 #include <iostream>
 
@@ -31,6 +32,9 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+unsigned int Gwidth = SCR_WIDTH;
+unsigned int Gheight = SCR_HEIGHT;
 
 int main()
 {
@@ -77,6 +81,7 @@ int main()
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("camera.vs", "camera.fs");
+	Shader terrainShader("terrain.vs", "terrain.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -155,7 +160,7 @@ int main()
 
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2;
+    unsigned int texture1, texture2, texture3;
     // texture 1
     // ---------
     glGenTextures(1, &texture1);
@@ -180,6 +185,7 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+	
     // texture 2
     // ---------
     glGenTextures(1, &texture2);
@@ -204,12 +210,38 @@ int main()
     }
     stbi_image_free(data);
 
+	glGenTextures(1, &texture3);
+	glBindTexture(GL_TEXTURE_2D, texture3);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+
+	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+	data = stbi_load(FileSystem::getPath("gui/resources/textures/grass.png").c_str(), &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+	vector<Texture>      textures;
+	struct Texture terrain_text{ texture3 , "texture_diffuse", FileSystem::getPath("gui/resources/textures/grass.png").c_str()};
+	textures.push_back(terrain_text);
+	Terrain smooth_ground(0, 0, textures);
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     ourShader.use();
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
-
+	//ourShader.setInt("texture3", 2);
 
     // render loop
     // -----------
@@ -240,7 +272,7 @@ int main()
         ourShader.use();
 
         // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)Gwidth / (float)Gheight, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
 
         // camera/view transformation
@@ -253,14 +285,18 @@ int main()
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, cubePositions[i]);
+			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             ourShader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
+		terrainShader.use();
+		terrainShader.setMat4("projection", projection);
+		terrainShader.setMat4("view", view);
+		terrainShader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		smooth_ground.Draw(terrainShader);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -301,6 +337,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
+	Gwidth = width;
+	Gheight = height;
     glViewport(0, 0, width, height);
 }
 

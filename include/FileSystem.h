@@ -1,7 +1,6 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#define _CRT_SECURE_NO_WARNINGS
 
 #include <string>
 #include <cstdlib>
