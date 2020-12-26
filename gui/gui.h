@@ -6,7 +6,7 @@
 
 namespace KooNan
 {
-	enum class GUIState {Default, EditScene, EditBuilding};
+	enum class GUIState {Pause, EditScene, EditBuilding};
 
 	class GUI
 	{
@@ -42,19 +42,6 @@ namespace KooNan
 		// setWidgets: 绘制所有控件
 		//   在initEnv后调用
 		static void drawWidgets() {
-			// Set all widgets
-			switch (curState)
-			{
-			case KooNan::GUIState::Default:
-
-				break;
-			case KooNan::GUIState::EditScene:
-				break;
-			case KooNan::GUIState::EditBuilding:
-				break;
-			default:
-				break;
-			}
 			/*
 			ImGui::Begin("Demo window");
 			ImGui::Button("Hello!");
@@ -65,11 +52,9 @@ namespace KooNan
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
 
-		static void ProcessMouseMovement(double xpos, double ypos) {};
-		static GUIState getCurState() noexcept { return curState; }
 	private:
 		static GUIState curState;
 	};
 
-	GUIState GUI::curState = GUIState::Default;
+	GUIState GUI::curState = GUIState::Pause;
 }
