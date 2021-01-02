@@ -19,7 +19,8 @@ enum Camera_Movement {
 	NORTH,
 	SOUTH,
 	EAST,
-	WEST
+	WEST,
+    NONE
 };
 
 enum Camera_Scroll {
@@ -107,7 +108,7 @@ public:
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime)
+    void ProcessKeyboard(float deltaTime, Camera_Movement direction = NONE)
     {
 		float velocity = MovementSpeed * deltaTime;
 		if (direction == FORWARD)
@@ -129,7 +130,7 @@ public:
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+    void ProcessMouseMovement(float xoffset, float yoffset)
     {
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
@@ -137,14 +138,10 @@ public:
         Yaw   += xoffset;
         Pitch += yoffset;
 
-        // make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (constrainPitch)
-        {
-            if (Pitch > 89.0f)
-                Pitch = 89.0f;
-            if (Pitch < -89.0f)
-                Pitch = -89.0f;
-        }
+		if (Pitch > 89.0f)
+			Pitch = 89.0f;
+		if (Pitch < -89.0f)
+			Pitch = -89.0f;
 
         // update Front, Right and Up Vectors using the updated Euler angles
         updateCameraVectors();

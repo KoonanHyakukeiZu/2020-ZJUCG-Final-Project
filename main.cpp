@@ -42,10 +42,7 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, GameController::framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, GameController::mouse_callback);
-	glfwSetScrollCallback(window, GameController::scroll_callback);
+	GameController::initGameController(window);
 
 	// tell GLFW to capture our mouse
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -125,11 +122,7 @@ int main()
 	// -----------
 	while (!glfwWindowShouldClose(window))
 	{
-		float currentFrame = glfwGetTime();
-		GameController::deltaTime = currentFrame - GameController::lastFrame;
-		GameController::lastFrame = currentFrame;
-
-		GameController::processInput(window);
+		GameController::updateGameController(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -138,11 +131,11 @@ int main()
 			(float)GameController::SCR_WIDTH / (float)GameController::SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = GameController::mainCamera.GetViewMatrix();
 
-		/*terrainShader.use();
+		terrainShader.use();
 		terrainShader.setMat4("projection", projection);
 		terrainShader.setMat4("view", view);
 		terrainShader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		smooth_ground.Draw(terrainShader);*/
+		smooth_ground.Draw(terrainShader);
 
 		ourShader.use();
 		ourShader.setMat4("projection", projection);
