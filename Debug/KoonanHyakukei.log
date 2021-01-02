@@ -1,15 +1,15 @@
 ﻿  main.cpp
-D:\Work\repos\2020-ZJUCG-Final-Project\include\Shader.h(56,40): warning C4101: “e”: 未引用的局部变量
+D:\Work\repos\2020-ZJUCG-Final-Project\include\shader.h(56,40): warning C4101: “e”: 未引用的局部变量
 D:\Work\repos\2020-ZJUCG-Final-Project\include\Camera.h(71,33): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
 D:\Work\repos\2020-ZJUCG-Final-Project\include\Camera.h(72,57): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
 D:\Work\repos\2020-ZJUCG-Final-Project\include\Camera.h(81,33): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
 D:\Work\repos\2020-ZJUCG-Final-Project\include\Camera.h(82,57): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(46,23): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(103,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(104,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(107,17): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(108,17): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(110,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(111,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(120,86): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(48,23): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(106,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(107,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(110,17): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(111,17): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(113,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(114,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(128,86): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
   KoonanHyakukei.vcxproj -> D:\Work\repos\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.exe

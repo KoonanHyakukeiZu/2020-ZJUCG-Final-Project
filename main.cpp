@@ -6,18 +6,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <Shader.h>
-#include <Camera.h>
-#include <FileSystem.h>
-#include <Model.h>
-
 #include <terrain.h>
 #include <gui.h>
 #include <GameController.h>
+#include <GameObject.h>
 
 #include <iostream>
 
 using namespace KooNan;
+using namespace glm;
 
 int main()
 {
@@ -65,7 +62,7 @@ int main()
 
 	// Terrain
 	// ------------------------------------
-	Shader terrainShader("terrain.vs", "terrain.fs");
+	Shader terrainShader("landscape/terrain.vs", "landscape/terrain.fs");
 
 	unsigned int texture3;
 	int width, height, nrChannels;
@@ -112,7 +109,14 @@ int main()
 	// Model
 	// ------------------------------------
 	Shader ourShader("model/model.vs", "model/model.fs");
-	Model ourModel(FileSystem::getPath("model/rsc/planet/planet.obj"));
+	Model* planet = new Model(FileSystem::getPath("model/rsc/planet/planet.obj"));
+
+	// Object
+	// ------------------------------------
+	GameObject* p1 = new GameObject(string("model/rsc/planet/planet.obj"),
+		scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)));
+	GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
+		scale(translate(mat4(1.0f), vec3(5.0f, 2.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)));
 
 	// GUI
 	// ------------------------------------
@@ -137,18 +141,8 @@ int main()
 		terrainShader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 		smooth_ground.Draw(terrainShader);
 
-		ourShader.use();
-		ourShader.setMat4("projection", projection);
-		ourShader.setMat4("view", view);
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 5.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-		ourShader.setMat4("model", model);
-		ourModel.Draw(ourShader);
-
-		model = glm::translate(model, glm::vec3(10.0f, 0.0f, 0.0f));
-		ourShader.setMat4("model", model);
-		ourModel.Draw(ourShader);
+		for (GameObject* obj : GameObject::gameObjList)
+			obj->Draw(ourShader, projection, view);
 
 		GUI::newFrame();
 		GUI::drawWidgets();
@@ -156,6 +150,15 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	// GameObject clear
+	for (GameObject* obj : GameObject::gameObjList)
+		delete obj;
+	GameObject::gameObjList.clear();
+	unordered_map<string, Model*>::iterator itr;
+	for (itr = Model::modelList.begin(); itr != Model::modelList.end(); ++itr)
+		delete itr->second;
+	Model::modelList.clear();
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------

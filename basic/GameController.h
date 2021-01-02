@@ -29,6 +29,7 @@ namespace KooNan
 
 		static Camera mainCamera;
 
+
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
 		static GameMode gameMode; // 游戏模式：暂停、漫游、创造
@@ -40,6 +41,7 @@ namespace KooNan
 			glfwSetFramebufferSizeCallback(window, GameController::framebuffer_size_callback);
 			glfwSetCursorPosCallback(window, GameController::cursor_callback);
 			glfwSetScrollCallback(window, GameController::scroll_callback);
+			glfwSetMouseButtonCallback(window, GameController::mouse_callback);
 		}
 		static void updateGameController(GLFWwindow* window)
 		{
@@ -67,6 +69,7 @@ namespace KooNan
 	private:
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 		static void cursor_callback(GLFWwindow* window, double xpos, double ypos);
+		static void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 		static void processInput(GLFWwindow* window);
 	private:
@@ -113,6 +116,11 @@ namespace KooNan
 		if(gameMode == Wandering) {
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
 		}
+	}
+
+	void GameController::mouse_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+
 	}
 
 	void GameController::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)

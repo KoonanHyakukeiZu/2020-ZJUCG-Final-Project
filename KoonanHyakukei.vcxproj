@@ -165,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basic\GameController.h" />
+    <ClInclude Include="basic\GameObject.h" />
     <ClInclude Include="gui\gui.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\FileSystem.h" />

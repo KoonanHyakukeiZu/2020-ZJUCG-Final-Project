@@ -104,5 +104,8 @@
     <ClInclude Include="include\mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="basic\GameObject.h">
+      <Filter>头文件\basic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
