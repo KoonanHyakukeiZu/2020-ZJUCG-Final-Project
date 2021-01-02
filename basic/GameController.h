@@ -38,8 +38,8 @@ namespace KooNan
 	};
 
 	// 状态与信号初始化
-	unsigned int GameController::SCR_WIDTH = 1920;
-	unsigned int GameController::SCR_HEIGHT = 1080;
+	unsigned int GameController::SCR_WIDTH = 800;
+	unsigned int GameController::SCR_HEIGHT = 600;
 
 	bool GameController::firstMouse = true;
 	float GameController::lastFrame = .0f;

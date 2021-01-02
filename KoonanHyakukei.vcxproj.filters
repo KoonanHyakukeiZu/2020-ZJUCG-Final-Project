@@ -19,6 +19,15 @@
     <Filter Include="源文件\imgui">
       <UniqueIdentifier>{64f98789-95c8-4f37-82d1-e7e9e1e4fafe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\gui">
+      <UniqueIdentifier>{fa36e695-919d-45a7-8042-f9b333c2deb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\basic">
+      <UniqueIdentifier>{9dad4ffb-10de-4d16-99de-790bd8da7eb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\model">
+      <UniqueIdentifier>{a50e3367-69c1-482e-90ad-7b2c4e99ec3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c">
@@ -81,6 +90,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\FileSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\gui.h">
+      <Filter>头文件\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="basic\GameController.h">
+      <Filter>头文件\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="include\model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
