@@ -77,6 +77,7 @@ public:
             this->vertices_extra = another_mesh.vertices_extra;
         }
         this->indices = another_mesh.indices;
+		this->textures = another_mesh.textures;
         setupMesh();
     }
 	~Mesh()

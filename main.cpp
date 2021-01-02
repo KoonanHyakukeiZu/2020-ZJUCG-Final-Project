@@ -10,31 +10,26 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <FileSystem.h>
-#include <terrain.h>
+#include <GameController.h>
+#include <waterframebuffer.h>
+#include <scene.h>
+#include <cube.h>
+#include <gui.h>
+#include <light.h>
 
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow* window);
+using namespace KooNan;
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+glm::vec3 pointLightPositions[] = {
+		glm::vec3(2.0f,  3.0f,  2.0f),
+		glm::vec3(2.3f, 2.0f, -5.0f),
+		glm::vec3(-4.0f,  2.5f, -8.0f),
+		glm::vec3(0.0f,  1.5f, -3.0f)
+};
 
-// camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
-
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
-
-unsigned int Gwidth = SCR_WIDTH;
-unsigned int Gheight = SCR_HEIGHT;
+void addlights(Light& light);
+unsigned int loadTexture(const char *filepath);
 
 int main()
 {
@@ -51,7 +46,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(GameController::SCR_WIDTH, GameController::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -59,9 +54,9 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetFramebufferSizeCallback(window, GameController::framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, GameController::mouse_callback);
+    glfwSetScrollCallback(window, GameController::scroll_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -76,58 +71,20 @@ int main()
 
     // configure global opengl state
     // -----------------------------
-    glEnable(GL_DEPTH_TEST);
+    
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("camera.vs", "camera.fs");
-	Shader terrainShader("terrain.vs", "terrain.fs");
-
+    Shader boxShader(FileSystem::getPath("model/camera.vs").c_str(), FileSystem::getPath("model/camera.fs").c_str());
+	Shader terrainShader(FileSystem::getPath("landscape/terrain.vs").c_str(), FileSystem::getPath("landscape/terrain.fs").c_str());
+	Shader waterShader(FileSystem::getPath("landscape/water.vs").c_str(), FileSystem::getPath("landscape/water.fs").c_str());
+	Shader skyShader(FileSystem::getPath("landscape/skybox.vs").c_str(), FileSystem::getPath("landscape/skybox.fs").c_str());
+	Shader lightShader(FileSystem::getPath("landscape/lightcube.vs").c_str(), FileSystem::getPath("landscape/lightcube.fs").c_str());
+	
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
@@ -141,108 +98,66 @@ int main()
         glm::vec3(1.5f,  0.2f, -1.5f),
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-
+    
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2, texture3;
-    // texture 1
-    // ---------
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char* data = stbi_load(FileSystem::getPath("gui/resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-	
-    // texture 2
-    // ---------
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    data = stbi_load(FileSystem::getPath("gui/resources/textures/awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+	std::vector<std::string> skyboxPaths = {
+			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_px.jpg").c_str(),
+			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_nx.jpg").c_str(),
+			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_py.jpg").c_str(),
+			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_ny.jpg").c_str(),
+			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_pz.jpg").c_str(),
+			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_nz.jpg").c_str(),
+	};
 
-	glGenTextures(1, &texture3);
-	glBindTexture(GL_TEXTURE_2D, texture3);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
 
-	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-	data = stbi_load(FileSystem::getPath("gui/resources/textures/grass.png").c_str(), &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-	vector<Texture>      textures;
+    unsigned int texture1, texture2, texture3, texture4, texture5;
+	texture1 = loadTexture(FileSystem::getPath("gui/resources/textures/container.jpg").c_str());
+	texture2 = loadTexture(FileSystem::getPath("gui/resources/textures/awesomeface.png").c_str());
+	texture3 = loadTexture(FileSystem::getPath("gui/resources/textures/grass.jpg").c_str());
+	texture4 = loadTexture(FileSystem::getPath("gui/resources/textures/waterDUDV.png").c_str());
+	texture5 = loadTexture(FileSystem::getPath("gui/resources/textures/normal.png").c_str());
+	vector<Texture>      terr_textures;
 	struct Texture terrain_text{ texture3 , "texture_diffuse", FileSystem::getPath("gui/resources/textures/grass.png").c_str()};
-	textures.push_back(terrain_text);
-	Terrain smooth_ground(0, 0, textures);
+	terr_textures.push_back(terrain_text);
+
+	Scene main_scene(32.0f, 1, 1, 0.5f, terrainShader, waterShader, skyShader, terr_textures, skyboxPaths);
+
+	DirLight parallel{
+		glm::vec3(-0.2f, -1.0f, -0.3f),
+		glm::vec3(0.05f, 0.05f, 0.05f),
+		glm::vec3(0.7f, 0.7f, 0.7f),
+		glm::vec3(0.4f, 0.4f, 0.4f)
+	};
+
+	Light main_light(parallel, lightShader);
+	addlights(main_light);
+
+	main_scene.setDudvMap(texture4);
+	main_scene.setNormalMap(texture5);
+	Water_Frame_Buffer waterfb;
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
-    ourShader.use();
-    ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
-	//ourShader.setInt("texture3", 2);
+	
+	terrainShader.use();
+	main_light.SetLight(terrainShader);
 
+	waterShader.use();
+	main_light.SetLight(waterShader);
+
+	//set the texture and material for boxes
+	vector<Texture>      box_textures;
+	struct Texture box_text1 { texture1, "texture_diffuse", FileSystem::getPath("gui/resources/textures/container.jpg").c_str() };
+	box_textures.push_back(box_text1);
+	Cube boxes(box_textures, boxShader);
+	boxShader.use();
+	boxShader.setInt("material.diffuse", 0);
+	boxShader.setInt("material.specular", 0);
+	boxShader.setFloat("material.shininess", 32.0f);
+	main_light.SetLight(boxShader);
+
+
+	GUI::initEnv(window);
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -250,37 +165,37 @@ int main()
         // per-frame time logic
         // --------------------
         float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+		GameController::deltaTime = currentFrame - GameController::lastFrame;
+		GameController::lastFrame = currentFrame;
 
         // input
         // -----
-        processInput(window);
+		GameController::processInput(window);
 
+		//需要渲染三次 前两次不渲染水面 最后一次渲染水面
+
+		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+		//--------------------------------------------------------------------------------------------------------------
+		//FIRST TIME RENDERING TO REFLECTION
+		//--------------------------------------------------------------------------------------------------------------
+		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+		glEnable(GL_CLIP_DISTANCE0);
+		waterfb.bindReflectionFrameBuffer();
+		glEnable(GL_DEPTH_TEST);
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
-        // activate shader
-        ourShader.use();
-
-        // pass projection matrix to shader (note that in this case it could change every frame)
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)Gwidth / (float)Gheight, 0.1f, 100.0f);
-        ourShader.setMat4("projection", projection);
-
-        // camera/view transformation
-        glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
+		
+        // Set the main camera to the position and direction of reflection
+		float distance = 2 * (GameController::mainCamera.Position.y - main_scene.getWaterHeight());
+		GameController::mainCamera.Position.y -= distance;
+		GameController::mainCamera.Pitch = -GameController::mainCamera.Pitch;
+ 
 
         // render boxes
-        glBindVertexArray(VAO);
+
         for (unsigned int i = 0; i < 10; i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
@@ -288,84 +203,176 @@ int main()
 			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            ourShader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), model);
         }
-		terrainShader.use();
-		terrainShader.setMat4("projection", projection);
-		terrainShader.setMat4("view", view);
-		terrainShader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-		smooth_ground.Draw(terrainShader);
+		// we now draw as many light bulbs as we have point lights.
+
+		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()));
+		//render the main scene
+		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), false);
+
+		/*
+		Render the else you need to render here!! Remember to set the clipping plane!!!
+		*/
+
+		//Restore the main camera
+		GameController::mainCamera.Position.y += distance;
+		GameController::mainCamera.Pitch = -GameController::mainCamera.Pitch;
+		GameController::mainCamera.GetViewMatrix();
+
+		waterfb.unbindCurrentFrameBuffer();
+
+		unsigned int reflect_text = waterfb.getReflectionTexture();
+		
+
+		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+		//--------------------------------------------------------------------------------------------------------------
+		//SECOND TIME RENDERING TO REFRACTION
+		//--------------------------------------------------------------------------------------------------------------
+		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+		waterfb.bindRefractionFrameBuffer();
+		glEnable(GL_DEPTH_TEST);
+		// render
+		// ------
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), model);
+		}
+		// we now draw as many light bulbs as we have point lights.
+
+
+		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()));
+		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), false);
+
+		/*
+		Render the else you need to render here!! Remember to set the clipping plane!!!
+		*/
+
+		unsigned int refract_text = waterfb.getRefractionTexture();
+
+
+
+		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+		//--------------------------------------------------------------------------------------------------------------
+		//THIRD TIME RENDERING TO SCREEN
+		//--------------------------------------------------------------------------------------------------------------
+		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+		waterfb.unbindCurrentFrameBuffer();
+		glEnable(GL_DEPTH_TEST);
+		// render
+		// ------
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// pass projection matrix to shader (note that in this case it could change every frame)
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), model);
+		}
+
+		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f));
+
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		main_scene.setReflectText(reflect_text);
+		main_scene.setRefractText(refract_text);
+		main_scene.setDepthMap(waterfb.getRefractionDepthTexture());
+		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), true);
+
+		glDisable(GL_BLEND);
+
+		/*
+		Render the else you need to render here!! Remember to set the clipping plane!!!
+		*/
+
+		GUI::newFrame();
+		GUI::drawWidgets();
+		
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
+	waterfb.cleanUp();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+void addlights(Light& light)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+	
+	for (int i = 0; i < 4; i++)
+	{
+		PointLight l
+		{
+			glm::vec3(pointLightPositions[i]),
+			1.0f,
+			0.09f,
+			0.032f,
+			glm::vec3(0.05f, 0.05f, 0.05f),
+			glm::vec3(0.8f, 0.8f, 0.8f),
+			glm::vec3(1.0f, 1.0f, 1.0f),
+		};
+		light.AddPointLight(l);
+	}
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+unsigned int loadTexture(const char *filepath)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
-	Gwidth = width;
-	Gheight = height;
-    glViewport(0, 0, width, height);
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	unsigned char *data = stbi_load(filepath, &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << filepath << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
 }
 
-
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    camera.ProcessMouseScroll(yoffset);
-}

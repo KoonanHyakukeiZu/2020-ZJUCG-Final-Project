@@ -1,0 +1,44 @@
+﻿  glad.c
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  main.cpp
+d:\codes\2020-zjucg-final-project\include\shader.h(56): warning C4101: “e”: 未引用的局部变量
+d:\codes\2020-zjucg-final-project\include\camera.h(70): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\camera.h(71): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\camera.h(80): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\include\camera.h(81): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(70): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(71): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(75): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(76): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(78): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(79): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(87): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\landscape\waterframebuffer.h(42): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
+d:\codes\2020-zjucg-final-project\landscape\scene.h(88): warning C4018: “<”: 有符号/无符号不匹配
+d:\codes\2020-zjucg-final-project\landscape\scene.h(121): warning C4018: “<”: 有符号/无符号不匹配
+d:\codes\2020-zjucg-final-project\landscape\light.h(49): warning C4018: “<”: 有符号/无符号不匹配
+d:\codes\2020-zjucg-final-project\main.cpp(167): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__CreateBitmap@20
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__CreateRectRgn@16
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__DeleteObject@4
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__CreateDIBSection@24
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__DragQueryFileW@16
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__DragQueryPoint@8
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__DragFinish@4
+glfw3.lib(win32_window.obj) : error LNK2001: 无法解析的外部符号 __imp__DragAcceptFiles@8
+glfw3.lib(wgl_context.obj) : error LNK2001: 无法解析的外部符号 __imp__ChoosePixelFormat@8
+glfw3.lib(wgl_context.obj) : error LNK2001: 无法解析的外部符号 __imp__DescribePixelFormat@16
+glfw3.lib(wgl_context.obj) : error LNK2001: 无法解析的外部符号 __imp__SetPixelFormat@12
+glfw3.lib(wgl_context.obj) : error LNK2001: 无法解析的外部符号 __imp__SwapBuffers@4
+glfw3.lib(win32_monitor.obj) : error LNK2001: 无法解析的外部符号 __imp__CreateDCW@16
+glfw3.lib(win32_monitor.obj) : error LNK2001: 无法解析的外部符号 __imp__DeleteDC@4
+glfw3.lib(win32_monitor.obj) : error LNK2001: 无法解析的外部符号 __imp__GetDeviceCaps@8
+glfw3.lib(win32_monitor.obj) : error LNK2001: 无法解析的外部符号 __imp__GetDeviceGammaRamp@8
+glfw3.lib(win32_monitor.obj) : error LNK2001: 无法解析的外部符号 __imp__SetDeviceGammaRamp@8
+D:\Codes\2020-ZJUCG-Final-Project\Release\KoonanHyakukei.exe : fatal error LNK1120: 17 个无法解析的外部命令
