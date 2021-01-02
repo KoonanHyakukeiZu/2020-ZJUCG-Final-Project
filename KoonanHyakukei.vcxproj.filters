@@ -25,6 +25,9 @@
     <Filter Include="头文件\basic">
       <UniqueIdentifier>{0138651d-2e75-49c3-b9d2-ea051094736f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\gui">
+      <UniqueIdentifier>{e355e9e1-a433-4789-b16b-f3935427b651}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\gui.cpp">
+      <Filter>源文件\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -366,7 +366,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 //	Causes a proble change in global var mouseMode and glfw's InputMode
 void updateCursorMode(GLFWwindow* window)
 {
-	if (bLAltDown || KooNan::GUI::getCurState() != KooNan::GUIState::Default) {
+	if (bLAltDown || KooNan::GUI::getCurState() != KooNan::GUIState::SightSeeing) {
 		mouseMode = MouseMode::GUIMode;
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		firstMouse = true;

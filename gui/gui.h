@@ -6,7 +6,8 @@
 
 namespace KooNan
 {
-	enum class GUIState {Default, EditScene, EditBuilding};
+	enum class GUIState {Title, SightSeeing, EditScene, EditBuilding, Pause};
+	int imguiDefaultFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
 
 	class GUI
 	{
@@ -39,37 +40,70 @@ namespace KooNan
 			ImGui::NewFrame();
 		}
 
-		// setWidgets: 绘制所有控件
+		// setWidgets: 绘制所有控件，处理输入
 		//   在initEnv后调用
 		static void drawWidgets() {
 			// Set all widgets
 			switch (curState)
 			{
-			case KooNan::GUIState::Default:
+			case KooNan::GUIState::Title:
 
 				break;
+			case KooNan::GUIState::SightSeeing:
+				ImGui::Begin("DefaultButtons1", NULL, imguiDefaultFlags);
+				ImGui::SetWindowPos(ImVec2(0, 0));
+				if (ImGui::Button("Hello!")) {
+					preState = curState;
+					curState = GUIState::EditScene;
+				}
+				ImGui::End(); 
+				break;
 			case KooNan::GUIState::EditScene:
+				ImGui::Begin("DefaultButtons1", NULL, imguiDefaultFlags);
+				ImGui::SetWindowPos(ImVec2(600, 500));
+				if (ImGui::Button("pause!")) {
+					preState = curState;
+					curState = GUIState::Pause;
+				}
+				ImGui::End();
 				break;
 			case KooNan::GUIState::EditBuilding:
+
+				break;
+			case KooNan::GUIState::Pause:
+
 				break;
 			default:
 				break;
 			}
-			/*
-			ImGui::Begin("Demo window");
-			ImGui::Button("Hello!");
-			ImGui::End();*/
 
 			// Render dear imgui into screen
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
 
-		static void ProcessMouseMovement(double xpos, double ypos) {};
+		// changeStateTo: 改变状态机的位置
+		static void changeStateTo(GUIState nextState) {
+			preState = curState;
+			curState = nextState;
+		}
+
+		// revertState：退回前一状态，理论上来说只有pause会用
+		static void revertState() {
+			GUIState tmp = curState;
+			curState = preState;
+			preState = tmp;
+		}
+
+		// getCurState: 获取当前状态
 		static GUIState getCurState() noexcept { return curState; }
+
+		// 仔细想想好像没什么用，先放着吧
+		static void ProcessMouseMovement(double xpos, double ypos) {};
 	private:
-		static GUIState curState;
+		static GUIState curState, preState;
 	};
 
-	GUIState GUI::curState = GUIState::Default;
+	GUIState GUI::preState = GUIState::Title;
+	GUIState GUI::curState = GUIState::SightSeeing;
 }
