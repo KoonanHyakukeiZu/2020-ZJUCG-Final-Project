@@ -4,6 +4,8 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
+#include <GameController.h>
+
 namespace KooNan
 {
 	enum class GUIState {Title, SightSeeing, EditScene, EditBuilding, Pause};
@@ -43,39 +45,19 @@ namespace KooNan
 		// setWidgets: 绘制所有控件，处理输入
 		//   在initEnv后调用
 		static void drawWidgets() {
-			// Set all widgets
-			switch (curState)
-			{
-			case KooNan::GUIState::Title:
-
-				break;
-			case KooNan::GUIState::SightSeeing:
-				ImGui::Begin("DefaultButtons1", NULL, imguiDefaultFlags);
-				ImGui::SetWindowPos(ImVec2(0, 0));
-				if (ImGui::Button("Hello!")) {
-					preState = curState;
-					curState = GUIState::EditScene;
+			ImGui::Begin("Menu");
+			if (GameController::gameMode == Creating)
+				if (ImGui::Button("Wandering"))
+					GameController::gameMode = Wandering;
+				else;
+			else if (GameController::gameMode == Wandering)
+				if (ImGui::Button("Creating"))
+				{
+					GameController::mainCamera = Camera();
+					GameController::gameMode = Creating;
 				}
-				ImGui::End(); 
-				break;
-			case KooNan::GUIState::EditScene:
-				ImGui::Begin("DefaultButtons1", NULL, imguiDefaultFlags);
-				ImGui::SetWindowPos(ImVec2(600, 500));
-				if (ImGui::Button("pause!")) {
-					preState = curState;
-					curState = GUIState::Pause;
-				}
-				ImGui::End();
-				break;
-			case KooNan::GUIState::EditBuilding:
-
-				break;
-			case KooNan::GUIState::Pause:
-
-				break;
-			default:
-				break;
-			}
+				else;
+			ImGui::End();
 
 			// Render dear imgui into screen
 			ImGui::Render();
@@ -95,11 +77,6 @@ namespace KooNan
 			preState = tmp;
 		}
 
-		// getCurState: 获取当前状态
-		static GUIState getCurState() noexcept { return curState; }
-
-		// 仔细想想好像没什么用，先放着吧
-		static void ProcessMouseMovement(double xpos, double ypos) {};
 	private:
 		static GUIState curState, preState;
 	};

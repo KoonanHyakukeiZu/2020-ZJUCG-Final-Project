@@ -8,38 +8,15 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <Shader.h>
-#include <Camera.h>
 #include <FileSystem.h>
 
 #include <iostream>
 
 // KooNanHyakyKei project's include
 #include <gui.h>
+#include <GameController.h>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow* window);
-void updateCursorMode(GLFWwindow* window);
-
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-// camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
-//float lastX = SCR_WIDTH / 2.0f;
-//float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
-
-// gui
-enum class MouseMode { CameraMode, GUIMode };
-bool bLAltDown = false;
-MouseMode mouseMode = MouseMode::CameraMode;
-
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
+using namespace KooNan;
 
 int main()
 {
@@ -56,7 +33,7 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(GameController::SCR_WIDTH, GameController::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -64,12 +41,12 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetFramebufferSizeCallback(window, GameController::framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, GameController::mouse_callback);
+	glfwSetScrollCallback(window, GameController::scroll_callback);
 
 	// tell GLFW to capture our mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
@@ -230,12 +207,12 @@ int main()
 		// per-frame time logic
 		// --------------------
 		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		GameController::deltaTime = currentFrame - GameController::lastFrame;
+		GameController::lastFrame = currentFrame;
 
 		// input
 		// -----
-		processInput(window);
+		GameController::processInput(window);
 
 		// render
 		// ------
@@ -252,11 +229,12 @@ int main()
 		ourShader.use();
 
 		// pass projection matrix to shader (note that in this case it could change every frame)
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(GameController::mainCamera.Zoom),
+			(float)GameController::SCR_WIDTH / (float)GameController::SCR_HEIGHT, 0.1f, 100.0f);
 		ourShader.setMat4("projection", projection);
 
 		// camera/view transformation
-		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 view = GameController::mainCamera.GetViewMatrix();
 		ourShader.setMat4("view", view);
 
 		// render boxes
@@ -290,89 +268,4 @@ int main()
 	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
-{
-	static bool lastLAltDown = false;
-
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
-
-	lastLAltDown = bLAltDown;
-	bLAltDown = glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
-	if (lastLAltDown != bLAltDown) updateCursorMode(window);
-
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	// make sure the viewport matches the new window dimensions; note that width and 
-	// height will be significantly larger than specified on retina displays.
-	glViewport(0, 0, width, height);
-}
-
-
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	static float lastX = SCR_WIDTH / 2.0f;
-	static float lastY = SCR_HEIGHT / 2.0f;
-
-	if (mouseMode==MouseMode::GUIMode) {
-		KooNan::GUI::ProcessMouseMovement(xpos, ypos);
-		return;
-	}
-	else {
-		if (firstMouse)
-		{
-			lastX = xpos;
-			lastY = ypos;
-			firstMouse = false;
-		}
-
-		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-		lastX = xpos;
-		lastY = ypos;
-
-		camera.ProcessMouseMovement(xoffset, yoffset);
-	}
-}
-
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	camera.ProcessMouseScroll(yoffset);
-}
-
-// updateCursorMode: for changing input mode ( whether the cursor is visible and who to deal with mouse input
-//	Causes a proble change in global var mouseMode and glfw's InputMode
-void updateCursorMode(GLFWwindow* window)
-{
-	if (bLAltDown || KooNan::GUI::getCurState() != KooNan::GUIState::SightSeeing) {
-		mouseMode = MouseMode::GUIMode;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		firstMouse = true;
-	}
-	else {
-		mouseMode = MouseMode::CameraMode;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	}
 }

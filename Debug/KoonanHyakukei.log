@@ -1,34 +1,13 @@
-﻿  gui.cpp
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(65,11): error C2039: "cout": 不是 "std" 的成员
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stddef.h(19): message : 参见“std”的声明
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(65,1): error C2065: “cout”: 未声明的标识符
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(65,38): error C2039: "endl": 不是 "std" 的成员
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stddef.h(19): message : 参见“std”的声明
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(65,1): error C2065: “endl”: 未声明的标识符
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(75,11): error C2039: "cout": 不是 "std" 的成员
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stddef.h(19): message : 参见“std”的声明
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(75,1): error C2065: “cout”: 未声明的标识符
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(75,40): error C2039: "endl": 不是 "std" 的成员
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stddef.h(19): message : 参见“std”的声明
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(75,1): error C2065: “endl”: 未声明的标识符
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(80,11): error C2039: "cout": 不是 "std" 的成员
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stddef.h(19): message : 参见“std”的声明
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(80,1): error C2065: “cout”: 未声明的标识符
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(80,37): error C2039: "endl": 不是 "std" 的成员
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stddef.h(19): message : 参见“std”的声明
-E:\乔俊鑫\大四\CG\Final\gui\gui.h(80,1): error C2065: “endl”: 未声明的标识符
-  main.cpp
-E:\乔俊鑫\大四\CG\Final\include\Shader.h(56,40): warning C4101: “e”: 未引用的局部变量
-E:\乔俊鑫\大四\CG\Final\include\Camera.h(54,33): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\include\Camera.h(55,57): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\include\Camera.h(64,33): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\include\Camera.h(65,57): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(232,22): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(344,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(345,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(349,17): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(350,17): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(352,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(353,11): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-E:\乔俊鑫\大四\CG\Final\main.cpp(363,28): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-  正在生成代码...
+﻿  main.cpp
+D:\Work\repos\2020-ZJUCG-Final-Project\include\Shader.h(56,40): warning C4101: “e”: 未引用的局部变量
+D:\Work\repos\2020-ZJUCG-Final-Project\include\Camera.h(68,33): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\include\Camera.h(69,57): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(70,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(71,13): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(75,18): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(76,18): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(78,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(79,12): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\basic\GameController.h(87,86): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+D:\Work\repos\2020-ZJUCG-Final-Project\main.cpp(209,22): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  KoonanHyakukei.vcxproj -> D:\Work\repos\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.exe
