@@ -8,7 +8,7 @@
 
 namespace KooNan
 {
-	enum class GUIState {Title, SightSeeing, EditScene, EditBuilding, Pause};
+	enum class GUIState {Title, Wandering, Creating, Pause};
 	int imguiDefaultFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
 
 	class GUI
@@ -44,20 +44,79 @@ namespace KooNan
 
 		// setWidgets: 绘制所有控件，处理输入
 		//   在initEnv后调用
-		static void drawWidgets() {
-			ImGui::Begin("Menu");
-			if (GameController::gameMode == Creating)
-				if (ImGui::Button("Wandering"))
-					GameController::gameMode = Wandering;
-				else;
-			else if (GameController::gameMode == Wandering)
-				if (ImGui::Button("Creating"))
-				{
+		static void drawWidgets(int windowWidth, int windowHeight) {
+			ImGui::Begin("Menu", 0, imguiDefaultFlags);
+			switch (curState)
+			{
+			case KooNan::GUIState::Title:
+				// todo：将窗口放到正中绘制菜单
+
+				break;
+			case KooNan::GUIState::Wandering:
+				ImGui::SetWindowPos(ImVec2(0, 0));
+				if (!hideGui && ImGui::Button("Pause")) {
+					changeStateTo(GUIState::Pause);
+					GameController::gameMode = Pause;
+				}
+				if (!hideGui && ImGui::Button("Begin Record")) {
+					// todo
+				}
+				if ((!hideGui && ImGui::Button("Hide UI")) || (hideGui && ImGui::Button("Show UI"))) {
+					hideGui = !hideGui;
+				}
+				if (!hideGui && ImGui::Button("Edit Scene")) {
+					changeStateTo(GUIState::Creating);
 					GameController::mainCamera = Camera();
 					GameController::gameMode = Creating;
 				}
-				else;
+				break;
+			case KooNan::GUIState::Creating:
+				ImGui::SetWindowPos(ImVec2(0, 0));
+				if (ImGui::Button("Pause")) {
+					changeStateTo(GUIState::Pause);
+					GameController::gameMode = Pause;
+				}
+				if (ImGui::Button("Save")) {
+					// todo
+				}
+				if (ImGui::Button("Wander")) {
+					// 检查当前是否选中了建筑且位置不合法
+					if (1) {
+						changeStateTo(GUIState::Wandering);
+						GameController::gameMode = Wandering;
+					}
+				}
+				break;
+			case KooNan::GUIState::Pause:
+				// todo：改变menu位置到正中
+				if (ImGui::Button("Continue")) {
+					revertState();
+					if (curState == GUIState::Creating) GameController::gameMode = Creating;
+					else if (curState == GUIState::Wandering) GameController::gameMode = Wandering;
+				}
+				if (ImGui::Button("Save and Quit to Title")) {
+					// todo：检查当前是否选中了建筑且位置不合法
+					if (1) {
+						changeStateTo(GUIState::Title);
+						GameController::gameMode = Tile;
+					}
+				}
+				break;
+			default:
+				break;
+			}
 			ImGui::End();
+
+			if (curState == GUIState::Creating) {
+				// todo：绘制选择建筑界面
+				ImGui::Begin("Select Page");
+				ImGui::End();
+
+				// todo：有选中建筑时，绘制选中建筑周围的菜单
+				if (1) {
+
+				}
+			}
 
 			// Render dear imgui into screen
 			ImGui::Render();
@@ -79,8 +138,10 @@ namespace KooNan
 
 	private:
 		static GUIState curState, preState;
+		static bool hideGui;
 	};
 
 	GUIState GUI::preState = GUIState::Title;
-	GUIState GUI::curState = GUIState::SightSeeing;
+	GUIState GUI::curState = GUIState::Wandering;
+	bool GUI::hideGui = false;
 }

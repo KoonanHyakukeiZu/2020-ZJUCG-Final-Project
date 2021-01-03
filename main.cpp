@@ -200,6 +200,7 @@ int main()
 
 	// render loop
 	// -----------
+	int windowWidth, windowHeight;
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -252,7 +253,8 @@ int main()
 		}
 
 		KooNan::GUI::newFrame();
-		KooNan::GUI::drawWidgets();
+		glfwGetWindowSize(window, &windowWidth, &windowHeight);
+		KooNan::GUI::drawWidgets(windowWidth, windowHeight);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
