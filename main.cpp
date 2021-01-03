@@ -124,6 +124,7 @@ int main()
 
 	// render loop
 	// -----------
+	int windowWidth, windowHeight;
 	while (!glfwWindowShouldClose(window))
 	{
 		GameController::updateGameController(window);
@@ -145,7 +146,8 @@ int main()
 			obj->Draw(ourShader, projection, view);
 
 		GUI::newFrame();
-		GUI::drawWidgets();
+		glfwGetWindowSize(window, &windowWidth, &windowHeight);
+		GUI::drawWidgets(windowWidth, windowHeight);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
