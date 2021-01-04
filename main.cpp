@@ -16,7 +16,7 @@
 #include <cube.h>
 #include <gui.h>
 #include <light.h>
-
+#include <Texture.h>
 #include <iostream>
 
 using namespace KooNan;
@@ -26,10 +26,9 @@ glm::vec3 pointLightPositions[] = {
 		glm::vec3(2.3f, 2.0f, -5.0f),
 		glm::vec3(-4.0f,  2.5f, -8.0f),
 		glm::vec3(0.0f,  1.5f, -3.0f)
-};
+};//This should match up with the macro NR_POINT_LIGHTS in fragment shader
 
 void addlights(Light& light);
-unsigned int loadTexture(const char *filepath);
 
 int main()
 {
@@ -88,15 +87,15 @@ int main()
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
+        glm::vec3(10.0f,  5.0f, -15.0f),
+        glm::vec3(-15.0f, -2.2f, -15.0f),
+        glm::vec3(-9.8f, -2.0f, -12.3f),
+        glm::vec3(10.4f, -0.4f, -8.5f),
+        glm::vec3(-1.7f,  3.0f, -9.5f),
+        glm::vec3(10.3f, -2.0f, -5.5f),
+        glm::vec3(12.5f,  2.0f, -3.5f),
+        glm::vec3(13.5f,  0.2f, -7.5f),
+        glm::vec3(-5.3f,  1.0f, -5.5f)
     };
     
     // load and create a texture 
@@ -109,19 +108,16 @@ int main()
 			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_pz.jpg").c_str(),
 			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_nz.jpg").c_str(),
 	};
+	//Format:1.groundheightmap 2.groundtexture 3.waterdudvmap 4.waternormalmap
+	std::vector<std::string> groundPaths = {
+		FileSystem::getPath("gui/resources/textures/heightmap.png"),
+		FileSystem::getPath("gui/resources/textures/grass.jpg"),
+		FileSystem::getPath("gui/resources/textures/waterDUDV.png"),
+		FileSystem::getPath("gui/resources/textures/normal.png")
+	};
 
+	Scene main_scene(64.0f, 1, 1, 0.0f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
 
-    unsigned int texture1, texture2, texture3, texture4, texture5;
-	texture1 = loadTexture(FileSystem::getPath("gui/resources/textures/container.jpg").c_str());
-	texture2 = loadTexture(FileSystem::getPath("gui/resources/textures/awesomeface.png").c_str());
-	texture3 = loadTexture(FileSystem::getPath("gui/resources/textures/grass.jpg").c_str());
-	texture4 = loadTexture(FileSystem::getPath("gui/resources/textures/waterDUDV.png").c_str());
-	texture5 = loadTexture(FileSystem::getPath("gui/resources/textures/normal.png").c_str());
-	vector<Texture>      terr_textures;
-	struct Texture terrain_text{ texture3 , "texture_diffuse", FileSystem::getPath("gui/resources/textures/grass.png").c_str()};
-	terr_textures.push_back(terrain_text);
-
-	Scene main_scene(32.0f, 1, 1, 0.5f, terrainShader, waterShader, skyShader, terr_textures, skyboxPaths);
 
 	DirLight parallel{
 		glm::vec3(-0.2f, -1.0f, -0.3f),
@@ -133,9 +129,7 @@ int main()
 	Light main_light(parallel, lightShader);
 	addlights(main_light);
 
-	main_scene.setDudvMap(texture4);
-	main_scene.setNormalMap(texture5);
-	Water_Frame_Buffer waterfb;
+	
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
 	
@@ -146,9 +140,9 @@ int main()
 	main_light.SetLight(waterShader);
 
 	//set the texture and material for boxes
+	TextureManager texman(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 	vector<Texture>      box_textures;
-	struct Texture box_text1 { texture1, "texture_diffuse", FileSystem::getPath("gui/resources/textures/container.jpg").c_str() };
-	box_textures.push_back(box_text1);
+	box_textures.push_back(texman.LoadTexture(FileSystem::getPath("gui/resources/textures/container.jpg"),"texture_diffuse"));
 	Cube boxes(box_textures, boxShader);
 	boxShader.use();
 	boxShader.setInt("material.diffuse", 0);
@@ -162,6 +156,7 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+		Water_Frame_Buffer waterfb;
         // per-frame time logic
         // --------------------
         float currentFrame = glfwGetTime();
@@ -200,9 +195,10 @@ int main()
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::translate(model, glm::vec3(cubePositions[i].x,main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
+			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+            //float angle = 20.0f * i;
+            //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), model);
         }
 		// we now draw as many light bulbs as we have point lights.
@@ -242,9 +238,10 @@ int main()
 		{
 			// calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::translate(model, glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
+			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+			//float angle = 20.0f * i;
+			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), model);
 		}
 		// we now draw as many light bulbs as we have point lights.
@@ -257,7 +254,7 @@ int main()
 		Render the else you need to render here!! Remember to set the clipping plane!!!
 		*/
 
-		unsigned int refract_text = waterfb.getRefractionTexture();
+		unsigned int refract_text = waterfb.getRefractionTexture(); 
 
 
 
@@ -279,9 +276,10 @@ int main()
 		{
 			// calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, cubePositions[i] + glm::vec3(0.0f, 4.0f, 0.0f));
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::translate(model, glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
+			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+			//float angle = 20.0f * i;
+			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
 			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), model);
 		}
@@ -297,6 +295,7 @@ int main()
 		main_scene.setDepthMap(waterfb.getRefractionDepthTexture());
 		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), true);
 
+		waterfb.cleanUp();
 		glDisable(GL_BLEND);
 
 		/*
@@ -312,7 +311,6 @@ int main()
         glfwPollEvents();
     }
 
-	waterfb.cleanUp();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
@@ -339,40 +337,4 @@ void addlights(Light& light)
 
 }
 
-unsigned int loadTexture(const char *filepath)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char *data = stbi_load(filepath, &width, &height, &nrComponents, 0);
-	if (data)
-	{
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << filepath << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
-}
 

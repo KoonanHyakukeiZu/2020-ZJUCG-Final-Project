@@ -43,7 +43,7 @@ namespace KooNan
 		}
 		void Draw(Camera& cam, glm::vec4 clipping_plane)
 		{
-			std::vector<Texture> textures;
+			std::vector<Texture> textures;//Load a null texture
 			Cube lightcube(textures, LightboxShader);
 			
 			for (int i = 0; i < point_lights.size(); i++)

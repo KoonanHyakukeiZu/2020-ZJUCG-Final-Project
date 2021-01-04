@@ -87,6 +87,11 @@ public:
 			this->vertices_extra.clear();
 		this->indices.clear();
 		this->textures.clear();
+		glDeleteBuffers(1, &VBO);
+		if (extra)
+			glDeleteBuffers(1, &VBO_extra);
+		glDeleteBuffers(1, &EBO);
+		glDeleteVertexArrays(1, &VAO);
 	}
 
     // render the mesh
@@ -127,7 +132,18 @@ public:
         // always good practice to set everything back to defaults once configured.
         glActiveTexture(GL_TEXTURE0);
     }
-
+	void cleanUp()
+	{
+		vertices_simple.clear();
+		vertices_extra.clear();
+		textures.clear();
+		indices.clear();
+		glDeleteBuffers(1, &VBO);
+		if(extra)
+			glDeleteBuffers(1, &VBO_extra);
+		glDeleteBuffers(1, &EBO);
+		glDeleteVertexArrays(1, &VAO);
+	}
 private:
     // render data 
     unsigned int VBO, EBO, VBO_extra;

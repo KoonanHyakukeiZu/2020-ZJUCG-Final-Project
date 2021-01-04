@@ -13,7 +13,7 @@
 #include <terrain.h>
 #include <water.h>
 #include <skybox.h>
-
+#include <Texture.h>
 
 
 namespace KooNan
@@ -21,10 +21,11 @@ namespace KooNan
 	class Scene {
 	private:
 		float chunk_size;
+	public:
 		vector<Terrain> all_terrain_chunks;
 		vector<Water> all_water_chunks;
 		Skybox skybox;
-		vector<Texture> ground_textures;
+		vector<string> groundPaths;
 		int width;
 		int height;
 		float water_height;
@@ -41,15 +42,15 @@ namespace KooNan
 		Shader& TerrainShader: Pass the terrain shader to it
 		Shader& WaterShader: Pass the water shader to it
 		Shader& SkyShader: Pass the skybox shader to it
-		vector<Texture> ground_textures: Pass a texture vector contains terrain textures
+		string ground_textures: Pass a string of ground texture
 		vector<string> skyboxPaths: Pass a string vector contains skybox textures
 		*/
-		Scene(float chunk_size, int scene_width, int scene_height, float water_height, Shader& TerrainShader, Shader& WaterShader, Shader& SkyShader, vector<Texture> ground_textures, vector<string> skyboxPaths) :
-			chunk_size(chunk_size), skybox(skyboxPaths), ground_textures(ground_textures), width(scene_width), height(scene_height),
+		Scene(float chunk_size, int scene_width, int scene_height, float water_height, Shader& TerrainShader, Shader& WaterShader, Shader& SkyShader, vector<string> groundPaths, vector<string> skyboxPaths) :
+			chunk_size(chunk_size), skybox(skyboxPaths), groundPaths(groundPaths), width(scene_width), height(scene_height),
 			water_height(water_height), TerrainShader(TerrainShader), WaterShader(WaterShader), SkyShader(SkyShader)
 		{
 			waterMoveFactor = 0.0f;
-			InitScene();
+			InitScene(groundPaths);
 		}
 		float getWaterHeight()
 		{
@@ -124,21 +125,57 @@ namespace KooNan
 				}
 			}
 		}
-	private:
-		void InitScene()
+		float getTerrainHeight(float x, float z)
 		{
+			float relativeX = x + chunk_size / 2;
+			float relativeZ = z + chunk_size / 2;
+			int gridX = (int)(relativeX / chunk_size);
+			int gridZ = (int)(relativeZ / chunk_size);
+			return all_terrain_chunks[gridX*width + gridZ].GetTerrainHeight(x, z);
+		}
+	private:
+		void InitScene(vector<string> ground_path)
+		{
+			bool use_heightMap = false;
+			string heightMapPath;
+			if (groundPaths.size() == 4)
+			{
+				use_heightMap = true;
+				heightMapPath = *ground_path.begin();
+				ground_path.erase(ground_path.begin());
+				assert(ground_path.size() == 3);
+			}
+			vector<string> types;
+			for (int k = 0; k < ground_path.size(); k++)
+			{
+				types.push_back("texture_diffuse");
+			}
+			TextureManager texman(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT, GL_LINEAR, GL_LINEAR);
+			vector<Texture> textures = texman.LoadTexture(ground_path, types);
 			for (int i = 0; i < width; i++)
 				for (int j = 0; j < height; j++)
 				{
-					Terrain ground(i, j, ground_textures, chunk_size);
-					all_terrain_chunks.push_back(ground);
-					Water water_surface(i, j, water_height, chunk_size);
-					all_water_chunks.push_back(water_surface);
+					if (!use_heightMap)
+					{
+						Terrain ground(i, j, textures[0], chunk_size);
+						all_terrain_chunks.push_back(ground);
+						Water water_surface(i, j, water_height, chunk_size);
+						all_water_chunks.push_back(water_surface);
+					}
+					else
+					{
+						Terrain ground(i, j, textures[0], heightMapPath, chunk_size);
+						all_terrain_chunks.push_back(ground);
+						Water water_surface(i, j, water_height, chunk_size);
+						all_water_chunks.push_back(water_surface);
+					}
 				}
 			WaterShader.use();
 			WaterShader.setVec3("material.diffuse", glm::vec3(0.2, 0.2, 0.2));
 			WaterShader.setVec3("material.specular", glm::vec3(1.0, 1.0, 1.0));
 			WaterShader.setFloat("material.shininess", 128.0f);
+			setDudvMap(textures[1].id);
+			setNormalMap(textures[2].id);
 
 		}
 
