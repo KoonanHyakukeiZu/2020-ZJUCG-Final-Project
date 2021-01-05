@@ -112,7 +112,7 @@ int main()
 	std::vector<std::string> groundPaths = {
 		FileSystem::getPath("landscape/resources/textures/heightmap.png"),
 		FileSystem::getPath("landscape/resources/textures/blendermap.jpg"),
-		FileSystem::getPath("landscape/resources/textures/background.jpg"),
+		FileSystem::getPath("landscape/resources/textures/background1.jpg"),
 		FileSystem::getPath("landscape/resources/textures/groundR.jpg"),
 		FileSystem::getPath("landscape/resources/textures/groundG.png"),
 		FileSystem::getPath("landscape/resources/textures/groundB.jpg"),
@@ -120,7 +120,7 @@ int main()
 		FileSystem::getPath("landscape/resources/textures/normal.png")
 	};
 
-	Scene main_scene(256.0f, 1, 1, -0.5f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
+	Scene main_scene(256.0f, 1, 1, -0.7f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
 
 
 	DirLight parallel{

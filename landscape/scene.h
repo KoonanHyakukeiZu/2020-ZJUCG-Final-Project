@@ -155,7 +155,6 @@ namespace KooNan
 			vector<Texture> ground_textures;
 			for (int l = 0; l < 5; l++)
 			{
-				std::cout << textures[l].path << endl;
 				ground_textures.push_back(textures[l]);
 			}
 			for (int i = 0; i < width; i++)
