@@ -14,12 +14,12 @@ d:\codes\2020-zjucg-final-project\basic\gamecontroller.h(87): warning C4244: “
 d:\codes\2020-zjucg-final-project\landscape\waterframebuffer.h(42): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
 d:\codes\2020-zjucg-final-project\landscape\terrain.h(89): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 d:\codes\2020-zjucg-final-project\landscape\terrain.h(90): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\landscape\terrain.h(130): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 d:\codes\2020-zjucg-final-project\landscape\terrain.h(131): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-d:\codes\2020-zjucg-final-project\landscape\terrain.h(132): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 d:\codes\2020-zjucg-final-project\include\texture.h(40): warning C4018: “<”: 有符号/无符号不匹配
 d:\codes\2020-zjucg-final-project\landscape\scene.h(89): warning C4018: “<”: 有符号/无符号不匹配
 d:\codes\2020-zjucg-final-project\landscape\scene.h(122): warning C4018: “<”: 有符号/无符号不匹配
 d:\codes\2020-zjucg-final-project\landscape\scene.h(149): warning C4018: “<”: 有符号/无符号不匹配
 d:\codes\2020-zjucg-final-project\landscape\light.h(49): warning C4018: “<”: 有符号/无符号不匹配
-d:\codes\2020-zjucg-final-project\main.cpp(162): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+d:\codes\2020-zjucg-final-project\main.cpp(166): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
   KoonanHyakukei.vcxproj -> D:\Codes\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.exe

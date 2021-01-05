@@ -106,7 +106,7 @@ void main()
     reflectTexCoord += totalDistortion;
     reflectTexCoord.x = clamp(reflectTexCoord.x, 0.001, 0.999);
     reflectTexCoord.y = clamp(reflectTexCoord.y, -0.999, -0.001);
-    float refractiveFactor = dot(normalize(viewPos - FragPos), normal);
+    float refractiveFactor = dot(normalize(viewPos - FragPos), normalize(vec3(normal.x, normal.y + 3.0, normal.z)));
     refractiveFactor = clamp(pow(refractiveFactor, 2.0), 0.0, 1.0);//The greater the expon the more the water will reflect
 
     

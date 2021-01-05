@@ -92,7 +92,7 @@ namespace KooNan
 			}
 			SkyShader.use();
 
-			skybox.Draw(SkyShader, glm::scale(glm::mat4(1.0f), glm::vec3(100.0f)), view, projection);
+			skybox.Draw(SkyShader, glm::scale(glm::mat4(1.0f), glm::vec3(500.0f)), view, projection);
 			if (draw_water)
 			{
 				waterMoveFactor += deltaTime * 0.1f;
@@ -138,33 +138,39 @@ namespace KooNan
 		{
 			bool use_heightMap = false;
 			string heightMapPath;
-			if (groundPaths.size() == 4)
+			if (groundPaths.size() == 8)
 			{
 				use_heightMap = true;
 				heightMapPath = *ground_path.begin();
 				ground_path.erase(ground_path.begin());
-				assert(ground_path.size() == 3);
+				assert(ground_path.size() == 7);
 			}
 			vector<string> types;
 			for (int k = 0; k < ground_path.size(); k++)
 			{
 				types.push_back("texture_diffuse");
 			}
-			TextureManager texman(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT, GL_LINEAR, GL_LINEAR);
+			TextureManager texman(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 			vector<Texture> textures = texman.LoadTexture(ground_path, types);
+			vector<Texture> ground_textures;
+			for (int l = 0; l < 5; l++)
+			{
+				std::cout << textures[l].path << endl;
+				ground_textures.push_back(textures[l]);
+			}
 			for (int i = 0; i < width; i++)
 				for (int j = 0; j < height; j++)
 				{
 					if (!use_heightMap)
 					{
-						Terrain ground(i, j, textures[0], chunk_size);
+						Terrain ground(i, j, ground_textures, chunk_size);
 						all_terrain_chunks.push_back(ground);
 						Water water_surface(i, j, water_height, chunk_size);
 						all_water_chunks.push_back(water_surface);
 					}
 					else
 					{
-						Terrain ground(i, j, textures[0], heightMapPath, chunk_size);
+						Terrain ground(i, j, ground_textures, heightMapPath, chunk_size);
 						all_terrain_chunks.push_back(ground);
 						Water water_surface(i, j, water_height, chunk_size);
 						all_water_chunks.push_back(water_surface);
@@ -174,8 +180,8 @@ namespace KooNan
 			WaterShader.setVec3("material.diffuse", glm::vec3(0.2, 0.2, 0.2));
 			WaterShader.setVec3("material.specular", glm::vec3(1.0, 1.0, 1.0));
 			WaterShader.setFloat("material.shininess", 128.0f);
-			setDudvMap(textures[1].id);
-			setNormalMap(textures[2].id);
+			setDudvMap(textures[textures.size() - 2].id);
+			setNormalMap(textures[textures.size() - 1].id);
 
 		}
 

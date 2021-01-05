@@ -30,11 +30,11 @@ namespace KooNan
 		std::vector<float> land_heights;
 		Mesh terrain_mesh;	
 	public:
-		Terrain(int grid_index_x, int grid_index_z, Texture& texture, float chunk_size = 32.0f, int vertex_count = 32, float if_flatten = false) :
+		Terrain(int grid_index_x, int grid_index_z, vector<Texture> texture, float chunk_size = 32.0f, int vertex_count = 32, float if_flatten = false) :
 			size(chunk_size), vertex_count(vertex_count), index_x(grid_index_x), index_z(grid_index_z), 
 			world_x(index_x * size), world_z(index_z * size), flatten(if_flatten), terrain_mesh(generateTerrain(texture, if_flatten))
 		{}
-		Terrain(int grid_index_x, int grid_index_z, Texture& texture, string heightmap_path, float chunk_size = 32.0f, int vertex_count = 32):
+		Terrain(int grid_index_x, int grid_index_z, vector<Texture> texture, string heightmap_path, float chunk_size = 32.0f, int vertex_count = 32):
 			size(chunk_size), index_x(grid_index_x),index_z(grid_index_z), world_x(index_x * size), world_z(index_z * size),flatten(false), terrain_mesh(LoadTerrain(texture,heightmap_path))
 		{}
 		void Draw(Shader &shader)
@@ -69,7 +69,7 @@ namespace KooNan
 
 		}
 	private:
-		Mesh generateTerrain(Texture& texture, bool flatten = false)
+		Mesh generateTerrain(vector<Texture> texture, bool flatten = false)
 		{
 			this->flatten = flatten;
 			this->land_heights.resize(vertex_count*vertex_count);
@@ -78,7 +78,7 @@ namespace KooNan
 			vector<Vertex_Simple>       vertices;
 			vector<unsigned int>		indices;
 			vector<Texture>				textures;
-			textures.push_back(texture);
+
 			Vertex_Simple* tmp_vertex = new Vertex_Simple;
 			if (!flatten)
 			{
@@ -110,9 +110,9 @@ namespace KooNan
 			}
 			indices = generateIndex();
 			delete tmp_vertex;
-			return Mesh(vertices, indices, textures);
+			return Mesh(vertices, indices, texture);
 		}
-		Mesh LoadTerrain(Texture& texture, std::string heightmap_path)
+		Mesh LoadTerrain(vector<Texture> texture, std::string heightmap_path)
 		{
 			int width, height, nrComponents;
 			unsigned char *data = stbi_load(heightmap_path.c_str(), &width, &height, &nrComponents, 0);
@@ -121,8 +121,7 @@ namespace KooNan
 			this->land_heights.resize(vertex_count*vertex_count);
 			vector<Vertex_Simple>       vertices;
 			vector<unsigned int>		indices;
-			vector<Texture>				textures;
-			textures.push_back(texture);
+	
 			Vertex_Simple* tmp_vertex = new Vertex_Simple;
 			for (int i = 0; i < vertex_count; i++)
 			{
@@ -141,7 +140,7 @@ namespace KooNan
 			stbi_image_free(data);
 			indices = generateIndex();
 			delete tmp_vertex;
-			return Mesh(vertices, indices, textures);
+			return Mesh(vertices, indices, texture);
 		}
 		vector<unsigned int> generateIndex()
 		{
@@ -165,7 +164,7 @@ namespace KooNan
 		}
 		float GetHeightFromMap(int x, int z, const unsigned char *data, int nrComponents, int map_size)
 		{
-			float amplitude = 10.0f;
+			float amplitude = 20.0f;
 			int rgb;
 			if (x >= 0 && x < map_size && z >= 0 && z < map_size)
 			{

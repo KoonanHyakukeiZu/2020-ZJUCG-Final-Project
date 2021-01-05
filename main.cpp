@@ -108,15 +108,19 @@ int main()
 			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_pz.jpg").c_str(),
 			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_nz.jpg").c_str(),
 	};
-	//Format:1.groundheightmap 2.groundtexture 3.waterdudvmap 4.waternormalmap
+	//Format:(1).groundheightmap (2~size-2).groundtexture (size-1).waterdudvmap (size).waternormalmap
 	std::vector<std::string> groundPaths = {
-		FileSystem::getPath("gui/resources/textures/heightmap.png"),
-		FileSystem::getPath("gui/resources/textures/grass.jpg"),
-		FileSystem::getPath("gui/resources/textures/waterDUDV.png"),
-		FileSystem::getPath("gui/resources/textures/normal.png")
+		FileSystem::getPath("landscape/resources/textures/heightmap.png"),
+		FileSystem::getPath("landscape/resources/textures/blendermap.jpg"),
+		FileSystem::getPath("landscape/resources/textures/background.jpg"),
+		FileSystem::getPath("landscape/resources/textures/groundR.jpg"),
+		FileSystem::getPath("landscape/resources/textures/groundG.png"),
+		FileSystem::getPath("landscape/resources/textures/groundB.jpg"),
+		FileSystem::getPath("landscape/resources/textures/waterDUDV.png"),
+		FileSystem::getPath("landscape/resources/textures/normal.png")
 	};
 
-	Scene main_scene(64.0f, 1, 1, 0.0f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
+	Scene main_scene(256.0f, 1, 1, -0.5f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
 
 
 	DirLight parallel{
