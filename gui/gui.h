@@ -9,7 +9,8 @@
 namespace KooNan
 {
 	enum class GUIState { Title, Wandering, Creating, Pause };
-	int imguiDefaultFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
+	int menuFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
+	int selectPageFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
 
 	class GUI
 	{
@@ -47,7 +48,7 @@ namespace KooNan
 		static void drawWidgets(int windowWidth, int windowHeight) {
 			static ImVec2 menuButtonSize(buttonWidth1, buttonHeight1);
 			static ImVec2 shotcutButtonSize(buttonWidth2, buttonHeight2);
-			ImGui::Begin("Menu", 0, imguiDefaultFlags);
+			ImGui::Begin("Menu", 0, menuFlags);
 			switch (curState)
 			{
 			case KooNan::GUIState::Title:
@@ -121,7 +122,11 @@ namespace KooNan
 
 			if (curState == GUIState::Creating) {
 				// todo：绘制选择建筑界面
-				ImGui::Begin("Select Page");
+				int pageHeight = windowHeight / 4;
+				pageHeight = pageHeight < 150 ? 150 : pageHeight;
+				ImGui::Begin("Select Page", 0, selectPageFlags);
+				ImGui::SetWindowPos(ImVec2(10, windowHeight - 10 - pageHeight));
+				ImGui::SetWindowSize(ImVec2(windowWidth - 20, pageHeight));
 				ImGui::End();
 
 				// todo：有选中建筑时，绘制选中建筑周围的菜单
