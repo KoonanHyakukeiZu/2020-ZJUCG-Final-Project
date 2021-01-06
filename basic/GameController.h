@@ -1,6 +1,7 @@
 #pragma once
 #include <Camera.h>
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 namespace KooNan
 {
@@ -10,6 +11,9 @@ namespace KooNan
 		Pause,
 		Wandering,
 		Creating
+	};
+	enum class MouseMode {
+		GUIMode, CameraMode
 	};
 	class GameController
 	{
@@ -22,6 +26,7 @@ namespace KooNan
 		
 		static bool firstMouse; // 是否是第一次点击（用于鼠标移动事件）
 		static bool altPressedLast; // 上一次循环是否按下alt键
+		static MouseMode mouseMode;
 		static float deltaTime;
 		static float lastFrame;
 
@@ -71,6 +76,7 @@ namespace KooNan
 		static void cursor_callback(GLFWwindow* window, double xpos, double ypos);
 		static void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+		static void updateCursorMode(GLFWwindow* window, bool bLAltDown);
 		static void processInput(GLFWwindow* window);
 	private:
 		
@@ -81,6 +87,8 @@ namespace KooNan
 	unsigned int GameController::SCR_HEIGHT = 600;
 
 	bool GameController::firstMouse = true;
+	bool GameController::altPressedLast = false;
+	MouseMode GameController::mouseMode = MouseMode::GUIMode;
 	float GameController::lastFrame = .0f;
 	float GameController::deltaTime = .0f;
 	double GameController::cursorX = .0;
@@ -99,6 +107,8 @@ namespace KooNan
 
 	void GameController::cursor_callback(GLFWwindow* window, double xpos, double ypos)
 	{
+		if (mouseMode == MouseMode::GUIMode) return;
+
 		static float lastX = SCR_WIDTH / 2.0f;
 		static float lastY = SCR_HEIGHT / 2.0f;
 		if (firstMouse)
@@ -110,8 +120,10 @@ namespace KooNan
 		float xoffset = xpos - lastX;
 		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-		lastX = xpos;
-		lastY = ypos;
+		// 避免光标不显示时点到GUI上的按钮，保持光标位置在屏幕中心
+		lastX = SCR_WIDTH / 2.0f;
+		lastY = SCR_HEIGHT / 2.0f;
+		glfwSetCursorPos(window, lastX, lastY);
 
 		if(gameMode == Wandering) {
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
@@ -126,6 +138,22 @@ namespace KooNan
 	void GameController::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		mainCamera.ProcessMouseScroll(gameMode == Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
+	}
+
+	// updateCursorMode: for changing input mode ( whether the cursor is visible and who to deal with mouse input
+	//	Causes a proble change in global var mouseMode and glfw's InputMode
+	void GameController::updateCursorMode(GLFWwindow* window, bool bLAltDown)
+	{
+		if (bLAltDown || GameController::gameMode != Wandering) {
+			mouseMode = MouseMode::GUIMode;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			GameController::firstMouse = true;
+		}
+		else {
+			mouseMode = MouseMode::CameraMode;
+			glfwSetCursorPos(window, SCR_WIDTH / 2.0f, SCR_HEIGHT / 2.0f);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
 	}
 
 	void  GameController::processInput(GLFWwindow* window)
@@ -154,6 +182,10 @@ namespace KooNan
 				mainCamera.ProcessKeyboard(deltaTime, LEFT);
 			else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, RIGHT);
+
+			bool altPressed = glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
+			if (altPressed != GameController::altPressedLast) GameController::updateCursorMode(window, altPressed);
+			GameController::altPressedLast = altPressed;
 		}
 	}
 }
