@@ -53,7 +53,7 @@ namespace KooNan
 			case GameMode::Title:
 				ImGui::SetWindowPos(ImVec2((windowWidth - menuWidth) / 2, windowHeight * 2 / 3));
 				if (ImGui::Button("Start a New Game", menuButtonSize)) {
-					GameController::gameMode = Wandering;
+					GameController::changeGameModeTo(GameMode::Wandering);
 				}
 				if (ImGui::Button("Load a Game", menuButtonSize)) {
 
@@ -65,33 +65,32 @@ namespace KooNan
 			case GameMode::Wandering:
 				ImGui::SetWindowPos(ImVec2(0, 0));
 				if (!hideGui && ImGui::Button("Pause", shotcutButtonSize)) {
-					GameController::gameMode = Pause;
+					GameController::changeGameModeTo(GameMode::Pause);
 				}
 				if (!hideGui && ImGui::Button("Begin Record", shotcutButtonSize)) {
-					changeStateTo(GUIState::Recording);
+					//changeStateTo(GUIState::Recording);
 					// todo: emit record start
 				}
 				if ((!hideGui && ImGui::Button("Hide UI", shotcutButtonSize)) || (hideGui && ImGui::Button("Show UI", shotcutButtonSize))) {
 					hideGui = !hideGui;
 				}
 				if (!hideGui && ImGui::Button("Edit Scene", shotcutButtonSize)) {
-					GameController::mainCamera = GameController::oriCreatingCamera;
-					GameController::gameMode = Creating;
+					GameController::changeGameModeTo(GameMode::Creating);
 				}
 				else;
 				break;
+				/*
 			case KooNan::GUIState::Recording:
 				ImGui::SetWindowPos(ImVec2(0, 0));
 				if (!hideGui && ImGui::Button("End Record", shotcutButtonSize)) {
 					changeStateTo(GUIState::Wandering);
 					// todo: emit record end
 				}
-				break;
+				break;*/
 			case GameMode::Creating:
 				ImGui::SetWindowPos(ImVec2(0, 0));
 				if (ImGui::Button("Pause", shotcutButtonSize)) {
-					GameController::lastGameMode = GameController::gameMode;
-					GameController::gameMode = Pause;
+					GameController::changeGameModeTo(GameMode::Pause);
 				}
 				if (ImGui::Button("Save", shotcutButtonSize)) {
 					// todo
@@ -99,19 +98,19 @@ namespace KooNan
 				if (ImGui::Button("Wander", shotcutButtonSize)) {
 					// 检查当前是否选中了建筑且位置不合法
 					if (1) {
-						GameController::gameMode = Wandering;
+						GameController::changeGameModeTo(GameMode::Wandering);
 					}
 				}
 				break;
 			case GameMode::Pause:
 				ImGui::SetWindowPos(ImVec2((windowWidth - menuWidth) / 2, windowHeight * 2 / 3));
 				if (ImGui::Button("Continue", menuButtonSize)) {
-					GameController::gameMode = GameController::lastGameMode;
+					GameController::revertGameMode();
 				}
 				if (ImGui::Button("Save and Quit to Title", menuButtonSize)) {
 					// todo：检查当前是否选中了建筑且位置不合法
 					if (1) {
-						GameController::gameMode = Title;
+						GameController::changeGameModeTo(GameMode::Title);
 					}
 				}
 				break;
@@ -141,18 +140,6 @@ namespace KooNan
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
-
-		//// changeStateTo: 改变状态机的位置
-		//static void changeStateTo(GameMode nextState) {
-		//	preState = curState;
-		//	curState = nextState;
-		//}
-		//// revertState：退回前一状态，理论上来说只有pause会用
-		//static void revertState() {
-		//	GameMode tmp = curState;
-		//	curState = preState;
-		//	preState = tmp;
-		//}
 	private:
 		static bool hideGui;
 		static const int buttonWidth1 = 200, buttonHeight1 = 30;

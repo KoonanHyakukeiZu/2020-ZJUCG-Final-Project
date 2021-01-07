@@ -5,14 +5,14 @@
 
 namespace KooNan
 {
-	enum GameMode
+	enum class GameMode
 	{// 第一级状态
 		Title, // 标题页
 		Pause, // 暂停页
 		Wandering, // 漫步游览模式
 		Creating // 创造模式
 	};
-	enum CreatingMode
+	enum class CreatingMode
 	{
 		Placing, // 放置模式
 		Viewing // 观察模式
@@ -66,7 +66,7 @@ namespace KooNan
 			GameController::processInput(window);
 
 			// 创造模式下使用鼠标可以移动相机
-			if (gameMode == Creating) {
+			if (gameMode == GameMode::Creating) {
 				
 				if (cursorX <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, WEST);
@@ -77,6 +77,20 @@ namespace KooNan
 				else if(cursorY >= SCR_HEIGHT - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, SOUTH);
 			}
+		}
+		static void changeGameModeTo(GameMode newmode) {
+			lastGameMode = gameMode;
+			gameMode = newmode;
+
+			if (gameMode == GameMode::Wandering) {
+				altPressedLast = true;
+			}
+			else if (gameMode == GameMode::Creating) {
+				GameController::mainCamera = GameController::oriCreatingCamera;
+			}
+		}
+		static void revertGameMode() {
+			changeGameModeTo(lastGameMode);
 		}
 	private:
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -104,9 +118,9 @@ namespace KooNan
 	Camera GameController::oriCreatingCamera = Camera(0.f, 2.f, 2.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
 	Camera GameController::mainCamera = GameController::oriCreatingCamera;
 
-	GameMode GameController::gameMode = Creating;
-	GameMode GameController::lastGameMode = Title;
-	CreatingMode GameController::creatingMode = Placing;
+	GameMode GameController::gameMode = GameMode::Creating;
+	GameMode GameController::lastGameMode = GameMode::Title;
+	CreatingMode GameController::creatingMode = CreatingMode::Placing;
 	int GameController::sthSelected = 0;
 
 	// 函数定义
@@ -135,7 +149,7 @@ namespace KooNan
 		lastY = SCR_HEIGHT / 2.0f;
 		glfwSetCursorPos(window, lastX, lastY);
 
-		if(gameMode == Wandering) {
+		if(gameMode == GameMode::Wandering) {
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
 		}
 	}
@@ -147,7 +161,7 @@ namespace KooNan
 
 	void GameController::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
-		mainCamera.ProcessMouseScroll(gameMode == Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
+		mainCamera.ProcessMouseScroll(gameMode == GameMode::Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
 	}
 
 	void  GameController::processInput(GLFWwindow* window)
@@ -155,7 +169,7 @@ namespace KooNan
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 
-		if (gameMode == Creating)
+		if (gameMode == GameMode::Creating)
 		{
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, NORTH);
@@ -166,7 +180,7 @@ namespace KooNan
 			else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, EAST);
 		}
-		else if (gameMode == Wandering)
+		else if (gameMode == GameMode::Wandering)
 		{
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, FORWARD);
@@ -185,7 +199,7 @@ namespace KooNan
 
 	void GameController::updateCursorMode(GLFWwindow* window, bool bLAltDown)
 	{
-		if (bLAltDown || GameController::gameMode != Wandering) {
+		if (bLAltDown || GameController::gameMode != GameMode::Wandering) {
 			mouseMode = MouseMode::GUIMode;
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			GameController::firstMouse = true;
