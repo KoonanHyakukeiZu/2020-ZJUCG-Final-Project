@@ -153,11 +153,12 @@ public:
 	{
 		if (scrollAct == HEIGHT_CHANGE)
 		{
-			Position.y -= yoffset;
+			glm::vec3 old = Position;
+			Position += -yoffset * Front;
 			if (Position.y < MIN_H)
-				Position.y = MIN_H;
+				Position = old;
 			else if (Position.y > MAX_H)
-				Position.y = MAX_H;
+				Position = old;
 		}
 		else if (scrollAct == FOVY_CHANGE)
 		{

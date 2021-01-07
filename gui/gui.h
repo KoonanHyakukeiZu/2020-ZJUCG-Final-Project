@@ -8,7 +8,6 @@
 
 namespace KooNan
 {
-	enum class GUIState { Title, Wandering, Creating, Pause, Recording };
 	int menuFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
 	int selectPageFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
 
@@ -49,12 +48,11 @@ namespace KooNan
 			static ImVec2 menuButtonSize(buttonWidth1, buttonHeight1);
 			static ImVec2 shotcutButtonSize(buttonWidth2, buttonHeight2);
 			ImGui::Begin("Menu", 0, menuFlags);
-			switch (curState)
+			switch (GameController::gameMode)
 			{
-			case KooNan::GUIState::Title:
+			case GameMode::Title:
 				ImGui::SetWindowPos(ImVec2((windowWidth - menuWidth) / 2, windowHeight * 2 / 3));
 				if (ImGui::Button("Start a New Game", menuButtonSize)) {
-					changeStateTo(GUIState::Wandering);
 					GameController::gameMode = Wandering;
 				}
 				if (ImGui::Button("Load a Game", menuButtonSize)) {
@@ -64,10 +62,9 @@ namespace KooNan
 					exit(0);
 				}
 				break;
-			case KooNan::GUIState::Wandering:
+			case GameMode::Wandering:
 				ImGui::SetWindowPos(ImVec2(0, 0));
 				if (!hideGui && ImGui::Button("Pause", shotcutButtonSize)) {
-					changeStateTo(GUIState::Pause);
 					GameController::gameMode = Pause;
 				}
 				if (!hideGui && ImGui::Button("Begin Record", shotcutButtonSize)) {
@@ -78,8 +75,7 @@ namespace KooNan
 					hideGui = !hideGui;
 				}
 				if (!hideGui && ImGui::Button("Edit Scene", shotcutButtonSize)) {
-					changeStateTo(GUIState::Creating);
-					GameController::mainCamera = Camera(glm::vec3(0.0f, 4.0f, 3.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+					GameController::mainCamera = GameController::oriCreatingCamera;
 					GameController::gameMode = Creating;
 				}
 				else;
@@ -90,10 +86,11 @@ namespace KooNan
 					changeStateTo(GUIState::Wandering);
 					// todo: emit record end
 				}
-			case KooNan::GUIState::Creating:
+				break;
+			case GameMode::Creating:
 				ImGui::SetWindowPos(ImVec2(0, 0));
 				if (ImGui::Button("Pause", shotcutButtonSize)) {
-					changeStateTo(GUIState::Pause);
+					GameController::lastGameMode = GameController::gameMode;
 					GameController::gameMode = Pause;
 				}
 				if (ImGui::Button("Save", shotcutButtonSize)) {
@@ -102,23 +99,19 @@ namespace KooNan
 				if (ImGui::Button("Wander", shotcutButtonSize)) {
 					// 检查当前是否选中了建筑且位置不合法
 					if (1) {
-						changeStateTo(GUIState::Wandering);
 						GameController::gameMode = Wandering;
 					}
 				}
 				break;
-			case KooNan::GUIState::Pause:
+			case GameMode::Pause:
 				ImGui::SetWindowPos(ImVec2((windowWidth - menuWidth) / 2, windowHeight * 2 / 3));
 				if (ImGui::Button("Continue", menuButtonSize)) {
-					revertState();
-					if (curState == GUIState::Creating) GameController::gameMode = Creating;
-					else if (curState == GUIState::Wandering) GameController::gameMode = Wandering;
+					GameController::gameMode = GameController::lastGameMode;
 				}
 				if (ImGui::Button("Save and Quit to Title", menuButtonSize)) {
 					// todo：检查当前是否选中了建筑且位置不合法
 					if (1) {
-						changeStateTo(GUIState::Title);
-						GameController::gameMode = Tile;
+						GameController::gameMode = Title;
 					}
 				}
 				break;
@@ -127,7 +120,7 @@ namespace KooNan
 			}
 			ImGui::End();
 
-			if (curState == GUIState::Creating) {
+			if (GameController::gameMode == GameMode::Creating) {
 				// todo：绘制选择建筑界面
 				int pageHeight = windowHeight / 4;
 				pageHeight = pageHeight < 150 ? 150 : pageHeight;
@@ -149,26 +142,22 @@ namespace KooNan
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
 
-		// changeStateTo: 改变状态机的位置
-		static void changeStateTo(GUIState nextState) {
-			preState = curState;
-			curState = nextState;
-		}
-		// revertState：退回前一状态，理论上来说只有pause会用
-		static void revertState() {
-			GUIState tmp = curState;
-			curState = preState;
-			preState = tmp;
-		}
+		//// changeStateTo: 改变状态机的位置
+		//static void changeStateTo(GameMode nextState) {
+		//	preState = curState;
+		//	curState = nextState;
+		//}
+		//// revertState：退回前一状态，理论上来说只有pause会用
+		//static void revertState() {
+		//	GameMode tmp = curState;
+		//	curState = preState;
+		//	preState = tmp;
+		//}
 	private:
-		static GUIState curState, preState;
 		static bool hideGui;
 		static const int buttonWidth1 = 200, buttonHeight1 = 30;
 		static const int buttonWidth2 = 100, buttonHeight2 = 17;
 		static const int menuWidth = 200;
 	};
-
-	GUIState GUI::preState = GUIState::Title;
-	GUIState GUI::curState = GUIState::Wandering;
 	bool GUI::hideGui = false;
 }
