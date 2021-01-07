@@ -62,7 +62,7 @@ namespace KooNan
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, GameController::SCR_WIDTH, GameController::SCR_HEIGHT);
+			glViewport(0, 0, Render::SCR_WIDTH, Render::SCR_HEIGHT);
 			delete[] textures, framebuffers;
 		}
 
@@ -77,14 +77,14 @@ namespace KooNan
 
 		// setWidgets: 绘制所有控件
 		//   在initEnv后调用
-		static void drawWidgets(int windowWidth, int windowHeight, Shader& shader) {
+		static void drawWidgets() {
 			static ImVec2 menuButtonSize(buttonWidth1, buttonHeight1);
 			static ImVec2 shotcutButtonSize(buttonWidth2, buttonHeight2);
 			ImGui::Begin("Menu", 0, menuFlags);
 			switch (GameController::gameMode)
 			{
 			case GameMode::Title:
-				ImGui::SetWindowPos(ImVec2((windowWidth - menuWidth) / 2, windowHeight * 2 / 3));
+				ImGui::SetWindowPos(ImVec2((Render::SCR_WIDTH - menuWidth) / 2, Render::SCR_HEIGHT * 2 / 3));
 				if (ImGui::Button("Start a New Game", menuButtonSize)) {
 					GameController::changeGameModeTo(GameMode::Wandering);
 				}
@@ -136,7 +136,7 @@ namespace KooNan
 				}
 				break;
 			case GameMode::Pause:
-				ImGui::SetWindowPos(ImVec2((windowWidth - menuWidth) / 2, windowHeight * 2 / 3));
+				ImGui::SetWindowPos(ImVec2((Render::SCR_WIDTH - menuWidth) / 2, Render::SCR_HEIGHT * 2 / 3));
 				if (ImGui::Button("Continue", menuButtonSize)) {
 					GameController::revertGameMode();
 				}
@@ -153,13 +153,14 @@ namespace KooNan
 			ImGui::End();
 
 			if (GameController::gameMode == GameMode::Creating) {
-				int pageHeight = windowHeight / 4;
+				int pageHeight = Render::SCR_HEIGHT / 4;
 				pageHeight = pageHeight < 150 ? 150 : pageHeight;
 				ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
 				ImGui::Begin("Select Page", 0, selectPageFlags);
-				ImGui::SetWindowPos(ImVec2(10, windowHeight - 10 - pageHeight));
-				ImGui::SetWindowSize(ImVec2(windowWidth - 20, pageHeight));
+				ImGui::SetWindowPos(ImVec2(10, Render::SCR_HEIGHT - 10 - pageHeight));
+				ImGui::SetWindowSize(ImVec2(Render::SCR_WIDTH - 20, pageHeight));
 
+				/*
 				int i = 0;
 				for (pair<const string, Model*> p : Model::modelList) {
 					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffers[i]);
@@ -171,14 +172,15 @@ namespace KooNan
 				}
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 				glViewport(0, 0, windowWidth, windowHeight);
+				*/
 
 				// 需要模型列表
 				for (int i = 0; i < modelTextures.size(); ++i) {
 					if (i) ImGui::SameLine();
 
-					if (ImGui::ImageButton((void*)modelTextures[i], selectButtonSize)) {
+					//if (ImGui::ImageButton((void*)modelTextures[i], selectButtonSize)) {
 
-					}
+					//}
 				}
 
 				ImGui::End();

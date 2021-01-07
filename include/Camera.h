@@ -31,7 +31,7 @@ enum Camera_Scroll {
 // Default camera values
 const float YAW = -90.0f;
 const float PITCH = -45.0f;
-const float SPEED = 2.5f;
+const float SPEED = 10.0f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 const float MIN_H = 1.0f;
@@ -104,6 +104,7 @@ public:
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix()
     {
+		updateCameraVectors();
         return glm::lookAt(Position, Position + Front, Up);
     }
 

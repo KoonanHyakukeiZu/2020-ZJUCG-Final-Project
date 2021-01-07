@@ -2,6 +2,7 @@
 #include <Camera.h>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
+#include <render.h>
 
 namespace KooNan
 {
@@ -27,7 +28,7 @@ namespace KooNan
 		const static unsigned int EDGE_WIDTH = 50;
 		// 全局状态
 	public:
-		static unsigned int SCR_WIDTH, SCR_HEIGHT; // 屏幕大小
+		
 		
 		static bool firstMouse; // 是否是第一次点击（用于鼠标移动事件）
 		static bool altPressedLast; // 上一次循环是否按下alt键
@@ -70,11 +71,11 @@ namespace KooNan
 				
 				if (cursorX <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, WEST);
-				else if (cursorX >= SCR_WIDTH - EDGE_WIDTH)
+				else if (cursorX >= Render::SCR_WIDTH - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, EAST);
 				if(cursorY <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, NORTH);
-				else if(cursorY >= SCR_HEIGHT - EDGE_WIDTH)
+				else if(cursorY >= Render::SCR_HEIGHT - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, SOUTH);
 			}
 		}
@@ -104,9 +105,6 @@ namespace KooNan
 	};
 
 	// 状态与信号初始化
-	unsigned int GameController::SCR_WIDTH = 800;
-	unsigned int GameController::SCR_HEIGHT = 600;
-
 	bool GameController::firstMouse = true;
 	bool GameController::altPressedLast = false;
 	MouseMode GameController::mouseMode = MouseMode::GUIMode;
@@ -133,8 +131,8 @@ namespace KooNan
 	{
 		if (mouseMode == MouseMode::GUIMode) return;
 
-		static float lastX = SCR_WIDTH / 2.0f;
-		static float lastY = SCR_HEIGHT / 2.0f;
+		static float lastX = Render::SCR_WIDTH / 2.0f;
+		static float lastY = Render::SCR_HEIGHT / 2.0f;
 		if (firstMouse)
 		{
 			lastX = xpos;
@@ -145,8 +143,8 @@ namespace KooNan
 		float yoffset = lastY - ypos;
 
 		// 避免光标不显示时点到GUI上的按钮，保持光标位置在屏幕中心
-		lastX = SCR_WIDTH / 2.0f;
-		lastY = SCR_HEIGHT / 2.0f;
+		lastX = Render::SCR_WIDTH / 2.0f;
+		lastY = Render::SCR_HEIGHT / 2.0f;
 		glfwSetCursorPos(window, lastX, lastY);
 
 		if(gameMode == GameMode::Wandering) {
@@ -164,7 +162,7 @@ namespace KooNan
 		mainCamera.ProcessMouseScroll(gameMode == GameMode::Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
 	}
 
-	void  GameController::processInput(GLFWwindow* window)
+	void GameController::processInput(GLFWwindow* window)
 	{
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
@@ -206,7 +204,7 @@ namespace KooNan
 		}
 		else {
 			mouseMode = MouseMode::CameraMode;
-			glfwSetCursorPos(window, SCR_WIDTH / 2.0f, SCR_HEIGHT / 2.0f);
+			glfwSetCursorPos(window, Render::SCR_WIDTH / 2.0f, Render::SCR_HEIGHT / 2.0f);
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
