@@ -6,11 +6,16 @@
 namespace KooNan
 {
 	enum GameMode
+	{// 第一级状态
+		Title, // 标题页
+		Pause, // 暂停页
+		Wandering, // 漫步游览模式
+		Creating // 创造模式
+	};
+	enum CreatingMode
 	{
-		Tile,
-		Pause,
-		Wandering,
-		Creating
+		Placing, // 放置模式
+		Viewing // 观察模式
 	};
 	enum class MouseMode {
 		GUIMode, CameraMode
@@ -33,11 +38,12 @@ namespace KooNan
 		static double cursorX, cursorY;
 
 		static Camera mainCamera;
-
+		static Camera oriCreatingCamera;
 
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
-		static GameMode gameMode; // 游戏模式：暂停、漫游、创造
+		static GameMode gameMode; // 游戏模式
+		static CreatingMode creatingMode; // 创造模式子模式
 		static int sthSelected; // 场景中有物体被拾取
 	public:
 		static void initGameController(GLFWwindow* window)
@@ -62,13 +68,13 @@ namespace KooNan
 			if (gameMode == Creating) {
 				
 				if (cursorX <= EDGE_WIDTH)
-					mainCamera.ProcessKeyboard(0.0001f, WEST);
+					mainCamera.ProcessKeyboard(0.001f, WEST);
 				else if (cursorX >= SCR_WIDTH - EDGE_WIDTH)
-					mainCamera.ProcessKeyboard(0.0001f, EAST);
+					mainCamera.ProcessKeyboard(0.001f, EAST);
 				if(cursorY <= EDGE_WIDTH)
-					mainCamera.ProcessKeyboard(0.0001f, SOUTH);
+					mainCamera.ProcessKeyboard(0.001f, NORTH);
 				else if(cursorY >= SCR_HEIGHT - EDGE_WIDTH)
-					mainCamera.ProcessKeyboard(0.0001f, NORTH);
+					mainCamera.ProcessKeyboard(0.001f, SOUTH);
 			}
 		}
 	private:
@@ -76,8 +82,8 @@ namespace KooNan
 		static void cursor_callback(GLFWwindow* window, double xpos, double ypos);
 		static void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-		static void updateCursorMode(GLFWwindow* window, bool bLAltDown);
 		static void processInput(GLFWwindow* window);
+		static void updateCursorMode(GLFWwindow* window, bool bLAltDown);
 	private:
 		
 	};
@@ -94,9 +100,11 @@ namespace KooNan
 	double GameController::cursorX = .0;
 	double GameController::cursorY = .0;
 
-	Camera GameController::mainCamera = Camera(glm::vec3(0.0f, 4.0f, 3.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	Camera GameController::oriCreatingCamera = Camera(0.f, 2.f, 2.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
+	Camera GameController::mainCamera = GameController::oriCreatingCamera;
 
-	GameMode GameController::gameMode = Wandering;
+	GameMode GameController::gameMode = Creating;
+	CreatingMode GameController::creatingMode = Placing;
 	int GameController::sthSelected = 0;
 
 	// 函数定义
@@ -118,7 +126,7 @@ namespace KooNan
 			firstMouse = false;
 		}
 		float xoffset = xpos - lastX;
-		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+		float yoffset = lastY - ypos;
 
 		// 避免光标不显示时点到GUI上的按钮，保持光标位置在屏幕中心
 		lastX = SCR_WIDTH / 2.0f;
@@ -138,22 +146,6 @@ namespace KooNan
 	void GameController::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		mainCamera.ProcessMouseScroll(gameMode == Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
-	}
-
-	// updateCursorMode: for changing input mode ( whether the cursor is visible and who to deal with mouse input
-	//	Causes a proble change in global var mouseMode and glfw's InputMode
-	void GameController::updateCursorMode(GLFWwindow* window, bool bLAltDown)
-	{
-		if (bLAltDown || GameController::gameMode != Wandering) {
-			mouseMode = MouseMode::GUIMode;
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			GameController::firstMouse = true;
-		}
-		else {
-			mouseMode = MouseMode::CameraMode;
-			glfwSetCursorPos(window, SCR_WIDTH / 2.0f, SCR_HEIGHT / 2.0f);
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
 	}
 
 	void  GameController::processInput(GLFWwindow* window)
@@ -186,6 +178,20 @@ namespace KooNan
 			bool altPressed = glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
 			if (altPressed != GameController::altPressedLast) GameController::updateCursorMode(window, altPressed);
 			GameController::altPressedLast = altPressed;
+		}
+	}
+
+	void GameController::updateCursorMode(GLFWwindow* window, bool bLAltDown)
+	{
+		if (bLAltDown || GameController::gameMode != Wandering) {
+			mouseMode = MouseMode::GUIMode;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			GameController::firstMouse = true;
+		}
+		else {
+			mouseMode = MouseMode::CameraMode;
+			glfwSetCursorPos(window, SCR_WIDTH / 2.0f, SCR_HEIGHT / 2.0f);
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
 }

@@ -1,2 +1,4 @@
 E:\乔俊鑫\大四\CG\Final\Debug\KoonanHyakukei.exe
 E:\乔俊鑫\大四\CG\Final\Debug\KoonanHyakukei.pdb
+D:\Work\repos\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.exe
+D:\Work\repos\2020-ZJUCG-Final-Project\Debug\KoonanHyakukei.pdb
