@@ -3,6 +3,7 @@
 in vec4 clipspace;
 in vec2 TexCoord;
 in vec3 FragPos;
+in float visibility;
 
 out vec4 FragColor;
 
@@ -11,7 +12,7 @@ uniform sampler2D refraction;
 uniform sampler2D dudvMap;
 uniform sampler2D normalMap;
 uniform sampler2D depthMap;
-
+uniform vec3 skyColor;
 uniform vec3 lightColor;
 uniform float moveOffset;
 
@@ -120,5 +121,7 @@ void main()
     vec4 reflectColor = texture(reflection, reflectTexCoord);
     vec4 refractColor = texture(refraction, refractTexCoord);
     FragColor = mix(mix(reflectColor, refractColor, refractiveFactor), vec4(0.0, 0.3, 0.5, 1.0), 0.05) + vec4(result, 0.0) * 1.0;
+    //FragColor = mix(vec4(skyColor, 1.0), FragColor, visibility);
     FragColor.a = clamp(waterDepth * 1.5, 0.0, 1.0);
+    
 }

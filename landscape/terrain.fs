@@ -4,6 +4,7 @@ out vec4 FragColor;
 in vec3 FragPos;
 in vec2 TexCoord;
 in vec3 Normal;
+in float visibility;
 
 struct DirLight {
     vec3 direction;
@@ -33,6 +34,7 @@ uniform sampler2D texture_diffuse3;//r
 uniform sampler2D texture_diffuse4;//g
 uniform sampler2D texture_diffuse5;//b
 //uniform sampler2D .....
+uniform vec3 skyColor;
 
 #define NR_POINT_LIGHTS 4
 uniform PointLight pointLights[NR_POINT_LIGHTS];
@@ -90,7 +92,7 @@ void main()
 	vec3 result = CalcDirLight(dirLight, norm, viewDir, vec3(totalColor)) * 1.2f;
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir, vec3(totalColor));  
-
-	FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0);
+	//FragColor = mix(vec4(skyColor, 1.0), vec4(result, 1.0), visibility);
 }
 

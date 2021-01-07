@@ -2,7 +2,7 @@
 #define WATER_FRAME_BUFFER_H
 
 #include <glad/glad.h>
-
+#include <Render.h>
 #include <GameController.h>
 
 
@@ -11,10 +11,10 @@ namespace KooNan
 	class Water_Frame_Buffer
 	{
 	private:
-		const int REFLECTION_WIDTH = 1280;
-		const int REFLECTION_HEIGHT = 720;
-		const int REFRACTION_WIDTH = 1280;
-		const int REFRACTION_HEIGHT = 720;
+		const int REFLECTION_WIDTH = 3840;
+		const int REFLECTION_HEIGHT = 2160;
+		const int REFRACTION_WIDTH = 1920;
+		const int REFRACTION_HEIGHT = 1080;
 		unsigned int reflectionFrameBuffer;
 		unsigned int reflectionTexture;
 		unsigned int reflectionDepthBuffer;
@@ -39,7 +39,7 @@ namespace KooNan
 
 		void unbindCurrentFrameBuffer() {//call to switch to default frame buffer
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, (float)GameController::SCR_WIDTH, (float)GameController::SCR_HEIGHT);
+			glViewport(0, 0, (float)Render::SCR_WIDTH, (float)Render::SCR_HEIGHT);
 		}
 		unsigned int getReflectionTexture() {//get the resulting texture
 			return reflectionTexture;

@@ -11,7 +11,9 @@
 #include <Camera.h>
 #include <FileSystem.h>
 #include <GameController.h>
+#include <Render.h>
 #include <waterframebuffer.h>
+#include <pickingtexture.h>
 #include <scene.h>
 #include <cube.h>
 #include <gui.h>
@@ -38,14 +40,14 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	glfwWindowHint(GLFW_SAMPLES, 4);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(GameController::SCR_WIDTH, GameController::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(Render::SCR_WIDTH, Render::SCR_HEIGHT, "Koonan", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -58,7 +60,7 @@ int main()
     glfwSetScrollCallback(window, GameController::scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -79,34 +81,38 @@ int main()
 	Shader waterShader(FileSystem::getPath("landscape/water.vs").c_str(), FileSystem::getPath("landscape/water.fs").c_str());
 	Shader skyShader(FileSystem::getPath("landscape/skybox.vs").c_str(), FileSystem::getPath("landscape/skybox.fs").c_str());
 	Shader lightShader(FileSystem::getPath("landscape/lightcube.vs").c_str(), FileSystem::getPath("landscape/lightcube.fs").c_str());
-	
+	Shader pickingShader(FileSystem::getPath("gui/picking.vs").c_str(), FileSystem::getPath("gui/picking.fs").c_str());
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 	
 
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(10.0f,  5.0f, -15.0f),
-        glm::vec3(-15.0f, -2.2f, -15.0f),
-        glm::vec3(-9.8f, -2.0f, -12.3f),
-        glm::vec3(10.4f, -0.4f, -8.5f),
-        glm::vec3(-1.7f,  3.0f, -9.5f),
-        glm::vec3(10.3f, -2.0f, -5.5f),
-        glm::vec3(12.5f,  2.0f, -3.5f),
-        glm::vec3(13.5f,  0.2f, -7.5f),
-        glm::vec3(-5.3f,  1.0f, -5.5f)
+        glm::vec3(-9.0f,  0.0f,  0.0f),
+        glm::vec3(-10.0f,  0.0f, 0.0f),
+        glm::vec3(-9.0f, 0.0f, -3.0f),
+        glm::vec3(-10.5f, 0.0f, 0.0f),
+		glm::vec3(-9.0f, 0.0f, -3.7f),
+		glm::vec3(-10.5f, 0.0f, 0.0f),
+		glm::vec3(-9.0f, 0.0f, -4.7f),
+		glm::vec3(-11.0f, 0.0f, 0.0f),
+		glm::vec3(-15.0f, 0.0f, -6.7f),
+		glm::vec3(-16.0f, 0.0f, 0.0f),
     };
-    
+
+
+
+
     // load and create a texture 
     // -------------------------
 	std::vector<std::string> skyboxPaths = {
-			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_px.jpg").c_str(),
-			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_nx.jpg").c_str(),
-			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_py.jpg").c_str(),
-			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_ny.jpg").c_str(),
-			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_pz.jpg").c_str(),
-			FileSystem::getPath("gui/resources/textures/skybox/TropicalSunnyDay_nz.jpg").c_str(),
+			FileSystem::getPath("landscape/resources/textures/skybox/TropicalSunnyDay_px.jpg").c_str(),
+			FileSystem::getPath("landscape/resources/textures/skybox/TropicalSunnyDay_nx.jpg").c_str(),
+			FileSystem::getPath("landscape/resources/textures/skybox/TropicalSunnyDay_py.jpg").c_str(),
+			FileSystem::getPath("landscape/resources/textures/skybox/TropicalSunnyDay_ny.jpg").c_str(),
+			FileSystem::getPath("landscape/resources/textures/skybox/TropicalSunnyDay_pz.jpg").c_str(),
+			FileSystem::getPath("landscape/resources/textures/skybox/TropicalSunnyDay_nz.jpg").c_str(),
 	};
 	//Format:(1).groundheightmap (2~size-2).groundtexture (size-1).waterdudvmap (size).waternormalmap
 	std::vector<std::string> groundPaths = {
@@ -124,7 +130,7 @@ int main()
 
 
 	DirLight parallel{
-		glm::vec3(-0.2f, -1.0f, -0.3f),
+		glm::vec3(0.3f, -0.7f, 1.0f),
 		glm::vec3(0.05f, 0.05f, 0.05f),
 		glm::vec3(0.7f, 0.7f, 0.7f),
 		glm::vec3(0.4f, 0.4f, 0.4f)
@@ -154,7 +160,9 @@ int main()
 	boxShader.setFloat("material.shininess", 32.0f);
 	main_light.SetLight(boxShader);
 
+	PickingTexture mouse_picking;
 
+	glEnable(GL_MULTISAMPLE);
 	GUI::initEnv(window);
     // render loop
     // -----------
@@ -201,9 +209,7 @@ int main()
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 			model = glm::translate(model, glm::vec3(cubePositions[i].x,main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
 			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-            //float angle = 20.0f * i;
-            //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), model);
+			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), model, Render::GetPerspectiveMat(GameController::mainCamera));
         }
 		// we now draw as many light bulbs as we have point lights.
 
@@ -244,9 +250,7 @@ int main()
 			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 			model = glm::translate(model, glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
 			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-			//float angle = 20.0f * i;
-			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), model);
+			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), model, Render::GetPerspectiveMat(GameController::mainCamera));
 		}
 		// we now draw as many light bulbs as we have point lights.
 
@@ -267,9 +271,29 @@ int main()
 		//THIRD TIME RENDERING TO SCREEN
 		//--------------------------------------------------------------------------------------------------------------
 		//¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö
-
 		waterfb.unbindCurrentFrameBuffer();
+		
+		mouse_picking.bindFrameBuffer();
 		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			// calculate the model matrix for each object and pass it to shader before drawing
+			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+			glm::vec3 model_position = glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z) + 0.15f, cubePositions[i].z);
+			model = glm::translate(model, model_position);
+			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+			boxes.Pick(pickingShader, GameController::mainCamera, model, Render::GetPerspectiveMat(GameController::mainCamera), i + 1, 0);
+
+		}
+
+
+		mouse_picking.unbindFrameBuffer();
+
+
+
+
+		
 		// render
 		// ------
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -280,14 +304,19 @@ int main()
 		{
 			// calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
+			glm::vec3 model_position = glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z) + 0.15f, cubePositions[i].z);
+			model = glm::translate(model, model_position);
 			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-			//float angle = 20.0f * i;
-			//model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			float hitObjID = mouse_picking.ReadPixel(GameController::mouseX, Render::SCR_HEIGHT - GameController::mouseY - 22).ObjID;//deviation of y under resolution 1920*1080 maybe 22
 
-			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), model);
+			bool intersected = false;
+			if ((unsigned int)hitObjID == i + 1)
+			{
+				intersected = true;
+			}
+			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), model, Render::GetPerspectiveMat(GameController::mainCamera), intersected);
 		}
-
+		
 		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f));
 
 
@@ -299,12 +328,14 @@ int main()
 		main_scene.setDepthMap(waterfb.getRefractionDepthTexture());
 		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), true);
 
-		waterfb.cleanUp();
+		
 		glDisable(GL_BLEND);
-
+		
 		/*
 		Render the else you need to render here!! Remember to set the clipping plane!!!
 		*/
+		waterfb.cleanUp();
+		glDisable(GL_DEPTH_TEST);
 
 		GUI::newFrame();
 		GUI::drawWidgets();

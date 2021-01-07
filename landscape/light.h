@@ -8,6 +8,7 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <cube.h>
+#include <Render.h>
 
 namespace KooNan
 {
@@ -51,7 +52,7 @@ namespace KooNan
 				glm::mat4 model(1.0f);
 				model = glm::translate(model, point_lights[i].position);
 				model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-				lightcube.Draw(cam, clipping_plane, model);
+				lightcube.Draw(cam, clipping_plane, model, Render::GetPerspectiveMat(GameController::mainCamera),false);
 			}
 		};
 		void SetLight(Shader& SomeEntities)

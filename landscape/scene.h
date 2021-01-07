@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <GameController.h>
+#include <Render.h>
 #include <Shader.h>
 #include <Camera.h>
 #include <terrain.h>
@@ -78,7 +79,7 @@ namespace KooNan
 		}
 		void Draw(float deltaTime, Camera& cam, glm::vec4 clippling_plane, bool draw_water)
 		{
-			glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)GameController::SCR_WIDTH / (float)GameController::SCR_HEIGHT, 0.1f, 1000.0f);
+			glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)Render::SCR_WIDTH / (float)Render::SCR_HEIGHT, 0.1f, 1000.0f);
 			glm::mat4 view = cam.GetViewMatrix();
 			glm::vec3 viewPos = cam.Position;
 			TerrainShader.use();
@@ -86,6 +87,7 @@ namespace KooNan
 			TerrainShader.setMat4("view", view);
 			TerrainShader.setVec4("plane", clippling_plane);
 			TerrainShader.setVec3("viewPos", viewPos);
+			TerrainShader.setVec3("skyColor", glm::vec3(0.527f, 0.805f, 0.918f));
 			for (int i = 0; i < all_terrain_chunks.size(); i++)
 			{
 				all_terrain_chunks[i].Draw(TerrainShader);
@@ -109,6 +111,7 @@ namespace KooNan
 				WaterShader.setInt("depthMap", 4);
 				WaterShader.setFloat("chunk_size", chunk_size);
 				WaterShader.setFloat("moveOffset", waterMoveFactor);
+				WaterShader.setVec3("skyColor", glm::vec3(0.527f, 0.805f, 0.918f));
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, reflect_text);
 				glActiveTexture(GL_TEXTURE1);

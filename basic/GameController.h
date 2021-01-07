@@ -1,6 +1,7 @@
 #pragma once
 #include <Camera.h>
 #include <glm/glm.hpp>
+#include <Render.h>
 
 namespace KooNan
 {
@@ -15,7 +16,7 @@ namespace KooNan
 	{
 		// 全局状态
 	public:
-		static unsigned int SCR_WIDTH, SCR_HEIGHT;
+		
 		
 		static bool firstMouse; // 是否是第一次点击（用于鼠标移动事件）
 		static bool altPressedLast; // 上一次循环是否按下alt键
@@ -23,7 +24,8 @@ namespace KooNan
 		static float lastFrame;
 
 		static Camera mainCamera;
-
+		static unsigned int mouseX;
+		static unsigned int mouseY;
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
 		static GameMode gameMode; // 游戏模式：暂停、漫游、创造
@@ -38,18 +40,18 @@ namespace KooNan
 	};
 
 	// 状态与信号初始化
-	unsigned int GameController::SCR_WIDTH = 1920;
-	unsigned int GameController::SCR_HEIGHT = 1080;
 
 	bool GameController::firstMouse = true;
 	float GameController::lastFrame = .0f;
 	float GameController::deltaTime = .0f;
-
+	unsigned int GameController::mouseX = Render::SCR_WIDTH / 2;
+	unsigned int GameController::mouseY = Render::SCR_HEIGHT / 2;
 	Camera GameController::mainCamera = Camera(glm::vec3(0.0f, 4.0f, 3.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	GameMode GameController::gameMode = Wandering;
 	int GameController::sthSelected = 0;
-
+	//MousePicker GameController::mpicker = MousePicker(GameController::mainCamera,
+		//glm::perspective(glm::radians(GameController::mainCamera.Zoom), (float)Render::SCR_WIDTH / (float)Render::SCR_HEIGHT, 0.1f, 1000.0f));
 	// 函数定义
 	void GameController::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	{
@@ -58,8 +60,8 @@ namespace KooNan
 
 	void GameController::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	{
-		static float lastX = SCR_WIDTH / 2.0f;
-		static float lastY = SCR_HEIGHT / 2.0f;
+		static float lastX = Render::SCR_WIDTH / 2.0f;
+		static float lastY = Render::SCR_HEIGHT / 2.0f;
 
 		if (gameMode == Creating) {
 			
@@ -71,7 +73,11 @@ namespace KooNan
 				lastY = ypos;
 				firstMouse = false;
 			}
-
+			GameController::mouseX = xpos;
+			GameController::mouseY = ypos;
+			//mpicker.update(xpos, ypos);
+			//std::cout << mpicker.getCurrentRay().x << " " << mpicker.getCurrentRay().y << " " << mpicker.getCurrentRay().z << std::endl;
+			
 			float xoffset = xpos - lastX;
 			float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
@@ -79,6 +85,7 @@ namespace KooNan
 			lastY = ypos;
 
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
+			
 		}
 	}
 

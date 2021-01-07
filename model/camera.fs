@@ -38,6 +38,7 @@ uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform Material material;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
+uniform vec3 selected_color;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
@@ -83,6 +84,6 @@ void main()
 	for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
 	// linearly interpolate between both textures (80% container, 20% awesomeface)
-	FragColor = vec4(result, 1.0);
+	FragColor = vec4(result + selected_color, 1.0);
 }
 
