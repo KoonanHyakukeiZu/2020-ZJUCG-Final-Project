@@ -8,7 +8,7 @@
 
 namespace KooNan
 {
-	enum class GUIState { Title, Wandering, Creating, Pause };
+	enum class GUIState { Title, Wandering, Creating, Pause, Recording };
 	int menuFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
 	int selectPageFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
 
@@ -71,7 +71,8 @@ namespace KooNan
 					GameController::gameMode = Pause;
 				}
 				if (!hideGui && ImGui::Button("Begin Record", shotcutButtonSize)) {
-					// todo
+					changeStateTo(GUIState::Recording);
+					// todo: emit record start
 				}
 				if ((!hideGui && ImGui::Button("Hide UI", shotcutButtonSize)) || (hideGui && ImGui::Button("Show UI", shotcutButtonSize))) {
 					hideGui = !hideGui;
@@ -83,6 +84,12 @@ namespace KooNan
 				}
 				else;
 				break;
+			case KooNan::GUIState::Recording:
+				ImGui::SetWindowPos(ImVec2(0, 0));
+				if (!hideGui && ImGui::Button("End Record", shotcutButtonSize)) {
+					changeStateTo(GUIState::Wandering);
+					// todo: emit record end
+				}
 			case KooNan::GUIState::Creating:
 				ImGui::SetWindowPos(ImVec2(0, 0));
 				if (ImGui::Button("Pause", shotcutButtonSize)) {
@@ -127,6 +134,8 @@ namespace KooNan
 				ImGui::Begin("Select Page", 0, selectPageFlags);
 				ImGui::SetWindowPos(ImVec2(10, windowHeight - 10 - pageHeight));
 				ImGui::SetWindowSize(ImVec2(windowWidth - 20, pageHeight));
+
+
 				ImGui::End();
 
 				// todo：有选中建筑时，绘制选中建筑周围的菜单
