@@ -1,5 +1,7 @@
 #pragma once
 
+#include <model.h>
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -9,7 +11,7 @@
 namespace KooNan
 {
 	int menuFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground;
-	int selectPageFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove;
+	int selectPageFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
 	class GUI
 	{
@@ -29,8 +31,39 @@ namespace KooNan
 
 			// Setup Dear ImGui style
 			ImGui::StyleColorsDark();
+		}
 
+		static void updateModelTextures(Shader& shader) {
+			modelTextures.clear();
+			int ntextures = Model::modelList.size();
+			GLuint* textures = new GLuint[ntextures];
+			GLuint* framebuffers = new GLuint[ntextures];
+			glGenTextures(ntextures, textures);
+			glGenFramebuffers(ntextures, framebuffers);
+			modelTextures.resize(ntextures);
+			frameBuffers.resize(ntextures);
 
+			int i = 0;
+			for (pair<const string, Model*> p : Model::modelList) {
+				GLuint curTexture = textures[i], curFrameBuffer = framebuffers[i];
+				modelTextures[i] = curTexture;
+				frameBuffers[i] = curFrameBuffer;
+				glBindTexture(GL_TEXTURE_2D, curTexture);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 480, 360, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+				glBindFramebuffer(GL_FRAMEBUFFER, curFrameBuffer);
+				glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, curTexture, 0);
+				glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+				glViewport(0, 0, 480, 360);
+				i++;
+			}
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, GameController::SCR_WIDTH, GameController::SCR_HEIGHT);
+			delete[] textures, framebuffers;
 		}
 
 		// newFrame: 绘制前的准备
@@ -44,7 +77,7 @@ namespace KooNan
 
 		// setWidgets: 绘制所有控件
 		//   在initEnv后调用
-		static void drawWidgets(int windowWidth, int windowHeight) {
+		static void drawWidgets(int windowWidth, int windowHeight, Shader& shader) {
 			static ImVec2 menuButtonSize(buttonWidth1, buttonHeight1);
 			static ImVec2 shotcutButtonSize(buttonWidth2, buttonHeight2);
 			ImGui::Begin("Menu", 0, menuFlags);
@@ -120,18 +153,38 @@ namespace KooNan
 			ImGui::End();
 
 			if (GameController::gameMode == GameMode::Creating) {
-				// todo：绘制选择建筑界面
 				int pageHeight = windowHeight / 4;
 				pageHeight = pageHeight < 150 ? 150 : pageHeight;
+				ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
 				ImGui::Begin("Select Page", 0, selectPageFlags);
 				ImGui::SetWindowPos(ImVec2(10, windowHeight - 10 - pageHeight));
 				ImGui::SetWindowSize(ImVec2(windowWidth - 20, pageHeight));
 
+				int i = 0;
+				for (pair<const string, Model*> p : Model::modelList) {
+					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffers[i]);
+					glViewport(0, 0, 480, 360);
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					glGenerateMipmap(GL_TEXTURE_2D);
+					p.second->Draw(NULL);
+					i++;
+				}
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				glViewport(0, 0, windowWidth, windowHeight);
+
+				// 需要模型列表
+				for (int i = 0; i < modelTextures.size(); ++i) {
+					if (i) ImGui::SameLine();
+
+					if (ImGui::ImageButton((void*)modelTextures[i], selectButtonSize)) {
+
+					}
+				}
 
 				ImGui::End();
 
 				// todo：有选中建筑时，绘制选中建筑周围的菜单
-				if (1) {
+				if (GameController::creatingMode == CreatingMode::Placing) {
 
 				}
 			}
@@ -142,9 +195,11 @@ namespace KooNan
 		}
 	private:
 		static bool hideGui;
+		static vector<GLuint> modelTextures, frameBuffers;
 		static const int buttonWidth1 = 200, buttonHeight1 = 30;
 		static const int buttonWidth2 = 100, buttonHeight2 = 17;
 		static const int menuWidth = 200;
 	};
 	bool GUI::hideGui = false;
+	vector<GLuint> GUI::modelTextures, GUI::frameBuffers;
 }

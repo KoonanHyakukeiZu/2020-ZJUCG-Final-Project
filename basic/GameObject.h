@@ -44,7 +44,7 @@ namespace KooNan
 			shader.setMat4("projection", projectionMat);
 			shader.setMat4("view", viewMat);
 			shader.setMat4("model", modelMat);
-			model->Draw(shader);
+			model->Draw(&shader);
 		}
 	};
 

@@ -84,7 +84,7 @@ class Terrain{
     }
 	void Draw(Shader &shader)
 	{
-		this->terrain_mesh.Draw(shader);
+		this->terrain_mesh.Draw(&shader);
 	}
 
 

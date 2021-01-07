@@ -121,6 +121,7 @@ int main()
 	// GUI
 	// ------------------------------------
 	GUI::initEnv(window);
+	GUI::updateModelTextures(ourShader);
 
 	// render loop
 	// -----------
@@ -147,7 +148,7 @@ int main()
 
 		GUI::newFrame();
 		glfwGetWindowSize(window, &windowWidth, &windowHeight);
-		GUI::drawWidgets(windowWidth, windowHeight);
+		GUI::drawWidgets(windowWidth, windowHeight, ourShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
