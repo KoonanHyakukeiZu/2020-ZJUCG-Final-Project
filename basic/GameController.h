@@ -43,6 +43,7 @@ namespace KooNan
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
 		static GameMode gameMode; // 游戏模式
+		static GameMode lastGameMode;
 		static CreatingMode creatingMode; // 创造模式子模式
 		static int sthSelected; // 场景中有物体被拾取
 	public:
@@ -104,6 +105,7 @@ namespace KooNan
 	Camera GameController::mainCamera = GameController::oriCreatingCamera;
 
 	GameMode GameController::gameMode = Creating;
+	GameMode GameController::lastGameMode = Title;
 	CreatingMode GameController::creatingMode = Placing;
 	int GameController::sthSelected = 0;
 
