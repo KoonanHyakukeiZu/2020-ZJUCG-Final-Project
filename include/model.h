@@ -16,6 +16,7 @@
 
 #include "mesh.h"
 #include "shader.h"
+#include "FileSystem.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -41,8 +42,8 @@ public:
     // constructor, expects a filepath to a 3D model.
     Model(string const& path, bool gamma = false) : gammaCorrection(gamma)
     {
-        loadModel(path);
-        modelList[path] = this;
+        loadModel(FileSystem::getPath(path));
+        modelList[FileSystem::getPath(path)] = this;
     }
 
     // draws the model, and thus all its meshes
