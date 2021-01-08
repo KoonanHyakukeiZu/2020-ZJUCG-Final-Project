@@ -54,6 +54,7 @@ namespace KooNan
 			shader.setMat4("projection", projectionMat);
 			shader.setMat4("view", viewMat);
 			shader.setVec4("plane", clippling_plane);
+			shader.setVec3("viewPos", GameController::mainCamera.Position);
 			shader.setMat4("model", modelMat);
 			model->Draw(&shader);
 		}
@@ -73,6 +74,7 @@ namespace KooNan
 			shader.setMat4("projection", projectionMat);
 			shader.setMat4("view", viewMat);
 			shader.setVec4("plane", clippling_plane);
+			shader.setVec3("viewPos", GameController::mainCamera.Position);
 			shader.setMat4("model", modelMat);
 			mesh.Draw(&shader);
 		}

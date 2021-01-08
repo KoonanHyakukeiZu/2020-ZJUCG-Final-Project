@@ -27,6 +27,10 @@ namespace KooNan
 			main_scene.WaterShader.use();
 			main_light.SetLight(main_scene.WaterShader);
 		}
+		void InitObjectLighting(Shader& shader)
+		{
+			main_light.SetLight(shader);
+		}
 		void DrawReflection(Shader& modelShader)
 		{
 			glm::vec4 clipping_plane = glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight());
