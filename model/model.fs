@@ -31,7 +31,9 @@ uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 uniform vec3 viewPos;
 
+uniform vec3 selected_color;
+
 void main()
 {    
-    FragColor = texture(texture_diffuse1, TexCoords);
+    FragColor = texture(texture_diffuse1, TexCoords) + vec4(selected_color, 1.0);
 }

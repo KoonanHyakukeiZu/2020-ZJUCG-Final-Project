@@ -121,7 +121,7 @@ int main()
 
     // build and compile our shader program
     // ------------------------------------
-    Shader boxShader(FileSystem::getPath("model/camera.vs").c_str(), FileSystem::getPath("model/camera.fs").c_str());
+    //Shader boxShader(FileSystem::getPath("model/camera.vs").c_str(), FileSystem::getPath("model/camera.fs").c_str());
 	Shader terrainShader(FileSystem::getPath("landscape/terrain.vs").c_str(), FileSystem::getPath("landscape/terrain.fs").c_str());
 	Shader waterShader(FileSystem::getPath("landscape/water.vs").c_str(), FileSystem::getPath("landscape/water.fs").c_str());
 	Shader skyShader(FileSystem::getPath("landscape/skybox.vs").c_str(), FileSystem::getPath("landscape/skybox.fs").c_str());
@@ -147,27 +147,6 @@ int main()
 
 
 
-	// Set the texture and material for boxes
-	TextureManager texman(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);// Instantiation the texture loader class for our boxes
-	vector<Texture>      box_textures;//Initialize an empty texture vector
-	box_textures.push_back(texman.LoadTexture(FileSystem::getPath("gui/resources/textures/container.jpg"),"texture_diffuse"));//Push back the loaded texture by "LoadTexture"
-	Cube boxes(box_textures, boxShader);// Instantiate the boxes
-	boxShader.use();
-	boxShader.setInt("material.diffuse", 0);
-	boxShader.setInt("material.specular", 0);
-	boxShader.setFloat("material.shininess", 32.0f);
-
-	// Set lights for scene and entities using "SetLight(Shader&)"
-	// -------------------------------------------------------------------------------------------
-	terrainShader.use();
-	main_light.SetLight(terrainShader);
-
-	waterShader.use();
-	main_light.SetLight(waterShader);
-
-	boxShader.use();
-	main_light.SetLight(boxShader);
-
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
@@ -179,11 +158,11 @@ int main()
 	// Object
 	// ------------------------------------
 	GameObject* p1 = new GameObject(string("model/rsc/planet/planet.obj"),
-		scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)));
+		scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
 	GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
-		scale(translate(mat4(1.0f), vec3(5.0f, 2.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)));
-	//GameObject* p2 = new GameObject(string("model/rsc/Temple2/Temple2.obj"),
-		//scale(translate(mat4(1.0f), vec3(1.0f, 5.0f, 5.0f)), vec3(0.5f, 0.5f, 0.5f)));
+		scale(translate(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
+	GameObject* p3 = new GameObject(string("model/rsc/Temple1/Temple1.obj"),
+		scale(translate(mat4(1.0f), vec3(9.0f, 5.0f, 9.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
 	//GameObject* p3 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(7.0f, 5.0f, 6.0f)), vec3(0.5f, 0.5f, 0.5f)));
 	//GameObject* p4 = new GameObject(string("model/rsc/planet/planet.obj"),
@@ -209,11 +188,11 @@ int main()
 		//需要渲染三次 前两次不渲染水面 最后一次渲染水面
 
 
-		main_renderer.DrawReflection();
+		main_renderer.DrawReflection(modelShader);
 		
-		main_renderer.DrawRefraction();
+		main_renderer.DrawRefraction(modelShader);
 
-		main_renderer.DrawAll(pickingShader);
+		main_renderer.DrawAll(pickingShader, modelShader);
 		
 		/*
 		Render the else you need to render here!! Remember to set the clipping plane!!!
@@ -246,15 +225,6 @@ int main()
 	// ------------------------------------------------------------------
 	glfwTerminate();
 	return 0;
-}
-
-void DrawReflection()
-{
-
-}
-void DrawRefraction()
-{
-
 }
 
 void addlights(Light& light)
