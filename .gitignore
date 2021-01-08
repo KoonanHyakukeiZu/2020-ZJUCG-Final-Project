@@ -23,7 +23,7 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+# [Bb]in/
 [Oo]bj/
 [Ll]og/
 
@@ -66,7 +66,6 @@ StyleCopReport.xml
 *.ilk
 *.meta
 *.obj
-!model/**/*.obj
 *.iobj
 *.pch
 *.pdb
@@ -339,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# need-tracing files
+!model/**/*.obj
