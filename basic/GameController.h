@@ -221,8 +221,7 @@ namespace KooNan
 				if (t != mainCamera.Position)
 				{
 					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
-					GameObject* p1 = new GameObject("model/rsc/Temple1/Temple1.obj");
-					p1->modelMat = modelMat;
+					GameObject* p1 = new GameObject("model/rsc/planet/planet.obj", modelMat);
 				}
 				
 			}
@@ -281,6 +280,10 @@ namespace KooNan
 		if(mainScene == NULL)
 			return mainCamera.Position;
 
+		// ·ÀÖ¹ÏòÉÏ·ÅÖÃ£¬·ÀÖ¹getTerrainHeightµÄ¶ÏÑÔÒì³£
+		if(mainCamera.Front.y >= 0)
+			return mainCamera.Position;
+
 		float hfPitch = mainCamera.Zoom / 2;
 		float hfYaw = hfPitch * Common::SCR_WIDTH / Common::SCR_HEIGHT;
 		hfYaw = hfYaw * (cursorX - Common::SCR_WIDTH / 2) * 2 / Common::SCR_WIDTH;
@@ -288,7 +291,7 @@ namespace KooNan
 
 		glm::vec4 d4 = glm::vec4(mainCamera.Front.x, mainCamera.Front.y, mainCamera.Front.z, 1.0f);
 		glm::mat4 rot = glm::mat4(1.0f);
-		rot = glm::rotate(rot, glm::radians(hfYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+		rot = glm::rotate(rot, glm::radians(-hfYaw), glm::vec3(0.0f, 1.0f, 0.0f));
 		rot = glm::rotate(rot, glm::radians(hfPitch), glm::vec3(1.0f, 0.0f, 0.0f));
 		d4 = rot * d4;
 		glm::vec3 d3 = glm::vec3(d4.x, d4.y, d4.z);

@@ -154,7 +154,7 @@ int main()
 	// Model
 	// ------------------------------------
 	
-	Model* planet = new Model(FileSystem::getPath("model/rsc/planet/planet.obj"));
+	Model* planet = new Model("model/rsc/planet/planet.obj");
 
 	// Object
 	// ------------------------------------
@@ -162,7 +162,7 @@ int main()
 		//scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
 	//GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
-	GameObject* p3 = new GameObject(string("model/rsc/Temple1/Temple1.obj"),
+	GameObject* p3 = new GameObject("model/rsc/Temple1/Temple1.obj",
 		scale(translate(mat4(1.0f), vec3(-7.0f, main_scene.getTerrainHeight(-7.0f, -7.0f), -7.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
 	//GameObject* p3 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(7.0f, 5.0f, 6.0f)), vec3(0.5f, 0.5f, 0.5f)));
