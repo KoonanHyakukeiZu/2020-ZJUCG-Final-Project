@@ -157,12 +157,12 @@ int main()
 
 	// Object
 	// ------------------------------------
-	GameObject* p1 = new GameObject(string("model/rsc/planet/planet.obj"),
-		scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
-	GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
-		scale(translate(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
+	//GameObject* p1 = new GameObject(string("model/rsc/planet/planet.obj"),
+		//scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
+	//GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
+		//scale(translate(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
 	GameObject* p3 = new GameObject(string("model/rsc/Temple1/Temple1.obj"),
-		scale(translate(mat4(1.0f), vec3(9.0f, 5.0f, 9.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
+		scale(translate(mat4(1.0f), vec3(-7.0f, main_scene.getTerrainHeight(-7.0f, -7.0f), -7.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
 	//GameObject* p3 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(7.0f, 5.0f, 6.0f)), vec3(0.5f, 0.5f, 0.5f)));
 	//GameObject* p4 = new GameObject(string("model/rsc/planet/planet.obj"),
@@ -176,6 +176,7 @@ int main()
 	PickingTexture mouse_picking;
 	Water_Frame_Buffer waterfb;
 	Render main_renderer(main_scene, main_light, waterfb, mouse_picking);
+	main_renderer.InitObjectLighting(modelShader);
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
