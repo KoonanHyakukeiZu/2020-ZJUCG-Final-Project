@@ -1,8 +1,11 @@
 #pragma once
 #include <Camera.h>
+#include <model.h>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <common.h>
+
+#include <unordered_map>
 
 namespace KooNan
 {
@@ -28,8 +31,6 @@ namespace KooNan
 		const static unsigned int EDGE_WIDTH = 50;
 		// 全局状态
 	public:
-		
-		
 		static bool firstMouse; // 是否是第一次点击（用于鼠标移动事件）
 		static bool altPressedLast; // 上一次循环是否按下alt键
 		static MouseMode mouseMode;
@@ -40,6 +41,8 @@ namespace KooNan
 
 		static Camera mainCamera;
 		static Camera oriCreatingCamera;
+
+		static std::unordered_map<std::string, Model*>::iterator curModel;
 
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
