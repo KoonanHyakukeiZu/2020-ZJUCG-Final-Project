@@ -23,6 +23,7 @@
 #include <gui.h>
 #include <light.h>
 #include <Texture.h>
+#include <Render.h>
 #include <iostream>
 
 using namespace KooNan;
@@ -173,7 +174,7 @@ int main()
 	// Model
 	// ------------------------------------
 	
-	Model* planet = new Model(string("model/rsc/planet/planet.obj"));
+	Model* planet = new Model(FileSystem::getPath("model/rsc/planet/planet.obj"));
 
 	// Object
 	// ------------------------------------
@@ -195,7 +196,7 @@ int main()
 
 	PickingTexture mouse_picking;
 	Water_Frame_Buffer waterfb;
-	
+	Render main_renderer(main_scene, main_light, waterfb, mouse_picking);
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -207,159 +208,12 @@ int main()
 
 		//需要渲染三次 前两次不渲染水面 最后一次渲染水面
 
-		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-		//--------------------------------------------------------------------------------------------------------------
-		//FIRST TIME RENDERING TO REFLECTION
-		//--------------------------------------------------------------------------------------------------------------
-		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
-		glEnable(GL_CLIP_DISTANCE0);
-		waterfb.bindReflectionFrameBuffer();
-		glEnable(GL_DEPTH_TEST);
-        // render
-        // ------
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		main_renderer.DrawReflection();
 		
-        // Set the main camera to the position and direction of reflection
-		float distance = 2 * (GameController::mainCamera.Position.y - main_scene.getWaterHeight());
-		GameController::mainCamera.Position.y -= distance;
-		GameController::mainCamera.Pitch = -GameController::mainCamera.Pitch;
- 
+		main_renderer.DrawRefraction();
 
-        // render boxes
-
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, glm::vec3(cubePositions[i].x,main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
-			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), model);
-        }
-		p1->Draw(modelShader, Common::GetPerspectiveMat(GameController::mainCamera), GameController::mainCamera.GetViewMatrix());
-
-		// we now draw as many light bulbs as we have point lights.
-		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()));
-		//render the main scene
-		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight()), false);
-
-		/*
-		Render the else you need to render here!! Remember to set the clipping plane!!!
-		*/
-
-		//Restore the main camera
-		GameController::mainCamera.Position.y += distance;
-		GameController::mainCamera.Pitch = -GameController::mainCamera.Pitch;
-		GameController::mainCamera.GetViewMatrix();
-
-		waterfb.unbindCurrentFrameBuffer();
-
-		unsigned int reflect_text = waterfb.getReflectionTexture();
-		
-
-		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-		//--------------------------------------------------------------------------------------------------------------
-		//SECOND TIME RENDERING TO REFRACTION
-		//--------------------------------------------------------------------------------------------------------------
-		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
-		waterfb.bindRefractionFrameBuffer();
-		glEnable(GL_DEPTH_TEST);
-		// render
-		// ------
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			model = glm::translate(model, glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z), cubePositions[i].z));
-			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), model);
-		}
-		// we now draw as many light bulbs as we have point lights.
-
-		p1->Draw(modelShader, Common::GetPerspectiveMat(GameController::mainCamera), GameController::mainCamera.GetViewMatrix());
-		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()));
-		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight()), false);
-
-		/*
-		Render the else you need to render here!! Remember to set the clipping plane!!!
-		*/
-
-		unsigned int refract_text = waterfb.getRefractionTexture(); 
-
-
-
-		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-		//--------------------------------------------------------------------------------------------------------------
-		//THIRD TIME RENDERING TO SCREEN
-		//--------------------------------------------------------------------------------------------------------------
-		//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-
-		waterfb.unbindCurrentFrameBuffer();
-
-		//Record picking info into the framebuffer
-		//--------------------------------------------
-		mouse_picking.bindFrameBuffer();
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			glm::vec3 model_position = glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z) + 0.15f, cubePositions[i].z);
-			model = glm::translate(model, model_position);
-			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-			boxes.Pick(pickingShader, GameController::mainCamera, model, i + 1, 0);
-
-		}
-
-
-		mouse_picking.unbindFrameBuffer();
-
-
-
-
-		
-		// render
-		// ------
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// pass projection matrix to shader (note that in this case it could change every frame)
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			glm::vec3 model_position = glm::vec3(cubePositions[i].x, main_scene.getTerrainHeight(cubePositions[i].x, cubePositions[i].z) + 0.15f, cubePositions[i].z);
-			model = glm::translate(model, model_position);
-			model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-			float hitObjID = mouse_picking.ReadPixel(GameController::cursorX, Common::SCR_HEIGHT - GameController::cursorY - 22).ObjID;//deviation of y under resolution 1920*1080 maybe 22
-
-			bool intersected = false;
-			if ((unsigned int)hitObjID == i + 1)
-			{
-				intersected = true;
-			}
-			boxes.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), model, intersected);
-		}
-		p1->Draw(modelShader, Common::GetPerspectiveMat(GameController::mainCamera), GameController::mainCamera.GetViewMatrix());
-		main_light.Draw(GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f));
-
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		main_scene.setReflectText(reflect_text);
-		main_scene.setRefractText(refract_text);
-		main_scene.setDepthMap(waterfb.getRefractionDepthTexture());
-		main_scene.Draw(GameController::deltaTime, GameController::mainCamera, glm::vec4(0.0, -1.0, 0.0, 99999.0f), true);
-
-		
-		glDisable(GL_BLEND);
+		main_renderer.DrawAll(pickingShader);
 		
 		/*
 		Render the else you need to render here!! Remember to set the clipping plane!!!
@@ -393,6 +247,16 @@ int main()
 	glfwTerminate();
 	return 0;
 }
+
+void DrawReflection()
+{
+
+}
+void DrawRefraction()
+{
+
+}
+
 void addlights(Light& light)
 {
 	
