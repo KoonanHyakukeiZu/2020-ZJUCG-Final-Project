@@ -24,8 +24,7 @@ namespace KooNan
 			if (Model::modelList.find(FileSystem::getPath(modelPath)) == Model::modelList.end())
 			{
 				// 该模型未加载到List
-				Model* model = new Model(FileSystem::getPath(modelPath));
-				Model::modelList[modelPath] = model;
+				Model* model = new Model(modelPath);
 				this->model = model;
 			}
 			else

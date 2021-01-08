@@ -173,7 +173,7 @@ int main()
 	// Model
 	// ------------------------------------
 	
-	Model* planet = new Model(FileSystem::getPath("model/rsc/planet/planet.obj"));
+	Model* planet = new Model("model/rsc/planet/planet.obj");
 
 	// Object
 	// ------------------------------------
