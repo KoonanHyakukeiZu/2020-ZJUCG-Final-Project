@@ -113,9 +113,9 @@ public:
 	{
 		float velocity = MovementSpeed * deltaTime;
 		if (direction == FORWARD)
-			Position += Front * velocity;
+			Position += glm::vec3(Front.x, 0.0f, Front.z) * velocity;
 		else if (direction == BACKWARD)
-			Position -= Front * velocity;
+			Position -= glm::vec3(Front.x, 0.0f, Front.z) * velocity;
 		else if (direction == LEFT)
 			Position -= Right * velocity;
 		else if (direction == RIGHT)
@@ -150,10 +150,6 @@ public:
 
 	void ProcessMouseMovement(float xoffset, float yoffset, const glm::vec3& center)
 	{
-		glm::vec3 d = Position - center;
-		float rXoZ = glm::vec2(d.x,d.z).length();
-		float rY = fabsf(d.y);
-
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
 
@@ -165,9 +161,13 @@ public:
 		if (Pitch < -89.0f)
 			Pitch = -89.0f;
 
-		Position += rXoZ * cosf(xoffset) * Right;
-		Position += rXoZ * sinf(xoffset) * Front;
-		Position -= rY * sinf(xoffset) * glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 d3 = Position - center;
+		glm::vec4 d4 = glm::vec4(d3.x, d3.y, d3.z, 1.0f);
+		glm::mat4 rot = glm::mat4(1.0f);
+		rot = glm::rotate(rot, glm::radians(xoffset), glm::vec3(0.0f, 1.0f, 0.0f));
+		rot = glm::rotate(rot, glm::radians(-yoffset), glm::vec3(1.0f, 0.0f, 0.0f));
+		d4 = rot * d4;
+		Position = center + glm::vec3(d4.x, d4.y, d4.z);
 
 		// update Front, Right and Up Vectors using the updated Euler angles
 		updateCameraVectors();

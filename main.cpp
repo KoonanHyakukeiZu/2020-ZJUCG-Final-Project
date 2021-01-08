@@ -133,6 +133,7 @@ int main()
    
 	// Instantiate the main_scene
 	Scene main_scene(256.0f, 1, 1, -0.7f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
+	GameController::mainScene = &main_scene; // 这个设计实在是不行
 
 	// Instantiate the light(with only "parallel" light component)
 	// ------------------------------------
@@ -230,7 +231,6 @@ int main()
 
 void addlights(Light& light)
 {
-	
 	for (int i = 0; i < 4; i++)
 	{
 		PointLight l

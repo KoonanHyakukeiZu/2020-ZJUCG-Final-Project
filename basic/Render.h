@@ -128,7 +128,7 @@ namespace KooNan
 							intersected = true;
 						}
 					}
-					GameObject::gameObjList[i]->Draw(modelShader,
+					GameObject::gameObjList[i]->Draw(modelShader, GameController::mainCamera.Position,
 						Common::GetPerspectiveMat(GameController::mainCamera), GameController::mainCamera.GetViewMatrix(),
 						clippling_plane,
 						intersected);
