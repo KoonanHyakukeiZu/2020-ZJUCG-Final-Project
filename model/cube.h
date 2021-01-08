@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <GameController.h>
-#include <Render.h>
+#include <common.h>
 #include <Camera.h>
 #include <mesh.h>
 #include <vector>
@@ -92,13 +92,14 @@ namespace KooNan
 		{
 			CubeMesh.cleanUp();
 		}
-		void Draw(Camera& cam, glm::vec4 clippling_plane, glm::mat4 model, glm::mat4 projection, bool if_hit = false)
+		void Draw(Camera& cam, glm::vec4 clippling_plane, glm::mat4 model, bool if_hit = false)
 		{
 			CubeShader.use();
 			if (if_hit)
 				CubeShader.setVec3("selected_color", glm::vec3(0.5f,0.5f,0.5f));
 			else
 				CubeShader.setVec3("selected_color", glm::vec3(0.0f, 0.0f, 0.0f));
+			glm::mat4 projection = Common::GetPerspectiveMat(cam);
 			CubeShader.setMat4("projection", projection);
 			CubeShader.setMat4("view", cam.GetViewMatrix());
 			CubeShader.setVec4("plane", clippling_plane);
@@ -106,8 +107,9 @@ namespace KooNan
 			CubeShader.setMat4("model", model);
 			CubeMesh.Draw(&CubeShader);
 		}
-		void Pick(Shader& pickingShader, Camera& cam, glm::mat4 model, glm::mat4 projection, unsigned int objIndex, unsigned int drawIndex)
+		void Pick(Shader& pickingShader, Camera& cam, glm::mat4 model, unsigned int objIndex, unsigned int drawIndex)
 		{
+			glm::mat4 projection = Common::GetPerspectiveMat(cam);
 			pickingShader.use();
 			pickingShader.setMat4("projection", projection);
 			pickingShader.setMat4("view", cam.GetViewMatrix());

@@ -2,7 +2,7 @@
 #include <Camera.h>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
-#include <render.h>
+#include <common.h>
 
 namespace KooNan
 {
@@ -71,11 +71,11 @@ namespace KooNan
 				
 				if (cursorX <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, WEST);
-				else if (cursorX >= Render::SCR_WIDTH - EDGE_WIDTH)
+				else if (cursorX >= Common::SCR_WIDTH - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, EAST);
 				if(cursorY <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, NORTH);
-				else if(cursorY >= Render::SCR_HEIGHT - EDGE_WIDTH)
+				else if(cursorY >= Common::SCR_HEIGHT - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(0.001f, SOUTH);
 			}
 		}
@@ -131,8 +131,8 @@ namespace KooNan
 	{
 		if (mouseMode == MouseMode::GUIMode) return;
 
-		static float lastX = Render::SCR_WIDTH / 2.0f;
-		static float lastY = Render::SCR_HEIGHT / 2.0f;
+		static float lastX = Common::SCR_WIDTH / 2.0f;
+		static float lastY = Common::SCR_HEIGHT / 2.0f;
 		if (firstMouse)
 		{
 			lastX = xpos;
@@ -143,8 +143,8 @@ namespace KooNan
 		float yoffset = lastY - ypos;
 
 		// 避免光标不显示时点到GUI上的按钮，保持光标位置在屏幕中心
-		lastX = Render::SCR_WIDTH / 2.0f;
-		lastY = Render::SCR_HEIGHT / 2.0f;
+		lastX = Common::SCR_WIDTH / 2.0f;
+		lastY = Common::SCR_HEIGHT / 2.0f;
 		glfwSetCursorPos(window, lastX, lastY);
 
 		if(gameMode == GameMode::Wandering) {
@@ -171,22 +171,22 @@ namespace KooNan
 		{
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, NORTH);
-			else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, SOUTH);
-			else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, WEST);
-			else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, EAST);
 		}
 		else if (gameMode == GameMode::Wandering)
 		{
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, FORWARD);
-			else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, BACKWARD);
-			else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, LEFT);
-			else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, RIGHT);
 
 			bool altPressed = glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
@@ -204,7 +204,7 @@ namespace KooNan
 		}
 		else {
 			mouseMode = MouseMode::CameraMode;
-			glfwSetCursorPos(window, Render::SCR_WIDTH / 2.0f, Render::SCR_HEIGHT / 2.0f);
+			glfwSetCursorPos(window, Common::SCR_WIDTH / 2.0f, Common::SCR_HEIGHT / 2.0f);
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}

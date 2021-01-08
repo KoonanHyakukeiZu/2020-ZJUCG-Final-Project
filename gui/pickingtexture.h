@@ -1,6 +1,6 @@
 #ifndef PICKINGTEXTURE_H
 #define PICKINGTEXTURE_H
-#include <Render.h>
+#include <common.h>
 #include <glad/glad.h>
 namespace KooNan
 {
@@ -25,11 +25,11 @@ namespace KooNan
 			glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 			glGenTextures(1, &m_pickingTexture);
 			glBindTexture(GL_TEXTURE_2D, m_pickingTexture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, Render::SCR_WIDTH, Render::SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, Common::SCR_WIDTH, Common::SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pickingTexture, 0);
 			glGenTextures(1, &m_depthTexture);
 			glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Render::SCR_WIDTH, Render::SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Common::SCR_WIDTH, Common::SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 			glReadBuffer(GL_NONE);
 			glDrawBuffer(GL_COLOR_ATTACHMENT0);

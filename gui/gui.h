@@ -62,7 +62,7 @@ namespace KooNan
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, Render::SCR_WIDTH, Render::SCR_HEIGHT);
+			glViewport(0, 0, Common::SCR_WIDTH, Common::SCR_HEIGHT);
 			delete[] textures, framebuffers;
 		}
 
@@ -84,7 +84,7 @@ namespace KooNan
 			switch (GameController::gameMode)
 			{
 			case GameMode::Title:
-				ImGui::SetWindowPos(ImVec2((Render::SCR_WIDTH - menuWidth) / 2, Render::SCR_HEIGHT * 2 / 3));
+				ImGui::SetWindowPos(ImVec2((Common::SCR_WIDTH - menuWidth) / 2, Common::SCR_HEIGHT * 2 / 3));
 				if (ImGui::Button("Start a New Game", menuButtonSize)) {
 					GameController::changeGameModeTo(GameMode::Wandering);
 				}
@@ -136,7 +136,7 @@ namespace KooNan
 				}
 				break;
 			case GameMode::Pause:
-				ImGui::SetWindowPos(ImVec2((Render::SCR_WIDTH - menuWidth) / 2, Render::SCR_HEIGHT * 2 / 3));
+				ImGui::SetWindowPos(ImVec2((Common::SCR_WIDTH - menuWidth) / 2, Common::SCR_HEIGHT * 2 / 3));
 				if (ImGui::Button("Continue", menuButtonSize)) {
 					GameController::revertGameMode();
 				}
@@ -153,12 +153,12 @@ namespace KooNan
 			ImGui::End();
 
 			if (GameController::gameMode == GameMode::Creating) {
-				int pageHeight = Render::SCR_HEIGHT / 4;
+				int pageHeight = Common::SCR_HEIGHT / 4;
 				pageHeight = pageHeight < 150 ? 150 : pageHeight;
 				ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
 				ImGui::Begin("Select Page", 0, selectPageFlags);
-				ImGui::SetWindowPos(ImVec2(10, Render::SCR_HEIGHT - 10 - pageHeight));
-				ImGui::SetWindowSize(ImVec2(Render::SCR_WIDTH - 20, pageHeight));
+				ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
+				ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
 
 				
 				int i = 0;
@@ -171,7 +171,7 @@ namespace KooNan
 					i++;
 				}
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-				glViewport(0, 0, Render::SCR_WIDTH, Render::SCR_HEIGHT);
+				glViewport(0, 0, Common::SCR_WIDTH, Common::SCR_HEIGHT);
 				
 
 				// 需要模型列表

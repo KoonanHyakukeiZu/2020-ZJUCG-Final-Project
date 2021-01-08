@@ -124,6 +124,7 @@ namespace KooNan
 		glBindTexture(GL_TEXTURE_CUBE_MAP, tid);
 
 		int width, height, nrChannels;
+		stbi_set_flip_vertically_on_load(false);
 		for (unsigned int i = 0; i < facePaths.size(); ++i)
 		{
 			unsigned char *image = stbi_load(facePaths[i].c_str(), &width, &height, &nrChannels, 0);

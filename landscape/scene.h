@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <GameController.h>
-#include <Render.h>
+#include <common.h>
 #include <Shader.h>
 #include <Camera.h>
 #include <terrain.h>
@@ -79,7 +79,7 @@ namespace KooNan
 		}
 		void Draw(float deltaTime, Camera& cam, glm::vec4 clippling_plane, bool draw_water)
 		{
-			glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)Render::SCR_WIDTH / (float)Render::SCR_HEIGHT, 0.1f, 1000.0f);
+			glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)Common::SCR_WIDTH / (float)Common::SCR_HEIGHT, 0.1f, 1000.0f);
 			glm::mat4 view = cam.GetViewMatrix();
 			glm::vec3 viewPos = cam.Position;
 			TerrainShader.use();

@@ -2,7 +2,7 @@
 #define WATER_FRAME_BUFFER_H
 
 #include <glad/glad.h>
-#include <Render.h>
+#include <common.h>
 #include <GameController.h>
 
 
@@ -39,7 +39,7 @@ namespace KooNan
 
 		void unbindCurrentFrameBuffer() {//call to switch to default frame buffer
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glViewport(0, 0, (float)Render::SCR_WIDTH, (float)Render::SCR_HEIGHT);
+			glViewport(0, 0, (float)Common::SCR_WIDTH, (float)Common::SCR_HEIGHT);
 		}
 		unsigned int getReflectionTexture() {//get the resulting texture
 			return reflectionTexture;
