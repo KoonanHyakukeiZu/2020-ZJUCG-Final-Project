@@ -160,7 +160,7 @@ namespace KooNan
 				ImGui::SetWindowPos(ImVec2(10, Render::SCR_HEIGHT - 10 - pageHeight));
 				ImGui::SetWindowSize(ImVec2(Render::SCR_WIDTH - 20, pageHeight));
 
-				/*
+				
 				int i = 0;
 				for (pair<const string, Model*> p : Model::modelList) {
 					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffers[i]);
@@ -171,16 +171,16 @@ namespace KooNan
 					i++;
 				}
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-				glViewport(0, 0, windowWidth, windowHeight);
-				*/
+				glViewport(0, 0, Render::SCR_WIDTH, Render::SCR_HEIGHT);
+				
 
 				// 需要模型列表
 				for (int i = 0; i < modelTextures.size(); ++i) {
 					if (i) ImGui::SameLine();
 
-					//if (ImGui::ImageButton((void*)modelTextures[i], selectButtonSize)) {
+					if (ImGui::ImageButton((void*)modelTextures[i], selectButtonSize)) {
 
-					//}
+					}
 				}
 
 				ImGui::End();
