@@ -167,6 +167,7 @@
     <ClInclude Include="basic\common.h" />
     <ClInclude Include="basic\GameController.h" />
     <ClInclude Include="basic\GameObject.h" />
+    <ClInclude Include="basic\mousepicker.h" />
     <ClInclude Include="basic\Render.h" />
     <ClInclude Include="gui\gui.h" />
     <ClInclude Include="include\Camera.h" />

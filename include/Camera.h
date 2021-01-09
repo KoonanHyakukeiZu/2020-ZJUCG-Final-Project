@@ -100,6 +100,18 @@ public:
 		Pitch = pitch;
 		updateCameraVectors();
 	}
+	Camera(const Camera& right)
+	{
+		MovementSpeed = right.MovementSpeed;
+		MouseSensitivity = right.MouseSensitivity;
+		Zoom = right.Zoom;
+
+		Position = right.Position;
+		WorldUp = right.WorldUp;
+		Yaw = right.Yaw;
+		Pitch = right.Pitch;
+		updateCameraVectors();
+	}
 
 	// returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix()

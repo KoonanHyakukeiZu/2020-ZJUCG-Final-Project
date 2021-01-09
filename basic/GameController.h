@@ -7,6 +7,7 @@
 
 #include <common.h>
 #include <GameObject.h>
+#include <mousepicker.h>
 
 #include <unordered_map>
 
@@ -51,6 +52,7 @@ namespace KooNan
 		static CreatingMode creatingMode; // 创造模式子模式
 		static int sthSelected; // 场景中有物体被拾取
 		
+		static MousePicker mousePicker;
 			// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
@@ -137,6 +139,8 @@ namespace KooNan
 
 	Camera GameController::oriCreatingCamera = Camera(0.f, 2.f, 2.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
 	Camera GameController::mainCamera = GameController::oriCreatingCamera;
+
+	MousePicker GameController::mousePicker = MousePicker(GameController::mainCamera);
 
 	GameMode GameController::gameMode = GameMode::Creating;
 	GameMode GameController::lastGameMode = GameMode::Title;
@@ -284,17 +288,8 @@ namespace KooNan
 		if(mainCamera.Front.y >= 0)
 			return mainCamera.Position;
 
-		float hfPitch = mainCamera.Zoom / 2;
-		float hfYaw = hfPitch * Common::SCR_WIDTH / Common::SCR_HEIGHT;
-		hfYaw = hfYaw * (cursorX - Common::SCR_WIDTH / 2) * 2 / Common::SCR_WIDTH;
-		hfPitch = hfPitch * (Common::SCR_HEIGHT / 2 - cursorY) * 2 / Common::SCR_HEIGHT;
-
-		glm::vec4 d4 = glm::vec4(mainCamera.Front.x, mainCamera.Front.y, mainCamera.Front.z, 1.0f);
-		glm::mat4 rot = glm::mat4(1.0f);
-		rot = glm::rotate(rot, glm::radians(-hfYaw), glm::vec3(0.0f, 1.0f, 0.0f));
-		rot = glm::rotate(rot, glm::radians(hfPitch), glm::vec3(1.0f, 0.0f, 0.0f));
-		d4 = rot * d4;
-		glm::vec3 d3 = glm::vec3(d4.x, d4.y, d4.z);
+		mousePicker.update(cursorX, cursorY);
+		glm::vec3 d3 = mousePicker.getCurrentRay();
 
 		static int maxStep = 100;
 		static float stepWise = 2.0f;
