@@ -153,7 +153,8 @@ int main()
 	// Model
 	// ------------------------------------
 	
-	Model* planet = new Model(FileSystem::getPath("model/rsc/planet/planet.obj"));
+	//Model* planet = new Model(FileSystem::getPath("model\\rsc\\Memorial Gate\\Memorial Gates.obj"));
+	Model::loadModelsFromPath("model\\");
 
 	// Object
 	// ------------------------------------
@@ -171,7 +172,7 @@ int main()
 	// GUI
 	// ------------------------------------
 	GUI::initEnv(window);
-	GUI::updateModelTextures(modelShader);
+	// GUI::updateModelTextures(modelShader);
 
 	PickingTexture mouse_picking;
 	Water_Frame_Buffer waterfb;

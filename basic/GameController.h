@@ -133,6 +133,8 @@ namespace KooNan
 	void GameController::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
+		Common::SCR_HEIGHT = height;
+		Common::SCR_WIDTH = width;
 	}
 
 	void GameController::cursor_callback(GLFWwindow* window, double xpos, double ypos)

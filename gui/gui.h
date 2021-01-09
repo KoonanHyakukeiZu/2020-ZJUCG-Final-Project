@@ -33,6 +33,7 @@ namespace KooNan
 			ImGui::StyleColorsDark();
 		}
 
+		// Use preview.png instead.
 		static void updateModelTextures(Shader& shader) {
 			modelTextures.clear();
 			int ntextures = Model::modelList.size();
@@ -160,7 +161,7 @@ namespace KooNan
 				ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
 				ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
 
-				
+				/*
 				int i = 0;
 				for (pair<const string, Model*> p : Model::modelList) {
 					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffers[i]);
@@ -172,15 +173,23 @@ namespace KooNan
 				}
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 				glViewport(0, 0, Common::SCR_WIDTH, Common::SCR_HEIGHT);
-				
+				*/
 
-				// 需要模型列表
-				for (int i = 0; i < modelTextures.size(); ++i) {
+				int i = 0;
+				for (pair<const string, Model*> p : Model::modelList) {
 					if (i) ImGui::SameLine();
 
-					if (ImGui::ImageButton((void*)modelTextures[i], selectButtonSize)) {
-
+					if (p.second->previewImage) {
+						if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
+							
+						}
 					}
+					else {
+						if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
+
+						}
+					}
+					i++;
 				}
 
 				ImGui::End();

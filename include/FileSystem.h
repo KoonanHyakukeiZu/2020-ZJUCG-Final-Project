@@ -14,8 +14,10 @@ private:
 public:
   static std::string getPath(const std::string& path)
   {
+    string tmppath = path;
+    for (int pos = 0; pos != string::npos; pos += 1) if ((pos = tmppath.find("\\", pos)) != string::npos) tmppath.replace(pos, 1, "/"); else break;
     static std::string(*pathBuilder)(std::string const &) = getPathBuilder();
-    return (*pathBuilder)(path);
+    return (*pathBuilder)(tmppath);
   }
 
 private:

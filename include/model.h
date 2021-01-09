@@ -24,8 +24,12 @@
 #include <map>
 #include <vector>
 #include <unordered_map>
+
+#include <filesystem>
+
 using namespace std;
 
+unsigned int PreviewImageFromFile(const string& path);
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 
 class Model
@@ -38,6 +42,7 @@ public:
     vector<Mesh> meshes;
     string directory;
     bool gammaCorrection;
+    Texture* previewImage;
 
     // constructor, expects a filepath to a 3D model.
     Model(string const& path, bool gamma = false) : gammaCorrection(gamma)
@@ -53,7 +58,68 @@ public:
             meshes[i].Draw(shader);
     }
 
+    // load models from a path, which contains several folder of models.
+    static int loadModelsFromPath(string const& modelsPath)
+    {
+        using namespace filesystem;
+        int totalModels = 0;
+        path basePath(modelsPath);
+        cout << "Loading models from path: " << modelsPath << endl;
+        if (!exists(basePath)) {
+            cout << "Error: Failed to load models from path: " << modelsPath << endl;
+            return 0;
+        }
+        else if (directory_entry(basePath).status().type() != file_type::directory) {
+            cout << "Error: \"" << modelsPath << "\" is not a directory." << endl;
+            return 0;
+        }
+        totalModels = loadModelsFromPath_r(basePath);
+        cout << totalModels << " models loaded." << endl;
+        cout << "==============================================" << endl;
+        return totalModels;
+    }
+
 private:
+
+    // This function should only be called by function loadModelsFromPath.
+    //  Used to recursively load all objs in the folder.
+    //  @retval: number of objects loaded.
+    static int loadModelsFromPath_r(filesystem::path basePath)
+    {
+        using namespace filesystem;
+        directory_iterator fileList1(basePath), fileList2(basePath);
+        int totalModels = 0;
+        cout << "Looking into " << basePath << " ..." << endl;
+
+        // First pass, check if there is an obj file.
+        string previewFilename = "", modelFilename = "";
+        for (auto& it : fileList1) {
+            path curPath = it.path();
+            if (directory_entry(curPath).status().type() != file_type::regular) continue;
+            if (curPath.extension() == ".obj" && curPath.filename()!="Bridge-2.obj" && curPath.filename() != "Memorial Gates.obj") modelFilename = curPath.string();
+            else if (curPath.filename() == "preview.png") previewFilename = curPath.string();
+        }
+        if (modelFilename != "") {
+            cout << "Model " + modelFilename + " found." << endl;
+            Model* tmpModel = new Model(FileSystem::getPath(modelFilename));
+            if (previewFilename != "") {
+                tmpModel->previewImage = new Texture;
+                tmpModel->previewImage->id = PreviewImageFromFile(FileSystem::getPath(previewFilename));
+            }
+            else {
+                cout << "No preview image found." << endl;
+            }
+            totalModels++;
+        }
+
+        // Second pass, look into child directories.
+        for (auto& it : fileList2) {
+            if (directory_entry(it.path()).status().type() != file_type::directory) continue;
+            totalModels += loadModelsFromPath_r(it.path());
+        }
+        return totalModels;
+    }
+
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const& path)
     {
@@ -256,5 +322,41 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
     return textureID;
 }
 
+unsigned int PreviewImageFromFile(const string& path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        cout << "Preview image failed to load at path: " << path << endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
+}
 std::unordered_map<std::string, Model*> Model::modelList;
 #endif
