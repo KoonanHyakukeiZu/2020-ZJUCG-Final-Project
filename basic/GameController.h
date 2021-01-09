@@ -41,25 +41,25 @@ namespace KooNan
 		static Camera mainCamera;
 		static Camera oriCreatingCamera;
 
-		static std::unordered_map<std::string, Model*>::iterator curModel;
-
 		static Scene* mainScene;
 
+
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
-		static string selectedModel;
 	public:
+		static string selectedModel; // 当前选择的模组
 		static GameMode gameMode; // 游戏模式
 		static GameMode lastGameMode;
 		static CreatingMode creatingMode; // 创造模式子模式
 		static int sthSelected; // 场景中有物体被拾取
-		
+
 		static MousePicker mousePicker;
-			// 常量
+		// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
-			// 状态
+		// 状态
 	private:
 		static bool firstMouse; // 是否是第一次点击（用于鼠标移动事件）
+		static bool ctrlPressedLast; // 上一次循环是否按下ctrl键
 		static bool altPressedLast; // 上一次循环是否按下alt键
 		static bool midBtnPressedLast; // 上一次循环是否按下鼠标中键
 	public:
@@ -82,14 +82,14 @@ namespace KooNan
 
 			// 创造模式下使用鼠标可以移动相机
 			if (gameMode == GameMode::Creating) {
-				
+
 				if (cursorX <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(deltaTime, WEST);
 				else if (cursorX >= Common::SCR_WIDTH - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(deltaTime, EAST);
-				if(cursorY <= EDGE_WIDTH)
+				if (cursorY <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(deltaTime, NORTH);
-				else if(cursorY >= Common::SCR_HEIGHT - EDGE_WIDTH)
+				else if (cursorY >= Common::SCR_HEIGHT - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(deltaTime, SOUTH);
 			}
 
@@ -97,11 +97,37 @@ namespace KooNan
 			if (mainScene)
 			{
 				static float border = 0.5f;
-				float h = mainScene->getTerrainHeight(mainCamera.Position.x, mainCamera.Position.z);
-				if (gameMode == GameMode::Creating && h >= mainCamera.Position.y)
-					mainCamera.Position.y = h + border;
-				else if(gameMode == GameMode::Wandering)
-					mainCamera.Position.y = h + border;
+				try
+				{
+					float h = mainScene->getTerrainHeight(mainCamera.Position.x, mainCamera.Position.z);
+					h = mainScene->getWaterHeight() > h ? mainScene->getWaterHeight() : h;
+
+					if (gameMode == GameMode::Creating && h >= mainCamera.Position.y)
+						mainCamera.Position.y = h + border;
+					else if (gameMode == GameMode::Wandering)
+						mainCamera.Position.y = h + border;
+				}
+				catch (const char* msg)
+				{
+					mainCamera = oriCreatingCamera;
+				}
+			}
+
+			// 光标移动时，若有模型选中，显示辅助物体
+			if (gameMode == GameMode::Creating && creatingMode == CreatingMode::Placing)
+			{
+				glm::vec3 t = findFocusInScene();
+				if (t != mainCamera.Position)
+				{
+					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
+					if (selectedModel != "" && GameObject::helperGameObj == NULL)
+					{
+						GameObject::helperGameObj = new GameObject(selectedModel.c_str(), modelMat);
+						selectedModel = "";
+					}
+					else if(GameObject::helperGameObj)
+						GameObject::helperGameObj->modelMat = modelMat; // 移动
+				}
 			}
 		}
 		static void changeGameModeTo(GameMode newmode) {
@@ -127,8 +153,6 @@ namespace KooNan
 
 		// 找到光标射线与地形的交点
 		static glm::vec3 findFocusInScene();
-	private:
-		
 	};
 
 	// 状态与信号初始化
@@ -149,6 +173,7 @@ namespace KooNan
 	int GameController::sthSelected = 0;
 
 	bool GameController::firstMouse = true;
+	bool GameController::ctrlPressedLast = false;
 	bool GameController::altPressedLast = false;
 	bool GameController::midBtnPressedLast = false;
 
@@ -184,7 +209,7 @@ namespace KooNan
 		lastY = Common::SCR_HEIGHT / 2.0f;
 		glfwSetCursorPos(window, lastX, lastY);
 
-		if(gameMode == GameMode::Wandering) {
+		if (gameMode == GameMode::Wandering) {
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
 		}
 		else if (gameMode == GameMode::Creating) {
@@ -198,7 +223,31 @@ namespace KooNan
 
 	void GameController::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
-		mainCamera.ProcessMouseScroll(gameMode == GameMode::Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
+		if (gameMode == GameMode::Creating)
+			if (creatingMode == CreatingMode::Placing)
+				if (ctrlPressedLast)
+					if (GameObject::helperGameObj)
+					{
+						glm::mat4 modelMat = glm::rotate(GameObject::helperGameObj->modelMat,
+							glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
+						GameObject::helperGameObj->modelMat = modelMat;
+					}
+					else;
+				else
+					mainCamera.ProcessMouseScroll(HEIGHT_CHANGE, yoffset);
+			else
+				mainCamera.ProcessMouseScroll(HEIGHT_CHANGE, yoffset);
+		else if(gameMode == GameMode::Wandering)
+			mainCamera.ProcessMouseScroll(FOVY_CHANGE, yoffset);
+		/*if(!ctrlPressedLast)
+			mainCamera.ProcessMouseScroll(gameMode == GameMode::Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
+		else if(gameMode == GameMode::Creating && creatingMode == CreatingMode::Placing)
+			if (GameObject::helperGameObj)
+			{
+				glm::mat4 modelMat = glm::rotate(GameObject::helperGameObj->modelMat,
+					glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
+				GameObject::helperGameObj->modelMat = modelMat;
+			}*/
 	}
 
 	void GameController::processInput(GLFWwindow* window)
@@ -217,6 +266,8 @@ namespace KooNan
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 				mainCamera.ProcessKeyboard(deltaTime, EAST);
 
+			ctrlPressedLast = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
+
 			bool midBtnPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
 			if (midBtnPressed != midBtnPressedLast)
 			{
@@ -224,16 +275,19 @@ namespace KooNan
 				updateCursorMode(window);
 			}
 
-			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			if (creatingMode == CreatingMode::Placing)
 			{
-				glm::vec3 t = findFocusInScene();
-				if (t != mainCamera.Position && selectedModel != "")
-				{
-					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
-					GameObject* p1 = new GameObject(selectedModel.c_str(), modelMat);
-					selectedModel = "";
-				}
-				
+				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+					if (GameObject::helperGameObj) // 确定放置物体
+						GameObject::helperGameObj = NULL;
+					else;
+				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+					if (GameObject::helperGameObj) // 移除辅助物体
+					{
+						GameObject::gameObjList.pop_back();
+						delete GameObject::helperGameObj;
+						GameObject::helperGameObj = NULL;
+					}
 			}
 		}
 		else if (gameMode == GameMode::Wandering)
@@ -258,7 +312,7 @@ namespace KooNan
 
 	void GameController::updateCursorMode(GLFWwindow* window)
 	{
-		if(gameMode == GameMode::Wandering)
+		if (gameMode == GameMode::Wandering)
 			if (altPressedLast)
 			{
 				mouseMode = MouseMode::GUIMode;
@@ -287,27 +341,34 @@ namespace KooNan
 	}
 	glm::vec3 GameController::findFocusInScene()
 	{
-		if(mainScene == NULL)
+		if (mainScene == NULL)
 			return mainCamera.Position;
 
 		// 防止向上放置，防止getTerrainHeight的断言异常
-		if(mainCamera.Front.y >= 0)
+		if (mainCamera.Front.y >= 0)
 			return mainCamera.Position;
 
 		mousePicker.update(cursorX, cursorY);
 		glm::vec3 d3 = mousePicker.getCurrentRay();
 
 		static int maxStep = 100;
-		static float stepWise = 2.0f;
+		static float stepWise = 2.0f, curH;
 		int step;
 		glm::vec3 curPosition = glm::vec3(mainCamera.Position);
 		for (step = 0; step < maxStep; step++)
 		{
-			if (curPosition.y <= mainScene->getTerrainHeight(curPosition.x,curPosition.z))
+			try {
+				curH = mainScene->getTerrainHeight(curPosition.x, curPosition.z);
+			}
+			catch (const char* msg) {
+				return mainCamera.Position;
+			}
+			if (curPosition.y <= curH)
 				break;
 			curPosition += stepWise * d3;
 		}
-		if(step == maxStep)
+
+		if (step == maxStep)
 			return mainCamera.Position;
 		return curPosition - stepWise * d3;
 	}

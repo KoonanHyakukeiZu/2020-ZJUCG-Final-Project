@@ -13,6 +13,8 @@ namespace KooNan
 		// 全局变量
 	public:
 		static std::vector<GameObject*> gameObjList; // 储存所有游戏物体
+		static GameObject* helperGameObj; // 辅助游戏物体
+		static std::vector<GameObject*>::iterator selectedGameObj;
 	public:
 		glm::mat4 modelMat;
 		bool IsPickable;//是否可被拾取
@@ -110,4 +112,6 @@ namespace KooNan
 	};
 
 	std::vector<GameObject*> GameObject::gameObjList;
+	GameObject* GameObject::helperGameObj = NULL;
+	std::vector<GameObject*>::iterator GameObject::selectedGameObj;
 }

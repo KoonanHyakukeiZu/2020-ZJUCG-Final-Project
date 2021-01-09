@@ -46,8 +46,10 @@ namespace KooNan
 		{
 			float relativeX = x - world_x + size / 2;
 			float relativeZ = z - world_z + size / 2;
-			assert(relativeX >= 0 && relativeX <= size);
-			assert(relativeZ >= 0 && relativeZ <= size);
+			if (!(relativeX >= 0 && relativeX <= size))
+				throw "Bad";
+			if (!(relativeZ >= 0 && relativeZ <= size))
+				throw "Bad";
 			float gridSqaureSize = size / (vertex_count - 1);
 			int gridX = (int)(relativeX / gridSqaureSize);
 			int gridZ = (int)(relativeZ / gridSqaureSize);
