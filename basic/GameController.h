@@ -119,16 +119,20 @@ namespace KooNan
 				glm::vec3 t = findFocusInScene();
 				if (t != mainCamera.Position)
 				{
-					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
 					if (selectedModel != "" && GameObject::helperGameObj == NULL)
-					{
+					{// 新建
+						glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
 						GameObject::helperGameObj = new GameObject(selectedModel.c_str(), modelMat);
 						selectedModel = "";
 					}
-					else if(GameObject::helperGameObj)
-						GameObject::helperGameObj->modelMat = modelMat; // 移动
+					else if (GameObject::helperGameObj)
+					{// 移动
+						GameObject::helperGameObj->pos = t; 
+						GameObject::helperGameObj->Update();
+					}
 				}
 			}
+				
 		}
 		static void changeGameModeTo(GameMode newmode) {
 			lastGameMode = gameMode;
@@ -228,9 +232,10 @@ namespace KooNan
 				if (ctrlPressedLast)
 					if (GameObject::helperGameObj)
 					{
-						glm::mat4 modelMat = glm::rotate(GameObject::helperGameObj->modelMat,
+						glm::mat4 rot = glm::rotate(GameObject::helperGameObj->rot,
 							glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
-						GameObject::helperGameObj->modelMat = modelMat;
+						GameObject::helperGameObj->rot = rot;
+						GameObject::helperGameObj->Update();
 					}
 					else;
 				else
