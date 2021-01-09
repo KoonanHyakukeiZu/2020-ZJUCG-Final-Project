@@ -122,7 +122,7 @@ namespace KooNan
 					if (selectedModel != "" && GameObject::helperGameObj == NULL)
 					{// 新建
 						glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
-						GameObject::helperGameObj = new GameObject(selectedModel.c_str(), modelMat);
+						GameObject::helperGameObj = new GameObject(selectedModel.c_str(), modelMat, true);
 						selectedModel = "";
 					}
 					else if (GameObject::helperGameObj)
@@ -284,8 +284,11 @@ namespace KooNan
 			if (creatingMode == CreatingMode::Placing)
 			{
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-					if (GameObject::helperGameObj) // 确定放置物体
+					if (GameObject::helperGameObj) {
+						// 确定放置物体
 						GameObject::helperGameObj = NULL;
+						GameController::creatingMode = CreatingMode::Editing;
+					}
 					else;
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 					if (GameObject::helperGameObj) // 移除辅助物体
