@@ -131,13 +131,17 @@ private:
                 vector.y = mesh->mBitangents[i].y;
                 vector.z = mesh->mBitangents[i].z;
                 vertex_extra.Bitangent = vector;
-                vertices_extra.push_back(vertex_extra);
+                
             }
             else
+            {
                 vertex_simple.TexCoords = glm::vec2(0.0f, 0.0f);
-
+                vertex_extra.Tangent = glm::vec3(0.0f, 0.0f, 0.0f);
+                vertex_extra.Bitangent = glm::vec3(0.0f, 0.0f, 0.0f);
+            }
+            vertices_extra.push_back(vertex_extra);
             vertices_simple.push_back(vertex_simple);
-            
+
         }
 
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
@@ -207,8 +211,6 @@ private:
         return textures;
     }
 };
-
-
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma)
 {
     string filename = string(path);
