@@ -46,6 +46,7 @@ namespace KooNan
 		static Scene* mainScene;
 
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
+		static string selectedModel;
 	public:
 		static GameMode gameMode; // 游戏模式
 		static GameMode lastGameMode;
@@ -153,6 +154,8 @@ namespace KooNan
 
 	Scene* GameController::mainScene = NULL;
 
+	string GameController::selectedModel = "";
+
 	// 函数定义
 	void GameController::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	{
@@ -224,10 +227,11 @@ namespace KooNan
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
 				glm::vec3 t = findFocusInScene();
-				if (t != mainCamera.Position)
+				if (t != mainCamera.Position && selectedModel != "")
 				{
 					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
-					GameObject* p1 = new GameObject("model/rsc/planet/planet.obj", modelMat);
+					GameObject* p1 = new GameObject(selectedModel.c_str(), modelMat);
+					selectedModel = "";
 				}
 				
 			}

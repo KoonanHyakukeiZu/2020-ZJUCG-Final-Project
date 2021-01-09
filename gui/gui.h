@@ -181,12 +181,12 @@ namespace KooNan
 
 					if (p.second->previewImage) {
 						if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
-							
+							GameController::selectedModel = p.first;
 						}
 					}
 					else {
 						if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
-
+							GameController::selectedModel = p.first;
 						}
 					}
 					i++;
