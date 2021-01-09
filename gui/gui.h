@@ -154,49 +154,73 @@ namespace KooNan
 			ImGui::End();
 
 			if (GameController::gameMode == GameMode::Creating) {
-				int pageHeight = Common::SCR_HEIGHT / 4;
-				pageHeight = pageHeight < 150 ? 150 : pageHeight;
-				ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
-				ImGui::Begin("Select Page", 0, selectPageFlags);
-				ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
-				ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
+				if (GameController::creatingMode == CreatingMode::Viewing) {
+					int pageHeight = Common::SCR_HEIGHT / 4;
+					pageHeight = pageHeight < 150 ? 150 : pageHeight;
+					ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
+					ImGui::Begin("Select Page", 0, selectPageFlags);
+					ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
+					ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
 
-				/*
-				int i = 0;
-				for (pair<const string, Model*> p : Model::modelList) {
-					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffers[i]);
-					glViewport(0, 0, 480, 360);
-					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-					glGenerateMipmap(GL_TEXTURE_2D);
-					p.second->Draw(NULL);
-					i++;
-				}
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-				glViewport(0, 0, Common::SCR_WIDTH, Common::SCR_HEIGHT);
-				*/
-
-				int i = 0;
-				for (pair<const string, Model*> p : Model::modelList) {
-					if (i) ImGui::SameLine();
-
-					if (p.second->previewImage) {
-						if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
-							GameController::selectedModel = p.first;
-						}
+					/*
+					int i = 0;
+					for (pair<const string, Model*> p : Model::modelList) {
+						glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffers[i]);
+						glViewport(0, 0, 480, 360);
+						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+						glGenerateMipmap(GL_TEXTURE_2D);
+						p.second->Draw(NULL);
+						i++;
 					}
-					else {
-						if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
-							GameController::selectedModel = p.first;
+					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+					glViewport(0, 0, Common::SCR_WIDTH, Common::SCR_HEIGHT);
+					*/
+
+					int i = 0;
+					for (pair<const string, Model*> p : Model::modelList) {
+						if (i) ImGui::SameLine();
+
+						if (p.second->previewImage) {
+							if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
+								GameController::selectedModel = p.first;
+								GameController::creatingMode = CreatingMode::Placing;
+							}
 						}
+						else {
+							if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
+								GameController::selectedModel = p.first;
+								GameController::creatingMode = CreatingMode::Placing;
+							}
+						}
+						i++;
 					}
-					i++;
+
+					ImGui::End();
+
 				}
+				else if (GameController::creatingMode == CreatingMode::Editing) {
+					// todo：把菜单移动到选中建筑周围
+					ImGui::Begin("Edit Menu", 0, menuFlags);
+					ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
+					if (ImGui::Button("Move", shotcutButtonSize)) {
 
-				ImGui::End();
+					}
+					if (ImGui::Button("Delete", shotcutButtonSize)) {
 
-				// todo：有选中建筑时，绘制选中建筑周围的菜单
-				if (GameController::creatingMode == CreatingMode::Placing) {
-
+					}
+					if (ImGui::Button("OK", shotcutButtonSize)) {
+						GameController::creatingMode = CreatingMode::Viewing;
+					}
+					ImGui::End();
+				}
+				else if (GameController::creatingMode == CreatingMode::Placing) {
+					ImGui::Begin("Edit Menu", 0, menuFlags);
+					ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
+					if (ImGui::Button("Cancel", shotcutButtonSize)) {
+						GameController::creatingMode = CreatingMode::Viewing;
+						GameController::selectedModel = "";
+					}
+					ImGui::End();
 				}
 			}
 

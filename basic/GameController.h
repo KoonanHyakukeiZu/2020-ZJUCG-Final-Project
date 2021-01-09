@@ -23,6 +23,7 @@ namespace KooNan
 	enum class CreatingMode
 	{
 		Placing, // 放置模式
+		Editing, // 编辑模式（编辑现有模型
 		Viewing // 观察模式
 	};
 	enum class MouseMode {
@@ -113,6 +114,7 @@ namespace KooNan
 			}
 			else if (gameMode == GameMode::Creating) {
 				GameController::mainCamera = GameController::oriCreatingCamera;
+				GameController::creatingMode = CreatingMode::Viewing;
 			}
 		}
 		static void revertGameMode() {
@@ -145,7 +147,7 @@ namespace KooNan
 
 	GameMode GameController::gameMode = GameMode::Creating;
 	GameMode GameController::lastGameMode = GameMode::Title;
-	CreatingMode GameController::creatingMode = CreatingMode::Placing;
+	CreatingMode GameController::creatingMode = CreatingMode::Viewing;
 	int GameController::sthSelected = 0;
 
 	bool GameController::firstMouse = true;
@@ -227,11 +229,13 @@ namespace KooNan
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 			{
 				glm::vec3 t = findFocusInScene();
+				// todo: optimize condition
 				if (t != mainCamera.Position && selectedModel != "")
 				{
 					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
-					GameObject* p1 = new GameObject(selectedModel.c_str(), modelMat);
+					GameObject* p1 = new GameObject(selectedModel.c_str(), modelMat, true);
 					selectedModel = "";
+					creatingMode = CreatingMode::Editing;
 				}
 				
 			}
