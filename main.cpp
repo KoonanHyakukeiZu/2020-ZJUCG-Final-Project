@@ -133,6 +133,7 @@ int main()
    
 	// Instantiate the main_scene
 	Scene main_scene(256.0f, 1, 1, -0.7f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
+	GameController::mainScene = &main_scene; // è¿™ä¸ªè®¾è®¡å®åœ¨æ˜¯ä¸è¡Œ
 
 	// Instantiate the light(with only "parallel" light component)
 	// ------------------------------------
@@ -162,7 +163,7 @@ int main()
 		//scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
 	//GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
-	GameObject* p3 = new GameObject(string("model/rsc/Temple1/Temple1.obj"),
+	GameObject* p3 = new GameObject("model/rsc/Temple1/Temple1.obj",
 		scale(translate(mat4(1.0f), vec3(-7.0f, main_scene.getTerrainHeight(-7.0f, -7.0f), -7.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
 	//GameObject* p3 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(7.0f, 5.0f, 6.0f)), vec3(0.5f, 0.5f, 0.5f)));
@@ -187,7 +188,7 @@ int main()
 		GameController::updateGameController(window);
 
 
-		//ĞèÒªäÖÈ¾Èı´Î Ç°Á½´Î²»äÖÈ¾Ë®Ãæ ×îºóÒ»´ÎäÖÈ¾Ë®Ãæ
+		//éœ€è¦æ¸²æŸ“ä¸‰æ¬¡ å‰ä¸¤æ¬¡ä¸æ¸²æŸ“æ°´é¢ æœ€åä¸€æ¬¡æ¸²æŸ“æ°´é¢
 
 
 		main_renderer.DrawReflection(modelShader);
@@ -231,7 +232,6 @@ int main()
 
 void addlights(Light& light)
 {
-	
 	for (int i = 0; i < 4; i++)
 	{
 		PointLight l

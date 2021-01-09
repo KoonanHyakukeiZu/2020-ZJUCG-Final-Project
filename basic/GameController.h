@@ -1,9 +1,13 @@
 #pragma once
 #include <Camera.h>
 #include <model.h>
+#include <scene.h>
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
+
 #include <common.h>
+#include <GameObject.h>
+#include <mousepicker.h>
 
 #include <unordered_map>
 
@@ -39,6 +43,8 @@ namespace KooNan
 
 		static std::unordered_map<std::string, Model*>::iterator curModel;
 
+		static Scene* mainScene;
+
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
 		static GameMode gameMode; // 游戏模式
@@ -46,6 +52,7 @@ namespace KooNan
 		static CreatingMode creatingMode; // 创造模式子模式
 		static int sthSelected; // 场景中有物体被拾取
 		
+		static MousePicker mousePicker;
 			// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
@@ -84,6 +91,17 @@ namespace KooNan
 				else if(cursorY >= Common::SCR_HEIGHT - EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(deltaTime, SOUTH);
 			}
+
+			// 检测相机是否低于地形，纠正
+			if (mainScene)
+			{
+				static float border = 0.5f;
+				float h = mainScene->getTerrainHeight(mainCamera.Position.x, mainCamera.Position.z);
+				if (gameMode == GameMode::Creating && h >= mainCamera.Position.y)
+					mainCamera.Position.y = h + border;
+				else if(gameMode == GameMode::Wandering)
+					mainCamera.Position.y = h + border;
+			}
 		}
 		static void changeGameModeTo(GameMode newmode) {
 			lastGameMode = gameMode;
@@ -102,10 +120,12 @@ namespace KooNan
 	private:
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 		static void cursor_callback(GLFWwindow* window, double xpos, double ypos);
-		static void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 		static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 		static void processInput(GLFWwindow* window);
 		static void updateCursorMode(GLFWwindow* window);
+
+		// 找到光标射线与地形的交点
+		static glm::vec3 findFocusInScene();
 	private:
 		
 	};
@@ -120,6 +140,8 @@ namespace KooNan
 	Camera GameController::oriCreatingCamera = Camera(0.f, 2.f, 2.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
 	Camera GameController::mainCamera = GameController::oriCreatingCamera;
 
+	MousePicker GameController::mousePicker = MousePicker(GameController::mainCamera);
+
 	GameMode GameController::gameMode = GameMode::Creating;
 	GameMode GameController::lastGameMode = GameMode::Title;
 	CreatingMode GameController::creatingMode = CreatingMode::Placing;
@@ -128,6 +150,8 @@ namespace KooNan
 	bool GameController::firstMouse = true;
 	bool GameController::altPressedLast = false;
 	bool GameController::midBtnPressedLast = false;
+
+	Scene* GameController::mainScene = NULL;
 
 	// 函数定义
 	void GameController::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -161,7 +185,11 @@ namespace KooNan
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
 		}
 		else if (gameMode == GameMode::Creating) {
-			mainCamera.ProcessMouseMovement(xoffset, yoffset, glm::vec3(0.0f));
+			if (creatingMode == CreatingMode::Placing)
+			{
+				static float viewDist = 5.0f;
+				mainCamera.ProcessMouseMovement(xoffset, yoffset, mainCamera.Position + viewDist * mainCamera.Front);
+			}
 		}
 	}
 
@@ -191,6 +219,17 @@ namespace KooNan
 			{
 				midBtnPressedLast = midBtnPressed;
 				updateCursorMode(window);
+			}
+
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			{
+				glm::vec3 t = findFocusInScene();
+				if (t != mainCamera.Position)
+				{
+					glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
+					GameObject* p1 = new GameObject("model/rsc/planet/planet.obj", modelMat);
+				}
+				
 			}
 		}
 		else if (gameMode == GameMode::Wandering)
@@ -241,15 +280,31 @@ namespace KooNan
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 				GameController::firstMouse = true;
 			}
-		/*if (altPressedLast || GameController::gameMode != GameMode::Wandering) {
-			mouseMode = MouseMode::GUIMode;
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			GameController::firstMouse = true;
+	}
+	glm::vec3 GameController::findFocusInScene()
+	{
+		if(mainScene == NULL)
+			return mainCamera.Position;
+
+		// 防止向上放置，防止getTerrainHeight的断言异常
+		if(mainCamera.Front.y >= 0)
+			return mainCamera.Position;
+
+		mousePicker.update(cursorX, cursorY);
+		glm::vec3 d3 = mousePicker.getCurrentRay();
+
+		static int maxStep = 100;
+		static float stepWise = 2.0f;
+		int step;
+		glm::vec3 curPosition = glm::vec3(mainCamera.Position);
+		for (step = 0; step < maxStep; step++)
+		{
+			if (curPosition.y <= mainScene->getTerrainHeight(curPosition.x,curPosition.z))
+				break;
+			curPosition += stepWise * d3;
 		}
-		else if(gameMode == GameMode::Wandering) {
-			mouseMode = MouseMode::CameraMode;
-			glfwSetCursorPos(window, Common::SCR_WIDTH / 2.0f, Common::SCR_HEIGHT / 2.0f);
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}*/
+		if(step == maxStep)
+			return mainCamera.Position;
+		return curPosition - stepWise * d3;
 	}
 }

@@ -28,6 +28,9 @@
     <Filter Include="头文件\model">
       <UniqueIdentifier>{a50e3367-69c1-482e-90ad-7b2c4e99ec3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\landscape">
+      <UniqueIdentifier>{875dfd14-5c25-4092-94d9-1bf90551c03d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c">
@@ -105,6 +108,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="basic\GameObject.h">
+      <Filter>头文件\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="landscape\scene.h">
+      <Filter>头文件\landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="basic\Render.h">
+      <Filter>头文件\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="basic\common.h">
+      <Filter>头文件\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="basic\mousepicker.h">
       <Filter>头文件\basic</Filter>
     </ClInclude>
   </ItemGroup>

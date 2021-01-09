@@ -165,8 +165,11 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="basic\common.h" />
     <ClInclude Include="basic\GameController.h" />
     <ClInclude Include="basic\GameObject.h" />
+    <ClInclude Include="basic\mousepicker.h" />
+    <ClInclude Include="basic\Render.h" />
     <ClInclude Include="gui\gui.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\FileSystem.h" />
@@ -181,6 +184,7 @@
     <ClInclude Include="include\mesh.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="landscape\scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
