@@ -130,6 +130,14 @@ namespace KooNan
 				if (ImGui::Button("Save", shotcutButtonSize)) {
 					// todo
 				}
+				if (GameController::creatingMode == CreatingMode::Placing)
+					if (GameController::modelType == Model::ModelType::ComplexModel &&
+						ImGui::Button("Basic Voxel", shotcutButtonSize))
+						GameController::modelType = Model::ModelType::BasicVoxel;
+					else if (GameController::modelType == Model::ModelType::BasicVoxel &&
+						ImGui::Button("Complex Model", shotcutButtonSize))
+						GameController::modelType = Model::ModelType::ComplexModel;
+					else;
 				if (GameController::creatingMode == CreatingMode::Selecting && ImGui::Button("Place", shotcutButtonSize)) {
 					GameController::creatingMode = CreatingMode::Placing;
 				}
@@ -184,7 +192,10 @@ namespace KooNan
 					*/
 
 					int i = 0;
-					for (pair<const string, Model*> p : Model::modelList) {
+					for (pair<const string, Model*> p : 
+						(GameController::modelType == Model::ModelType::ComplexModel ?
+							Model::modelList :
+							Model::basicVoxelList)) {
 						if (i) ImGui::SameLine();
 
 						if (p.second->previewImage) {
@@ -226,7 +237,7 @@ namespace KooNan
 					}
 					ImGui::End();
 				}
-				else if (GameController::creatingMode == CreatingMode::Placing) {
+				/*else if (GameController::creatingMode == CreatingMode::Placing) {
 					ImGui::Begin("Edit Menu", 0, menuFlags);
 					ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
 					if (ImGui::Button("Cancel", shotcutButtonSize)) {
@@ -234,7 +245,7 @@ namespace KooNan
 						GameController::selectedModel = "";
 					}
 					ImGui::End();
-				}
+				}*/
 			}
 
 			// Render dear imgui into screen
