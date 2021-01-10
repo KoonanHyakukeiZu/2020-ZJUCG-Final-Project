@@ -129,6 +129,7 @@ int main()
 	Shader lightShader(FileSystem::getPath("landscape/lightcube.vs").c_str(), FileSystem::getPath("landscape/lightcube.fs").c_str());
 	Shader pickingShader(FileSystem::getPath("gui/picking.vs").c_str(), FileSystem::getPath("gui/picking.fs").c_str());
 	Shader modelShader("model/model.vs", "model/model.fs");
+	Shader shadowShader("landscape/shadow.vs", "landscape/shadow.fs");
 
     
    
@@ -140,8 +141,8 @@ int main()
 	// ------------------------------------
 	DirLight parallel{
 		glm::vec3(0.3f, -0.7f, 1.0f),
-		glm::vec3(0.05f, 0.05f, 0.05f),
-		glm::vec3(0.7f, 0.7f, 0.7f),
+		glm::vec3(0.3f, 0.3f, 0.3f),
+		glm::vec3(0.3f, 0.3f, 0.3f),
 		glm::vec3(0.4f, 0.4f, 0.4f)
 	};
 	Light main_light(parallel, lightShader);
@@ -178,7 +179,8 @@ int main()
 
 	PickingTexture mouse_picking;
 	Water_Frame_Buffer waterfb;
-	Render main_renderer(main_scene, main_light, waterfb, mouse_picking);
+	Shadow_Frame_Buffer shadowfb;
+	Render main_renderer(main_scene, main_light, waterfb, mouse_picking, shadowfb);
 	main_renderer.InitObjectLighting(modelShader);
 	
 	// render loop
@@ -197,7 +199,7 @@ int main()
 		
 		main_renderer.DrawRefraction(modelShader);
 
-		main_renderer.DrawAll(pickingShader, modelShader);
+		main_renderer.DrawAll(pickingShader, modelShader, shadowShader);
 		
 		/*
 		Render the else you need to render here!! Remember to set the clipping plane!!!
