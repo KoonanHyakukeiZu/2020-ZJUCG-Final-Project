@@ -38,6 +38,7 @@ namespace KooNan
 		static float lastFrame;
 
 		static double cursorX, cursorY;
+		static double lastCursorX, lastCursorY;
 
 		static Camera mainCamera;
 		static Camera oriCreatingCamera;
@@ -168,6 +169,8 @@ namespace KooNan
 	float GameController::deltaTime = .0f;
 	double GameController::cursorX = .0;
 	double GameController::cursorY = .0;
+	double GameController::lastCursorX = .0;
+	double GameController::lastCursorY = .0;
 
 	Camera GameController::oriCreatingCamera = Camera(0.f, 2.f, 2.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
 	Camera GameController::mainCamera = GameController::oriCreatingCamera;
@@ -306,7 +309,11 @@ namespace KooNan
 			else if (creatingMode == CreatingMode::Selecting)
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 					if (selectedGameObj)
+					{
+						lastCursorX = cursorX;
+						lastCursorY = cursorY;
 						creatingMode = CreatingMode::Editing;
+					}
 		}
 		else if (gameMode == GameMode::Wandering)
 		{

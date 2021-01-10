@@ -205,11 +205,11 @@ namespace KooNan
 
 				}
 				else if (GameController::creatingMode == CreatingMode::Editing) {
-					// 把菜单移动到选中建筑周围
-					ImGui::SetWindowPos(ImVec2(GameController::cursorX, GameController::cursorY));
-
 					ImGui::Begin("Edit Menu", 0, menuFlags);
 					//ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
+					// 把菜单移动到选中建筑周围
+
+					ImGui::SetWindowPos(ImVec2(GameController::lastCursorX, GameController::lastCursorY));
 					if (ImGui::Button("Move", shotcutButtonSize)) {
 						GameController::helperGameObj = GameController::selectedGameObj;
 						GameController::selectedGameObj = NULL;
