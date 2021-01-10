@@ -88,9 +88,20 @@ namespace KooNan
 			return parallel_light.direction;
 		}
 
+		unsigned int numOfPointLight()
+		{
+			return point_lights.size();
+		}
 
+		PointLight* getPointLightAt(unsigned int idx)
+		{
+			return &(point_lights[idx]);
+		}
 
-
+		DirLight* getDirectionLight()
+		{
+			return &parallel_light;
+		}
 	};
 }
 #endif // !LIGHT_H

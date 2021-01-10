@@ -156,6 +156,9 @@ namespace KooNan
 						GameController::changeGameModeTo(GameMode::Wandering);
 					}
 				}
+				if (ImGui::Button("Back Home", shotcutButtonSize)) {
+					GameController::mainCamera = GameController::oriCreatingCamera;
+				}
 				break;
 			case GameMode::Pause:
 				ImGui::SetWindowPos(ImVec2((Common::SCR_WIDTH - menuWidth) / 2, Common::SCR_HEIGHT * 2 / 3));
@@ -224,32 +227,57 @@ namespace KooNan
 				}
 				else if (GameController::creatingMode == CreatingMode::EditingLight) {
 					int pageHeight = Common::SCR_HEIGHT / 4;
-					pageHeight = pageHeight < 150 ? 150 : pageHeight;
-					ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
+					pageHeight = pageHeight < 250 ? 250 : pageHeight;
+					ImVec2 selectButtonSize((pageHeight - 30) * 2, pageHeight);
 					ImGui::Begin("Select Page", 0, selectPageFlags);
 					ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
 					ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
 
-					if (GameController::mainLight)
-					{
-						/*int i = 0;
-						for (auto pl : GameController::mainLight->GetDirLightDirection()) {
-							if (i) ImGui::SameLine();
-
-							if (p.second->previewImage) {
-								if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
-									GameController::selectedModel = p.first;
-									GameController::creatingMode = CreatingMode::Placing;
-								}
-							}
-							else {
-								if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
-									GameController::selectedModel = p.first;
-									GameController::creatingMode = CreatingMode::Placing;
-								}
-							}
-							i++;
-						}*/
+					static vector<PointLight*> pls;
+					static DirLight* dl = NULL;
+					if (GameController::mainLight) {
+						unsigned int num = GameController::mainLight->numOfPointLight();
+						if (pls.size() != num) {
+							pls.clear();
+							for (unsigned int i = 0; i < num; i++)
+								pls.push_back(GameController::mainLight->getPointLightAt(i));
+						}
+						if (dl == NULL)
+							dl = GameController::mainLight->getDirectionLight();
+						
+						unsigned int i = 0;
+						for (i = 0; i < num; i++) {
+							if (i)ImGui::SameLine();
+							ImGui::BeginChild(i + 1, ImVec2(selectButtonSize.x, selectButtonSize.y));
+							ImGui::SliderFloat("X", &pls[i]->position.x, -100.f, 100.f);
+							ImGui::SliderFloat("Y", &pls[i]->position.y, -100.f, 100.f);
+							ImGui::SliderFloat("Z", &pls[i]->position.z, -100.f, 100.f);
+							ImGui::SliderFloat("R Ambient", &pls[i]->ambient.r, 0.f, 1.f);
+							ImGui::SliderFloat("G Ambient", &pls[i]->ambient.g, 0.f, 1.f);
+							ImGui::SliderFloat("B Ambient", &pls[i]->ambient.b, 0.f, 1.f);
+							ImGui::SliderFloat("R Diffuse", &pls[i]->diffuse.r, 0.f, 1.f);
+							ImGui::SliderFloat("G Diffuse", &pls[i]->diffuse.g, 0.f, 1.f);
+							ImGui::SliderFloat("B Diffuse", &pls[i]->diffuse.b, 0.f, 1.f);
+							ImGui::SliderFloat("R Specular", &pls[i]->specular.r, 0.f, 1.f);
+							ImGui::SliderFloat("G Specular", &pls[i]->specular.g, 0.f, 1.f);
+							ImGui::SliderFloat("B Specular", &pls[i]->specular.b, 0.f, 1.f);
+							ImGui::EndChild();
+						}
+						if (i)ImGui::SameLine();
+						ImGui::BeginChild(i, ImVec2(selectButtonSize.x, selectButtonSize.y));
+						ImGui::SliderFloat("X", &dl->direction.x, -100.f, 100.f);
+						ImGui::SliderFloat("Y", &dl->direction.y, -100.f, 100.f);
+						ImGui::SliderFloat("Z", &dl->direction.z, -100.f, 100.f);
+						ImGui::SliderFloat("R Ambient", &dl->ambient.r, 0.f, 1.f);
+						ImGui::SliderFloat("G Ambient", &dl->ambient.g, 0.f, 1.f);
+						ImGui::SliderFloat("B Ambient", &dl->ambient.b, 0.f, 1.f);
+						ImGui::SliderFloat("R Diffuse", &dl->diffuse.r, 0.f, 1.f);
+						ImGui::SliderFloat("G Diffuse", &dl->diffuse.g, 0.f, 1.f);
+						ImGui::SliderFloat("B Diffuse", &dl->diffuse.b, 0.f, 1.f);
+						ImGui::SliderFloat("R Specular", &dl->specular.r, 0.f, 1.f);
+						ImGui::SliderFloat("G Specular", &dl->specular.g, 0.f, 1.f);
+						ImGui::SliderFloat("B Specular", &dl->specular.b, 0.f, 1.f);
+						ImGui::EndChild();
 					}
 
 					ImGui::End();
@@ -260,12 +288,18 @@ namespace KooNan
 					// 把菜单移动到选中建筑周围
 
 					ImGui::SetWindowPos(ImVec2(GameController::lastCursorX, GameController::lastCursorY));
-					if (ImGui::Button("Move", shotcutButtonSize)) {
+					if (ImGui::Button("Transform", shotcutButtonSize)) {
 						GameController::helperGameObj = GameController::selectedGameObj;
 						GameController::selectedGameObj = NULL;
 						GameController::creatingMode = CreatingMode::Placing;
 					}
 					if (ImGui::Button("Delete", shotcutButtonSize)) {
+						auto itr = GameObject::gameObjList.begin();
+						for (; itr != GameObject::gameObjList.end(); ++itr)
+							if (*itr == GameController::selectedGameObj)
+								break;
+						GameObject::gameObjList.erase(itr);
+						delete GameController::selectedGameObj;
 						GameController::selectedGameObj = NULL;
 						GameController::creatingMode = CreatingMode::Selecting;
 					}
