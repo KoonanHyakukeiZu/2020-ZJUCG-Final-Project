@@ -15,7 +15,7 @@ namespace KooNan
 		static std::list<GameObject*> gameObjList; // 储存所有游戏物体
 	public:
 		glm::vec3 pos; // 位移
-		glm::mat4 rot; // 自旋
+		float rotY; // 自旋
 		glm::vec3 sca; // 缩放
 		glm::mat4 modelMat;
 		bool IsPickable;//是否可被拾取
@@ -23,7 +23,7 @@ namespace KooNan
 		Model* model;
 	public:
 		GameObject(const std::string& modelPath, const glm::mat4& modelMat = glm::mat4(1.0f), bool IsPickable = false)
-			: pos(glm::vec3(0.0f)), rot(glm::mat4(1.0f)), sca(glm::vec3(1.0f))
+			: pos(glm::vec3(0.0f)), rotY(0.0f), sca(glm::vec3(1.0f))
 		{
 			this->modelMat = modelMat;
 			this->IsPickable = IsPickable;
@@ -46,8 +46,8 @@ namespace KooNan
 
 		void Update()
 		{
-			modelMat = rot * glm::mat4(1.0f); // 自旋
-			modelMat = glm::translate(modelMat, pos); // 位移
+			modelMat = glm::translate(glm::mat4(1.0f), pos); // 位移
+			modelMat = glm::rotate(modelMat, rotY, glm::vec3(0.0f, 1.0f, 0.0f));
 			modelMat = glm::scale(modelMat, sca); // 缩放
 		}
 

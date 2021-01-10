@@ -134,7 +134,10 @@ namespace KooNan
 			float relativeZ = z + chunk_size / 2;
 			int gridX = (int)(relativeX / chunk_size);
 			int gridZ = (int)(relativeZ / chunk_size);
-			return all_terrain_chunks[gridX*width + gridZ].GetTerrainHeight(x, z);
+			if (gridX != 0 || gridZ != 0)
+				throw "Bad";
+			return all_terrain_chunks[gridX * width + gridZ].GetTerrainHeight(x, z);
+			
 		}
 	private:
 		void InitScene(vector<string> ground_path)

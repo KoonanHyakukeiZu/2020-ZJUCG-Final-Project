@@ -241,10 +241,7 @@ namespace KooNan
 				if (ctrlPressedLast)
 					if (helperGameObj)
 					{
-						glm::mat4 rot = glm::rotate(helperGameObj->rot,
-							glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
-						helperGameObj->rot = rot;
-						helperGameObj->Update();
+						helperGameObj->rotY += glm::radians(yoffset);
 					}
 					else;
 				else
@@ -253,15 +250,6 @@ namespace KooNan
 				mainCamera.ProcessMouseScroll(HEIGHT_CHANGE, yoffset);
 		else if(gameMode == GameMode::Wandering)
 			mainCamera.ProcessMouseScroll(FOVY_CHANGE, yoffset);
-		/*if(!ctrlPressedLast)
-			mainCamera.ProcessMouseScroll(gameMode == GameMode::Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
-		else if(gameMode == GameMode::Creating && creatingMode == CreatingMode::Placing)
-			if (helperGameObj)
-			{
-				glm::mat4 modelMat = glm::rotate(helperGameObj->modelMat,
-					glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
-				helperGameObj->modelMat = modelMat;
-			}*/
 	}
 
 	void GameController::processInput(GLFWwindow* window)
@@ -291,6 +279,27 @@ namespace KooNan
 
 			if (creatingMode == CreatingMode::Placing)
 			{
+				static float scalStepWise = 1.1f;
+				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+					if (helperGameObj)
+						helperGameObj->sca.y *= scalStepWise;
+				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+					if (helperGameObj)
+						helperGameObj->sca.y /= scalStepWise;
+				if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+					if (helperGameObj)
+					{
+						helperGameObj->sca.x /= scalStepWise;
+						helperGameObj->sca.z /= scalStepWise;
+					}
+				if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+					if (helperGameObj)
+					{
+						helperGameObj->sca.x *= scalStepWise;
+						helperGameObj->sca.z *= scalStepWise;
+					}
+
+
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 					if (helperGameObj) // 确定放置物体
 						helperGameObj = NULL;
