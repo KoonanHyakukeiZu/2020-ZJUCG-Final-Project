@@ -83,6 +83,10 @@ namespace KooNan
 				SomeEntities.setVec3(s_lights + std::to_string(i) + s_specular, point_lights[i].specular);
 			}
 		}
+		glm::vec3 GetDirLightDirection()
+		{
+			return parallel_light.direction;
+		}
 
 
 
