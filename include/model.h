@@ -36,8 +36,12 @@ class Model
 {
 public:
 	static std::unordered_map<std::string, Model*> modelList; // 储存所有模型，供物体使用
-	static std::unordered_map<std::string, Model*> basicVoxelList; // 基本体素将被注册在这里（modelList仍然存在），可以进行纹理编辑
+	static std::unordered_map<std::string, Model*> basicVoxelList; // 储存所有基本体素模型
 public:
+	enum ModelType
+	{
+		ComplexModel, BasicVoxel
+	};
 	// model data 
 	vector<Texture> textures_loaded; // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 	vector<Mesh> meshes;
@@ -46,10 +50,13 @@ public:
 	Texture* previewImage;
 
 	// constructor, expects a filepath to a 3D model.
-	Model(string const& path, bool gamma = false) : gammaCorrection(gamma)
+	Model(string const& path, ModelType type = ModelType::ComplexModel, bool gamma = false) : gammaCorrection(gamma)
 	{
 		loadModel(FileSystem::getPath(path));
-		modelList[FileSystem::getPath(path)] = this;
+		if(type == ModelType::ComplexModel)
+			modelList[FileSystem::getPath(path)] = this;
+		else if(type == ModelType::BasicVoxel)
+			basicVoxelList[FileSystem::getPath(path)] = this;
 	}
 
 	// draws the model, and thus all its meshes
@@ -60,7 +67,7 @@ public:
 	}
 
 	// load models from a path, which contains several folder of models.
-	static int loadModelsFromPath(string const& modelsPath)
+	static int loadModelsFromPath(string const& modelsPath, ModelType type)
 	{
 		using namespace filesystem;
 		int totalModels = 0;
@@ -74,29 +81,8 @@ public:
 			cout << "Error: \"" << modelsPath << "\" is not a directory." << endl;
 			return 0;
 		}
-		totalModels = loadModelsFromPath_r(basePath);
+		totalModels = loadModelsFromPath_r(basePath, type);
 		cout << totalModels << " models loaded." << endl;
-		cout << "==============================================" << endl;
-		return totalModels;
-	}
-
-	// load basic voxel from a path
-	static int loadBasicVoxelsFromPath(string const& basicVoxelPath)
-	{
-		using namespace filesystem;
-		int totalModels = 0;
-		path basePath(basicVoxelPath);
-		cout << "Loading models from path: " << basicVoxelPath << endl;
-		if (!exists(basePath)) {
-			cout << "Error: Failed to load models from path: " << basicVoxelPath << endl;
-			return 0;
-		}
-		else if (directory_entry(basePath).status().type() != file_type::directory) {
-			cout << "Error: \"" << basicVoxelPath << "\" is not a directory." << endl;
-			return 0;
-		}
-		totalModels = loadBasicVoxelsFromPath_r(basePath);
-		cout << totalModels << " basic voxels loaded." << endl;
 		cout << "==============================================" << endl;
 		return totalModels;
 	}
@@ -106,7 +92,7 @@ private:
 	// This function should only be called by function loadModelsFromPath.
 	//  Used to recursively load all objs in the folder.
 	//  @retval: number of objects loaded.
-	static int loadModelsFromPath_r(filesystem::path basePath)
+	static int loadModelsFromPath_r(filesystem::path basePath, ModelType type)
 	{
 		using namespace filesystem;
 		directory_iterator fileList1(basePath), fileList2(basePath);
@@ -123,7 +109,7 @@ private:
 		}
 		if (modelFilename != "") {
 			cout << "Model " + modelFilename + " found." << endl;
-			Model* tmpModel = new Model(FileSystem::getPath(modelFilename));
+			Model* tmpModel = new Model(FileSystem::getPath(modelFilename), type);
 			if (previewFilename != "") {
 				tmpModel->previewImage = new Texture;
 				tmpModel->previewImage->id = PreviewImageFromFile(FileSystem::getPath(previewFilename));
@@ -137,39 +123,7 @@ private:
 		// Second pass, look into child directories.
 		for (auto& it : fileList2) {
 			if (directory_entry(it.path()).status().type() != file_type::directory) continue;
-			totalModels += loadModelsFromPath_r(it.path());
-		}
-		return totalModels;
-	}
-
-	static int loadBasicVoxelsFromPath_r(filesystem::path basePath)
-	{
-		using namespace filesystem;
-		directory_iterator fileList1(basePath), fileList2(basePath);
-		int totalModels = 0;
-		cout << "Looking into " << basePath << " ..." << endl;
-
-		// First pass, check if there is an obj file.
-		string modelFilename = "";
-		for (auto& it : fileList1) {
-			path curPath = it.path();
-			if (directory_entry(curPath).status().type() != file_type::regular) continue;
-			if (curPath.extension() == ".obj" && curPath.filename() != "Bridge-2.obj") modelFilename = curPath.string();
-		}
-		if (modelFilename != "") {
-			cout << "Basic voxels " + modelFilename + " found." << endl;
-			string key = FileSystem::getPath(modelFilename);
-			if (modelList.find(key) == modelList.end())
-				;
-			else
-				basicVoxelList[key] = modelList[key];
-			totalModels++;
-		}
-
-		// Second pass, look into child directories.
-		for (auto& it : fileList2) {
-			if (directory_entry(it.path()).status().type() != file_type::directory) continue;
-			totalModels += loadBasicVoxelsFromPath_r(it.path());
+			totalModels += loadModelsFromPath_r(it.path(), type);
 		}
 		return totalModels;
 	}
