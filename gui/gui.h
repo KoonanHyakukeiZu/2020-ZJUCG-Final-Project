@@ -154,7 +154,7 @@ namespace KooNan
 			ImGui::End();
 
 			if (GameController::gameMode == GameMode::Creating) {
-				if (GameController::creatingMode == CreatingMode::Viewing) {
+				if (GameController::creatingMode == CreatingMode::Placing) {
 					int pageHeight = Common::SCR_HEIGHT / 4;
 					pageHeight = pageHeight < 150 ? 150 : pageHeight;
 					ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
@@ -209,7 +209,7 @@ namespace KooNan
 
 					}
 					if (ImGui::Button("OK", shotcutButtonSize)) {
-						GameController::creatingMode = CreatingMode::Viewing;
+						GameController::creatingMode = CreatingMode::Placing;
 					}
 					ImGui::End();
 				}
@@ -217,7 +217,7 @@ namespace KooNan
 					ImGui::Begin("Edit Menu", 0, menuFlags);
 					ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
 					if (ImGui::Button("Cancel", shotcutButtonSize)) {
-						GameController::creatingMode = CreatingMode::Viewing;
+						GameController::creatingMode = CreatingMode::Placing;
 						GameController::selectedModel = "";
 					}
 					ImGui::End();
