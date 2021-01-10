@@ -24,7 +24,6 @@ namespace KooNan
 	{
 		Placing, // 放置模式
 		Editing, // 编辑模式（编辑现有模型
-		Viewing // 观察模式
 	};
 	enum class MouseMode {
 		GUIMode, CameraMode
@@ -143,7 +142,7 @@ namespace KooNan
 			}
 			else if (gameMode == GameMode::Creating) {
 				GameController::mainCamera = GameController::oriCreatingCamera;
-				GameController::creatingMode = CreatingMode::Viewing;
+				GameController::creatingMode = CreatingMode::Placing;
 			}
 		}
 		static void revertGameMode() {
@@ -174,7 +173,7 @@ namespace KooNan
 
 	GameMode GameController::gameMode = GameMode::Creating;
 	GameMode GameController::lastGameMode = GameMode::Title;
-	CreatingMode GameController::creatingMode = CreatingMode::Viewing;
+	CreatingMode GameController::creatingMode = CreatingMode::Placing;
 	int GameController::sthSelected = 0;
 
 	bool GameController::firstMouse = true;
