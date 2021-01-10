@@ -60,6 +60,7 @@ namespace KooNan
 		static CreatingMode creatingMode; // 创造模式子模式
 		static bool isRecordingLast; // 上一次循环是否正在录制
 		static bool isRecording; // 是否正在录制
+		static Model::ModelType modelType; // 模型列表的类型
 		// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
@@ -202,6 +203,8 @@ namespace KooNan
 
 	bool GameController::isRecordingLast = false;
 	bool GameController::isRecording = false;
+
+	Model::ModelType GameController::modelType = Model::ModelType::ComplexModel;
 
 	bool GameController::firstMouse = true;
 	bool GameController::ctrlPressedLast = false;
