@@ -129,6 +129,12 @@ namespace KooNan
 				if (ImGui::Button("Save", shotcutButtonSize)) {
 					// todo
 				}
+				if (GameController::creatingMode == CreatingMode::Selecting && ImGui::Button("Place", shotcutButtonSize)) {
+					GameController::creatingMode = CreatingMode::Placing;
+				}
+				else if (GameController::creatingMode == CreatingMode::Placing && ImGui::Button("Select", shotcutButtonSize)) {
+					GameController::creatingMode = CreatingMode::Selecting;
+				}
 				if (ImGui::Button("Wander", shotcutButtonSize)) {
 					// 检查当前是否选中了建筑且位置不合法
 					if (1) {
@@ -199,17 +205,23 @@ namespace KooNan
 
 				}
 				else if (GameController::creatingMode == CreatingMode::Editing) {
-					// todo：把菜单移动到选中建筑周围
-					ImGui::Begin("Edit Menu", 0, menuFlags);
-					ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
-					if (ImGui::Button("Move", shotcutButtonSize)) {
+					// 把菜单移动到选中建筑周围
+					ImGui::SetWindowPos(ImVec2(GameController::cursorX, GameController::cursorY));
 
+					ImGui::Begin("Edit Menu", 0, menuFlags);
+					//ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
+					if (ImGui::Button("Move", shotcutButtonSize)) {
+						GameController::helperGameObj = GameController::selectedGameObj;
+						GameController::selectedGameObj = NULL;
+						GameController::creatingMode = CreatingMode::Placing;
 					}
 					if (ImGui::Button("Delete", shotcutButtonSize)) {
-
+						GameController::selectedGameObj = NULL;
+						GameController::creatingMode = CreatingMode::Selecting;
 					}
 					if (ImGui::Button("OK", shotcutButtonSize)) {
-						GameController::creatingMode = CreatingMode::Placing;
+						GameController::selectedGameObj = NULL;
+						GameController::creatingMode = CreatingMode::Selecting;
 					}
 					ImGui::End();
 				}

@@ -4,7 +4,7 @@
 #include <FileSystem.h>
 #include <Model.h>
 
-#include <vector>
+#include <list>
 
 namespace KooNan
 {
@@ -12,9 +12,7 @@ namespace KooNan
 	{
 		// 全局变量
 	public:
-		static std::vector<GameObject*> gameObjList; // 储存所有游戏物体
-		static GameObject* helperGameObj; // 辅助游戏物体
-		static std::vector<GameObject*>::iterator selectedGameObj;
+		static std::list<GameObject*> gameObjList; // 储存所有游戏物体
 	public:
 		glm::vec3 pos; // 位移
 		glm::mat4 rot; // 自旋
@@ -122,7 +120,5 @@ namespace KooNan
 		}
 	};
 
-	std::vector<GameObject*> GameObject::gameObjList;
-	GameObject* GameObject::helperGameObj = NULL;
-	std::vector<GameObject*>::iterator GameObject::selectedGameObj;
+	std::list<GameObject*> GameObject::gameObjList;
 }

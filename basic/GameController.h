@@ -23,6 +23,7 @@ namespace KooNan
 	enum class CreatingMode
 	{
 		Placing, // 放置模式
+		Selecting, // 选择模式
 		Editing, // 编辑模式（编辑现有模型
 	};
 	enum class MouseMode {
@@ -47,6 +48,8 @@ namespace KooNan
 	public:
 		static string selectedModel; // 当前选择的模组
 		static GameMode gameMode; // 游戏模式
+		static GameObject* helperGameObj; // 辅助游戏物体
+		static GameObject* selectedGameObj; // 光标移动过程中选中的游戏物体
 		static GameMode lastGameMode;
 		static CreatingMode creatingMode; // 创造模式子模式
 		static int sthSelected; // 场景中有物体被拾取
@@ -118,16 +121,16 @@ namespace KooNan
 				glm::vec3 t = findFocusInScene();
 				if (t != mainCamera.Position)
 				{
-					if (selectedModel != "" && GameObject::helperGameObj == NULL)
+					if (selectedModel != "" && helperGameObj == NULL)
 					{// 新建
 						glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), t);
-						GameObject::helperGameObj = new GameObject(selectedModel.c_str(), modelMat, true);
+						helperGameObj = new GameObject(selectedModel.c_str(), modelMat, true);
 						selectedModel = "";
 					}
-					else if (GameObject::helperGameObj)
+					else if (helperGameObj)
 					{// 移动
-						GameObject::helperGameObj->pos = t; 
-						GameObject::helperGameObj->Update();
+						helperGameObj->pos = t; 
+						helperGameObj->Update();
 					}
 				}
 			}
@@ -142,7 +145,7 @@ namespace KooNan
 			}
 			else if (gameMode == GameMode::Creating) {
 				GameController::mainCamera = GameController::oriCreatingCamera;
-				GameController::creatingMode = CreatingMode::Placing;
+				GameController::creatingMode = CreatingMode::Selecting;
 			}
 		}
 		static void revertGameMode() {
@@ -173,7 +176,7 @@ namespace KooNan
 
 	GameMode GameController::gameMode = GameMode::Creating;
 	GameMode GameController::lastGameMode = GameMode::Title;
-	CreatingMode GameController::creatingMode = CreatingMode::Placing;
+	CreatingMode GameController::creatingMode = CreatingMode::Selecting;
 	int GameController::sthSelected = 0;
 
 	bool GameController::firstMouse = true;
@@ -184,6 +187,8 @@ namespace KooNan
 	Scene* GameController::mainScene = NULL;
 
 	string GameController::selectedModel = "";
+	GameObject* GameController::helperGameObj = NULL;
+	GameObject* GameController::selectedGameObj = NULL;
 
 	// 函数定义
 	void GameController::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -217,7 +222,8 @@ namespace KooNan
 			mainCamera.ProcessMouseMovement(xoffset, yoffset);
 		}
 		else if (gameMode == GameMode::Creating) {
-			if (creatingMode == CreatingMode::Placing)
+			if (creatingMode == CreatingMode::Editing);
+			else
 			{
 				static float viewDist = 5.0f;
 				mainCamera.ProcessMouseMovement(xoffset, yoffset, mainCamera.Position + viewDist * mainCamera.Front);
@@ -230,12 +236,12 @@ namespace KooNan
 		if (gameMode == GameMode::Creating)
 			if (creatingMode == CreatingMode::Placing)
 				if (ctrlPressedLast)
-					if (GameObject::helperGameObj)
+					if (helperGameObj)
 					{
-						glm::mat4 rot = glm::rotate(GameObject::helperGameObj->rot,
+						glm::mat4 rot = glm::rotate(helperGameObj->rot,
 							glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
-						GameObject::helperGameObj->rot = rot;
-						GameObject::helperGameObj->Update();
+						helperGameObj->rot = rot;
+						helperGameObj->Update();
 					}
 					else;
 				else
@@ -247,11 +253,11 @@ namespace KooNan
 		/*if(!ctrlPressedLast)
 			mainCamera.ProcessMouseScroll(gameMode == GameMode::Wandering ? FOVY_CHANGE : HEIGHT_CHANGE, yoffset);
 		else if(gameMode == GameMode::Creating && creatingMode == CreatingMode::Placing)
-			if (GameObject::helperGameObj)
+			if (helperGameObj)
 			{
-				glm::mat4 modelMat = glm::rotate(GameObject::helperGameObj->modelMat,
+				glm::mat4 modelMat = glm::rotate(helperGameObj->modelMat,
 					glm::radians((float)yoffset), glm::vec3(0.0f, 1.0f, 0.0f));
-				GameObject::helperGameObj->modelMat = modelMat;
+				helperGameObj->modelMat = modelMat;
 			}*/
 	}
 
@@ -283,20 +289,24 @@ namespace KooNan
 			if (creatingMode == CreatingMode::Placing)
 			{
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-					if (GameObject::helperGameObj) {
-						// 确定放置物体
-						GameObject::helperGameObj = NULL;
-						GameController::creatingMode = CreatingMode::Editing;
-					}
-					else;
+					if (helperGameObj) // 确定放置物体
+						helperGameObj = NULL;
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-					if (GameObject::helperGameObj) // 移除辅助物体
+					if (helperGameObj) // 移除辅助物体
 					{
-						GameObject::gameObjList.pop_back();
-						delete GameObject::helperGameObj;
-						GameObject::helperGameObj = NULL;
+						auto itr = GameObject::gameObjList.begin();
+						for (; itr != GameObject::gameObjList.end(); ++itr)
+							if (*itr == helperGameObj)
+								break;
+						GameObject::gameObjList.erase(itr);
+						delete helperGameObj;
+						helperGameObj = NULL;
 					}
 			}
+			else if (creatingMode == CreatingMode::Selecting)
+				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+					if (selectedGameObj)
+						creatingMode = CreatingMode::Editing;
 		}
 		else if (gameMode == GameMode::Wandering)
 		{
