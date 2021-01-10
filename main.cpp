@@ -157,6 +157,7 @@ int main()
 	
 	//Model* planet = new Model(FileSystem::getPath("model\\rsc\\Memorial Gate\\Memorial Gates.obj"));
 	Model::loadModelsFromPath("model\\");
+	Model::loadBasicVoxelsFromPath("model\\basic voxel\\");
 
 	// Object
 	// ------------------------------------
