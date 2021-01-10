@@ -145,7 +145,8 @@ int main()
 		glm::vec3(0.4f, 0.4f, 0.4f)
 	};
 	Light main_light(parallel, lightShader);
-	addlights(main_light);// Add four point lights
+	GameController::mainLight = &main_light; // 这个设计实在不行
+	//addlights(main_light);// Add four point lights
 
 
 

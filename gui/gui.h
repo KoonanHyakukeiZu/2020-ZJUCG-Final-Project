@@ -144,6 +144,12 @@ namespace KooNan
 				else if (GameController::creatingMode == CreatingMode::Placing && ImGui::Button("Select", shotcutButtonSize)) {
 					GameController::creatingMode = CreatingMode::Selecting;
 				}
+				if (GameController::creatingMode == CreatingMode::Selecting && ImGui::Button("Edit Light", shotcutButtonSize)) {
+					GameController::creatingMode = CreatingMode::EditingLight;
+				}
+				else if (GameController::creatingMode == CreatingMode::EditingLight&& ImGui::Button("Select", shotcutButtonSize)) {
+					GameController::creatingMode = CreatingMode::Selecting;
+				}
 				if (ImGui::Button("Wander", shotcutButtonSize)) {
 					// 检查当前是否选中了建筑且位置不合法
 					if (1) {
@@ -215,6 +221,37 @@ namespace KooNan
 
 					ImGui::End();
 
+				}
+				else if (GameController::creatingMode == CreatingMode::EditingLight) {
+					int pageHeight = Common::SCR_HEIGHT / 4;
+					pageHeight = pageHeight < 150 ? 150 : pageHeight;
+					ImVec2 selectButtonSize((pageHeight - 30) / 3 * 4, pageHeight - 30);
+					ImGui::Begin("Select Page", 0, selectPageFlags);
+					ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
+					ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
+					int i = 0;
+					for (pair<const string, Model*> p :
+						(GameController::modelType == Model::ModelType::ComplexModel ?
+							Model::modelList :
+							Model::basicVoxelList)) {
+						if (i) ImGui::SameLine();
+
+						if (p.second->previewImage) {
+							if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
+								GameController::selectedModel = p.first;
+								GameController::creatingMode = CreatingMode::Placing;
+							}
+						}
+						else {
+							if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
+								GameController::selectedModel = p.first;
+								GameController::creatingMode = CreatingMode::Placing;
+							}
+						}
+						i++;
+					}
+
+					ImGui::End();
 				}
 				else if (GameController::creatingMode == CreatingMode::Editing) {
 					ImGui::Begin("Edit Menu", 0, menuFlags);

@@ -2,6 +2,7 @@
 #include <Camera.h>
 #include <model.h>
 #include <scene.h>
+#include <light.h>
 #include <VideoRecord.h>
 
 #include <glm/glm.hpp>
@@ -26,7 +27,8 @@ namespace KooNan
 	{
 		Placing, // 放置模式
 		Selecting, // 选择模式
-		Editing, // 编辑模式（编辑现有模型
+		Editing, // 编辑模型模式
+		EditingLight, // 编辑光照
 	};
 	enum class MouseMode {
 		GUIMode, CameraMode
@@ -46,6 +48,7 @@ namespace KooNan
 		static Camera oriCreatingCamera;
 
 		static Scene* mainScene;
+		static Light* mainLight;
 		
 		static string selectedModel; // 当前选择的模组
 		static GameObject* helperGameObj; // 辅助游戏物体
@@ -157,20 +160,28 @@ namespace KooNan
 			}
 				
 		}
-		static void changeGameModeTo(GameMode newmode) {
+		static void changeGameModeTo(GameMode newmode) 
+		{
 			lastGameMode = gameMode;
 			gameMode = newmode;
 
 			if (gameMode == GameMode::Wandering) {
 				altPressedLast = true;
 			}
-			else if (gameMode == GameMode::Creating) {
+			else if (gameMode == GameMode::Creating) 
+			{
 				GameController::mainCamera = GameController::oriCreatingCamera;
 				GameController::creatingMode = CreatingMode::Selecting;
 			}
 		}
-		static void revertGameMode() {
+		static void revertGameMode() 
+		{
 			changeGameModeTo(lastGameMode);
+		}
+		static void addLightToMainLight(const PointLight& pl) 
+		{
+			if (mainLight == NULL)return;
+			mainLight->AddPointLight(pl);
 		}
 	private:
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -212,6 +223,7 @@ namespace KooNan
 	bool GameController::midBtnPressedLast = false;
 
 	Scene* GameController::mainScene = NULL;
+	Light* GameController::mainLight = NULL;
 
 	string GameController::selectedModel = "";
 	GameObject* GameController::helperGameObj = NULL;
@@ -306,22 +318,22 @@ namespace KooNan
 				static float scalStepWise = 1.1f;
 				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 					if (helperGameObj)
-						helperGameObj->sca.y *= scalStepWise;
+						helperGameObj->sca.z *= scalStepWise;
 				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 					if (helperGameObj)
-						helperGameObj->sca.y /= scalStepWise;
+						helperGameObj->sca.z /= scalStepWise;
 				if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 					if (helperGameObj)
-					{
 						helperGameObj->sca.x /= scalStepWise;
-						helperGameObj->sca.z /= scalStepWise;
-					}
 				if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 					if (helperGameObj)
-					{
 						helperGameObj->sca.x *= scalStepWise;
-						helperGameObj->sca.z *= scalStepWise;
-					}
+				if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+					if (helperGameObj)
+						helperGameObj->sca.y *= scalStepWise;
+				if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+					if (helperGameObj)
+						helperGameObj->sca.y /= scalStepWise;
 
 
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)

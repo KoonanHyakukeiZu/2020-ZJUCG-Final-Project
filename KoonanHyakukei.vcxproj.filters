@@ -125,5 +125,8 @@
     <ClInclude Include="basic\VideoRecord.h">
       <Filter>头文件\basic</Filter>
     </ClInclude>
+    <ClInclude Include="landscape\light.h">
+      <Filter>头文件\landscape</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

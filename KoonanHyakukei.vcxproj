@@ -186,6 +186,7 @@
     <ClInclude Include="include\mesh.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="landscape\light.h" />
     <ClInclude Include="landscape\scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
