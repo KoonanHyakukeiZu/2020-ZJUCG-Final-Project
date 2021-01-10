@@ -24,7 +24,9 @@
 #include <light.h>
 #include <Texture.h>
 #include <Render.h>
+#include <VideoRecord.h>
 #include <iostream>
+
 
 using namespace KooNan;
 using namespace glm;
@@ -179,6 +181,10 @@ int main()
 	Water_Frame_Buffer waterfb;
 	Render main_renderer(main_scene, main_light, waterfb, mouse_picking);
 	main_renderer.InitObjectLighting(modelShader);
+
+	
+	VideoRecord::RecordInit(60, Common::SCR_WIDTH, Common::SCR_HEIGHT);
+	
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -210,11 +216,13 @@ int main()
 
 		GUI::newFrame();
 		GUI::drawWidgets();
+		VideoRecord::GrabFrame();
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
+	
 	// GameObject clear
 	for (GameObject* obj : GameObject::gameObjList)
 		delete obj;
@@ -224,6 +232,7 @@ int main()
 		delete itr->second;
 	Model::modelList.clear();
 	waterfb.cleanUp();
+	VideoRecord::EndRecord();
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
