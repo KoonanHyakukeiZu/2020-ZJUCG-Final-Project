@@ -23,7 +23,7 @@ namespace KooNan
 		Model* model;
 	public:
 		GameObject(const std::string& modelPath, const glm::mat4& modelMat = glm::mat4(1.0f), bool IsPickable = false)
-			: pos(glm::vec3(0.0f)), rotY(0.0f), sca(glm::vec3(1.0f))
+			: pos(glm::vec3(0.0f)), rotY(0.0f), sca(glm::vec3(0.2f))
 		{
 			this->modelMat = modelMat;
 			this->IsPickable = IsPickable;

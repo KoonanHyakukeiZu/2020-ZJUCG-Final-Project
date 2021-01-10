@@ -101,11 +101,12 @@ namespace KooNan
 				if (!hideGui && ImGui::Button("Pause", shotcutButtonSize)) {
 					GameController::changeGameModeTo(GameMode::Pause);
 				}
-				if (!hideGui && ImGui::Button("Begin Record", shotcutButtonSize)) {
-					//changeStateTo(GUIState::Recording);
-					// todo: emit record start
+				if ((!hideGui && !GameController::isRecording && ImGui::Button("Begin Record", shotcutButtonSize)) ||
+					(!hideGui && GameController::isRecording && ImGui::Button("End Record", shotcutButtonSize))) {
+					GameController::isRecording = !GameController::isRecording;
 				}
-				if ((!hideGui && ImGui::Button("Hide UI", shotcutButtonSize)) || (hideGui && ImGui::Button("Show UI", shotcutButtonSize))) {
+				if ((!hideGui && ImGui::Button("Hide UI", shotcutButtonSize)) ||
+					(hideGui && ImGui::Button("Show UI", shotcutButtonSize))) {
 					hideGui = !hideGui;
 				}
 				if (!hideGui && ImGui::Button("Edit Scene", shotcutButtonSize)) {

@@ -122,5 +122,8 @@
     <ClInclude Include="basic\mousepicker.h">
       <Filter>头文件\basic</Filter>
     </ClInclude>
+    <ClInclude Include="basic\VideoRecord.h">
+      <Filter>头文件\basic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

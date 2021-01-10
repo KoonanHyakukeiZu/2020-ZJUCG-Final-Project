@@ -2,6 +2,8 @@
 #include <Camera.h>
 #include <model.h>
 #include <scene.h>
+#include <VideoRecord.h>
+
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 
@@ -44,18 +46,20 @@ namespace KooNan
 		static Camera oriCreatingCamera;
 
 		static Scene* mainScene;
+		
+		static string selectedModel; // 当前选择的模组
+		static GameObject* helperGameObj; // 辅助游戏物体
+		static GameObject* selectedGameObj; // 光标移动过程中选中的游戏物体
+
+		static MousePicker mousePicker;
 
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
-		static string selectedModel; // 当前选择的模组
 		static GameMode gameMode; // 游戏模式
-		static GameObject* helperGameObj; // 辅助游戏物体
-		static GameObject* selectedGameObj; // 光标移动过程中选中的游戏物体
 		static GameMode lastGameMode;
 		static CreatingMode creatingMode; // 创造模式子模式
-		static int sthSelected; // 场景中有物体被拾取
-
-		static MousePicker mousePicker;
+		static bool isRecordingLast; // 上一次循环是否正在录制
+		static bool isRecording; // 是否正在录制
 		// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
@@ -135,6 +139,21 @@ namespace KooNan
 					}
 				}
 			}
+
+			if (!isRecordingLast && isRecording)
+			{// 开始录像
+				isRecordingLast = isRecording;
+				VideoRecord::RecordInit(60, Common::SCR_WIDTH, Common::SCR_HEIGHT);
+			}
+			else if (isRecordingLast && !isRecording)
+			{// 结束录像
+				isRecordingLast = isRecording;
+				VideoRecord::EndRecord();
+			}
+			else if (isRecordingLast && isRecording)
+			{// 录像
+				VideoRecord::GrabFrame();
+			}
 				
 		}
 		static void changeGameModeTo(GameMode newmode) {
@@ -180,7 +199,9 @@ namespace KooNan
 	GameMode GameController::gameMode = GameMode::Creating;
 	GameMode GameController::lastGameMode = GameMode::Title;
 	CreatingMode GameController::creatingMode = CreatingMode::Selecting;
-	int GameController::sthSelected = 0;
+
+	bool GameController::isRecordingLast = false;
+	bool GameController::isRecording = false;
 
 	bool GameController::firstMouse = true;
 	bool GameController::ctrlPressedLast = false;
