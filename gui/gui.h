@@ -229,26 +229,27 @@ namespace KooNan
 					ImGui::Begin("Select Page", 0, selectPageFlags);
 					ImGui::SetWindowPos(ImVec2(10, Common::SCR_HEIGHT - 10 - pageHeight));
 					ImGui::SetWindowSize(ImVec2(Common::SCR_WIDTH - 20, pageHeight));
-					int i = 0;
-					for (pair<const string, Model*> p :
-						(GameController::modelType == Model::ModelType::ComplexModel ?
-							Model::modelList :
-							Model::basicVoxelList)) {
-						if (i) ImGui::SameLine();
 
-						if (p.second->previewImage) {
-							if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
-								GameController::selectedModel = p.first;
-								GameController::creatingMode = CreatingMode::Placing;
+					if (GameController::mainLight)
+					{
+						/*int i = 0;
+						for (auto pl : GameController::mainLight->GetDirLightDirection()) {
+							if (i) ImGui::SameLine();
+
+							if (p.second->previewImage) {
+								if (ImGui::ImageButton((void*)(p.second->previewImage->id), selectButtonSize)) {
+									GameController::selectedModel = p.first;
+									GameController::creatingMode = CreatingMode::Placing;
+								}
 							}
-						}
-						else {
-							if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
-								GameController::selectedModel = p.first;
-								GameController::creatingMode = CreatingMode::Placing;
+							else {
+								if (ImGui::Button("Preview Image not Found", selectButtonSize)) {
+									GameController::selectedModel = p.first;
+									GameController::creatingMode = CreatingMode::Placing;
+								}
 							}
-						}
-						i++;
+							i++;
+						}*/
 					}
 
 					ImGui::End();

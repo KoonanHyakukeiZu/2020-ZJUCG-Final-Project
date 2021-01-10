@@ -147,7 +147,7 @@ int main()
 	};
 	Light main_light(parallel, lightShader);
 	GameController::mainLight = &main_light; // 这个设计实在不行
-	//addlights(main_light);// Add four point lights
+	addlights(main_light);// Add four point lights
 
 
 
