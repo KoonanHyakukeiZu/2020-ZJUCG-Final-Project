@@ -151,15 +151,17 @@ namespace KooNan
 		private:
 			void DrawObjects(Shader& modelShader, glm::vec4 clippling_plane, bool IsAfterPicking)
 			{
+				bool enablePciking = GameController::gameMode == GameMode::Creating &&
+					GameController::creatingMode == CreatingMode::Selecting &&
+					IsAfterPicking && !GameController::isCursorOnGui;
+				if (enablePciking)GameController::selectedGameObj = NULL;
+
 				auto itr = GameObject::gameObjList.begin();
 				for (int i = 0; i < GameObject::gameObjList.size(); i++, ++itr)
 				{
 					bool intersected = false;
-					
 					// 创造模式的放置模式，且没有物体选中，且该物体可以被选中：开启拾取
-					if (GameController::gameMode == GameMode::Creating &&
-						GameController::creatingMode == CreatingMode::Selecting &&
-						IsAfterPicking && !GameController::isCursorOnGui)
+					if (enablePciking)
 					{
 						float hitObjID = mouse_picking.ReadPixel(GameController::cursorX, 
 							Common::SCR_HEIGHT - GameController::cursorY - 22).ObjID;//deviation of y under resolution 1920*1080 maybe 22
