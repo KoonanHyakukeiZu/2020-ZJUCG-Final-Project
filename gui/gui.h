@@ -228,7 +228,7 @@ namespace KooNan
 						i++;
 					}
 
-					checkMouseOnGui(0.f, -1.f, Common::SCR_WIDTH, Common::SCR_HEIGHT);
+					checkMouseOnGui(0.f, -1.f, Common::SCR_WIDTH, Common::SCR_HEIGHT - 2);
 					/*
 					cout << "pos: " << ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y << endl;
 					cout << "size: " << ImGui::GetWindowSize().x << " " << ImGui::GetWindowSize().y << endl;
