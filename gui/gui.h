@@ -228,7 +228,12 @@ namespace KooNan
 						i++;
 					}
 
-					checkMouseOnGui();
+					checkMouseOnGui(0.f, -1.f, Common::SCR_WIDTH, Common::SCR_HEIGHT + 100);
+					/*
+					cout << "pos: " << ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y << endl;
+					cout << "size: " << ImGui::GetWindowSize().x << " " << ImGui::GetWindowSize().y << endl;
+					cout << "windowsize: " << Common::SCR_WIDTH << " " << Common::SCR_HEIGHT << endl;
+					cout << "area: " << ImGui::GetWindowSize().x << " " << Common::SCR_HEIGHT - ImGui::GetWindowPos().y << endl;*/
 					ImGui::End();
 
 				}
@@ -339,9 +344,16 @@ namespace KooNan
 		static const int buttonWidth2 = 100, buttonHeight2 = 17;
 		static const int menuWidth = 200;
 
-		static void checkMouseOnGui()
+		static void checkMouseOnGui(float minx = -1.f, float miny = -1.f, float maxx = -1.f, float maxy = -1.f)
 		{
-			if (ImGui::IsMouseHoveringRect(ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowSize().x + ImGui::GetWindowPos().x, ImGui::GetWindowSize().y + ImGui::GetWindowPos().y))) GameController::isCursorOnGui = true;
+			float mix, miy, max, may;
+			mix = minx >= 0.f ? minx : ImGui::GetWindowPos().x;
+			miy = miny >= 0.f ? miny : ImGui::GetWindowPos().y;
+			max = maxx >= 0.f ? maxx : ImGui::GetWindowPos().x + ImGui::GetWindowSize().x;
+			may = maxy >= 0.f ? maxy : ImGui::GetWindowPos().y + ImGui::GetWindowSize().y;
+			//cout << mix << "," << miy << endl << max << "," << may << endl;
+			if (ImGui::IsMouseHoveringRect(ImVec2(mix, miy), ImVec2(max, may), false)) GameController::isCursorOnGui = true;
+			//if (ImGui::IsMouseHoveringRect(ImVec2(0, 0), ImGui::GetWindowSize())) GameController::isCursorOnGui = true;
 		}
 	};
 	bool GUI::hideGui = false;
