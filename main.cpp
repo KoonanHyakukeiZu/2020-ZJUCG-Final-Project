@@ -183,7 +183,7 @@ int main()
 	Water_Frame_Buffer waterfb;
 	Shadow_Frame_Buffer shadowfb;
 	Render main_renderer(main_scene, main_light, waterfb, mouse_picking, shadowfb);
-	main_renderer.InitObjectLighting(modelShader);
+
 	
 	// render loop
 	// -----------

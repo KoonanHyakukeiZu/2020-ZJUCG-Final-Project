@@ -128,8 +128,8 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     float shadow = ShadowCaculation(FragPosInLightSpace);
 	vec3 result = CalcDirLight(dirLight, norm, viewDir, vec3(totalColor), shadow) * 1.2f;
-    //for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        //result += CalcPointLight(pointLights[i], norm, FragPos, viewDir, vec3(totalColor));  
+    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir, vec3(totalColor));  
     FragColor = vec4(result, 1.0);
 	//FragColor = mix(vec4(skyColor, 1.0), vec4(result, 1.0), visibility);
 }

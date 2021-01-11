@@ -31,12 +31,17 @@ namespace KooNan
 			main_scene.WaterShader.use();
 			main_light.SetLight(main_scene.WaterShader);
 		}
-		void InitObjectLighting(Shader& shader)
+		void InitLighting(Shader& shader)
 		{
 			main_light.SetLight(shader);
 		}
 		void DrawReflection(Shader& modelShader)
 		{
+			main_scene.TerrainShader.use();
+			main_light.SetLight(main_scene.TerrainShader);
+			modelShader.use();
+			InitLighting(modelShader);
+
 			glm::vec4 clipping_plane = glm::vec4(0.0, 1.0, 0.0, -main_scene.getWaterHeight());
 			glEnable(GL_CLIP_DISTANCE0);
 			waterfb.bindReflectionFrameBuffer();
@@ -67,6 +72,11 @@ namespace KooNan
 		}
 		void DrawRefraction(Shader& modelShader)
 		{
+			main_scene.TerrainShader.use();
+			main_light.SetLight(main_scene.TerrainShader);
+			modelShader.use();
+			InitLighting(modelShader);
+
 			glm::vec4 clipping_plane = glm::vec4(0.0, -1.0, 0.0, main_scene.getWaterHeight());
 			glEnable(GL_CLIP_DISTANCE0);
 			waterfb.bindRefractionFrameBuffer();
@@ -87,6 +97,13 @@ namespace KooNan
 		}
 		void DrawAll(Shader& pickingShader,Shader& modelShader, Shader& shadowShader)
 		{
+			main_scene.WaterShader.use();
+			main_light.SetLight(main_scene.WaterShader);
+			main_scene.TerrainShader.use();
+			main_light.SetLight(main_scene.TerrainShader);
+			modelShader.use();
+			InitLighting(modelShader);
+
 			glm::vec4 clipping_plane = glm::vec4(0.0, -1.0, 0.0, 99999.0f);
 
 			// ¿ªÆôÊ°È¡
