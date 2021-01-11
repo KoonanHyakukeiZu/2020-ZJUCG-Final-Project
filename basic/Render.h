@@ -159,7 +159,7 @@ namespace KooNan
 					// 创造模式的放置模式，且没有物体选中，且该物体可以被选中：开启拾取
 					if (GameController::gameMode == GameMode::Creating &&
 						GameController::creatingMode == CreatingMode::Selecting &&
-						IsAfterPicking)
+						IsAfterPicking && !GameController::isCursorOnGui)
 					{
 						float hitObjID = mouse_picking.ReadPixel(GameController::cursorX, 
 							Common::SCR_HEIGHT - GameController::cursorY - 22).ObjID;//deviation of y under resolution 1920*1080 maybe 22

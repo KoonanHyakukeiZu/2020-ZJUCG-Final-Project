@@ -81,6 +81,8 @@ namespace KooNan
 		static void drawWidgets() {
 			static ImVec2 menuButtonSize(buttonWidth1, buttonHeight1);
 			static ImVec2 shotcutButtonSize(buttonWidth2, buttonHeight2);
+			ImVec2 maxpos;
+			GameController::isCursorOnGui = false;
 			ImGui::Begin("Menu", 0, menuFlags);
 			switch (GameController::gameMode)
 			{
@@ -98,6 +100,9 @@ namespace KooNan
 				break;
 			case GameMode::Wandering:
 				ImGui::SetWindowPos(ImVec2(0, 0));
+				maxpos.x = ImGui::GetWindowSize().x + ImGui::GetWindowPos().x;
+				maxpos.y = ImGui::GetWindowSize().y + ImGui::GetWindowPos().y;
+				if (ImGui::IsMouseHoveringRect(ImGui::GetWindowPos(),maxpos)) GameController::isCursorOnGui = true;
 				if (!hideGui && ImGui::Button("Pause", shotcutButtonSize)) {
 					GameController::changeGameModeTo(GameMode::Pause);
 				}
@@ -175,6 +180,7 @@ namespace KooNan
 			default:
 				break;
 			}
+			checkMouseOnGui();
 			ImGui::End();
 
 			if (GameController::gameMode == GameMode::Creating) {
@@ -222,6 +228,12 @@ namespace KooNan
 						i++;
 					}
 
+					checkMouseOnGui(0.f, -1.f, Common::SCR_WIDTH, Common::SCR_HEIGHT + 100);
+					/*
+					cout << "pos: " << ImGui::GetWindowPos().x << " " << ImGui::GetWindowPos().y << endl;
+					cout << "size: " << ImGui::GetWindowSize().x << " " << ImGui::GetWindowSize().y << endl;
+					cout << "windowsize: " << Common::SCR_WIDTH << " " << Common::SCR_HEIGHT << endl;
+					cout << "area: " << ImGui::GetWindowSize().x << " " << Common::SCR_HEIGHT - ImGui::GetWindowPos().y << endl;*/
 					ImGui::End();
 
 				}
@@ -264,7 +276,7 @@ namespace KooNan
 							ImGui::EndChild();
 						}
 						if (i)ImGui::SameLine();
-						ImGui::BeginChild(i, ImVec2(selectButtonSize.x, selectButtonSize.y));
+						ImGui::BeginChild(i + 1, ImVec2(selectButtonSize.x, selectButtonSize.y));
 						ImGui::SliderFloat("X", &dl->direction.x, -100.f, 100.f);
 						ImGui::SliderFloat("Y", &dl->direction.y, -100.f, 100.f);
 						ImGui::SliderFloat("Z", &dl->direction.z, -100.f, 100.f);
@@ -280,10 +292,11 @@ namespace KooNan
 						ImGui::EndChild();
 					}
 
+					checkMouseOnGui();
 					ImGui::End();
 				}
 				else if (GameController::creatingMode == CreatingMode::Editing) {
-					ImGui::Begin("Edit Menu", 0, menuFlags);
+					ImGui::Begin("Edit Menu", 0, menuFlags & ~ImGuiWindowFlags_NoBackground);
 					//ImGui::SetWindowPos(ImVec2(Common::SCR_WIDTH - shotcutButtonSize.x - 10, 0));
 					// 把菜单移动到选中建筑周围
 
@@ -330,6 +343,18 @@ namespace KooNan
 		static const int buttonWidth1 = 200, buttonHeight1 = 30;
 		static const int buttonWidth2 = 100, buttonHeight2 = 17;
 		static const int menuWidth = 200;
+
+		static void checkMouseOnGui(float minx = -1.f, float miny = -1.f, float maxx = -1.f, float maxy = -1.f)
+		{
+			float mix, miy, max, may;
+			mix = minx >= 0.f ? minx : ImGui::GetWindowPos().x;
+			miy = miny >= 0.f ? miny : ImGui::GetWindowPos().y;
+			max = maxx >= 0.f ? maxx : ImGui::GetWindowPos().x + ImGui::GetWindowSize().x;
+			may = maxy >= 0.f ? maxy : ImGui::GetWindowPos().y + ImGui::GetWindowSize().y;
+			//cout << mix << "," << miy << endl << max << "," << may << endl;
+			if (ImGui::IsMouseHoveringRect(ImVec2(mix, miy), ImVec2(max, may), false)) GameController::isCursorOnGui = true;
+			//if (ImGui::IsMouseHoveringRect(ImVec2(0, 0), ImGui::GetWindowSize())) GameController::isCursorOnGui = true;
+		}
 	};
 	bool GUI::hideGui = false;
 	vector<GLuint> GUI::modelTextures, GUI::frameBuffers;
