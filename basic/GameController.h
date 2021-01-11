@@ -66,6 +66,7 @@ namespace KooNan
 		static bool isRecordingLast; // 上一次循环是否正在录制
 		static bool isRecording; // 是否正在录制
 		static Model::ModelType modelType; // 模型列表的类型
+		static bool isCursorOnGui;
 		// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
@@ -94,7 +95,7 @@ namespace KooNan
 			GameController::processInput(window);
 
 			// 创造模式下使用鼠标可以移动相机
-			if (gameMode == GameMode::Creating) {
+			if (gameMode == GameMode::Creating && !isCursorOnGui) {
 
 				if (cursorX <= EDGE_WIDTH)
 					mainCamera.ProcessKeyboard(deltaTime, WEST);
@@ -127,7 +128,7 @@ namespace KooNan
 			}
 
 			// 光标移动时，若有模型选中，显示辅助物体
-			if (gameMode == GameMode::Creating && creatingMode == CreatingMode::Placing)
+			if (gameMode == GameMode::Creating && creatingMode == CreatingMode::Placing && !isCursorOnGui)
 			{
 				glm::vec3 t = findFocusInScene();
 				if (t != mainCamera.Position)
@@ -220,6 +221,8 @@ namespace KooNan
 	bool GameController::isRecording = false;
 
 	Model::ModelType GameController::modelType = Model::ModelType::ComplexModel;
+
+	bool GameController::isCursorOnGui = false;
 
 	bool GameController::firstMouse = true;
 	bool GameController::ctrlPressedLast = false;
