@@ -34,7 +34,7 @@ namespace KooNan
 		Shader& WaterShader;
 		Shader& SkyShader;
 		float waterMoveFactor;
-		unsigned int reflect_text, refract_text, dudvMap, normalMap, depthMap;
+		unsigned int reflect_text, refract_text, dudvMap, normalMap, depthMap, shadowMap;
 	public:
 		/*
 		float chunk_size: define size of each chunk
@@ -77,24 +77,47 @@ namespace KooNan
 		{
 			depthMap = textID;
 		}
-		void Draw(float deltaTime, Camera& cam, glm::vec4 clippling_plane, bool draw_water)
+		void setShadowMap(unsigned int textID)
+		{
+			shadowMap = textID;
+		}
+		void Draw(float deltaTime, Camera& cam, glm::vec4 clippling_plane, bool draw_water, bool draw_shadow = false)
 		{
 			glm::mat4 projection = glm::perspective(glm::radians(cam.Zoom), (float)Common::SCR_WIDTH / (float)Common::SCR_HEIGHT, 0.1f, 1000.0f);
 			glm::mat4 view = cam.GetViewMatrix();
 			glm::vec3 viewPos = cam.Position;
-			TerrainShader.use();
-			TerrainShader.setMat4("projection", projection);
-			TerrainShader.setMat4("view", view);
-			TerrainShader.setVec4("plane", clippling_plane);
-			TerrainShader.setVec3("viewPos", viewPos);
-			TerrainShader.setVec3("skyColor", glm::vec3(0.527f, 0.805f, 0.918f));
-			for (int i = 0; i < all_terrain_chunks.size(); i++)
-			{
-				all_terrain_chunks[i].Draw(TerrainShader);
-			}
-			SkyShader.use();
 
+			SkyShader.use();
 			skybox.Draw(SkyShader, glm::scale(glm::mat4(1.0f), glm::vec3(500.0f)), view, projection);
+			if(draw_shadow)
+			{
+				TerrainShader.use();
+				TerrainShader.setMat4("projection", projection);
+				TerrainShader.setMat4("view", view);
+				TerrainShader.setVec4("plane", clippling_plane);
+				TerrainShader.setVec3("viewPos", viewPos);
+				TerrainShader.setVec3("skyColor", glm::vec3(0.527f, 0.805f, 0.918f));
+				TerrainShader.setInt("shadowMap", 5);
+				glActiveTexture(GL_TEXTURE5);
+				glBindTexture(GL_TEXTURE_2D, shadowMap);
+				for (int i = 0; i < all_terrain_chunks.size(); i++)
+				{
+					all_terrain_chunks[i].Draw(TerrainShader);
+				}
+			}
+			else
+			{
+				TerrainShader.use();
+				TerrainShader.setMat4("projection", projection);
+				TerrainShader.setMat4("view", view);
+				TerrainShader.setVec4("plane", clippling_plane);
+				TerrainShader.setVec3("viewPos", viewPos);
+				TerrainShader.setVec3("skyColor", glm::vec3(0.527f, 0.805f, 0.918f));
+				for (int i = 0; i < all_terrain_chunks.size(); i++)
+				{
+					all_terrain_chunks[i].Draw(TerrainShader);
+				}
+			}
 			if (draw_water)
 			{
 				waterMoveFactor += deltaTime * 0.1f;
@@ -135,7 +158,7 @@ namespace KooNan
 			int gridX = (int)(relativeX / chunk_size);
 			int gridZ = (int)(relativeZ / chunk_size);
 			if (gridX != 0 || gridZ != 0)
-				throw "Bad";
+				return 0;
 			return all_terrain_chunks[gridX * width + gridZ].GetTerrainHeight(x, z);
 			
 		}

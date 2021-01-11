@@ -2,9 +2,11 @@
 #include <Camera.h>
 #include <model.h>
 #include <scene.h>
+#include <light.h>
 #include <VideoRecord.h>
 
 #include <glm/glm.hpp>
+#define GLM_SWIZZLE
 #include <GLFW/glfw3.h>
 
 #include <common.h>
@@ -26,7 +28,8 @@ namespace KooNan
 	{
 		Placing, // 放置模式
 		Selecting, // 选择模式
-		Editing, // 编辑模式（编辑现有模型
+		Editing, // 编辑模型模式
+		EditingLight, // 编辑光照
 	};
 	enum class MouseMode {
 		GUIMode, CameraMode
@@ -46,12 +49,14 @@ namespace KooNan
 		static Camera oriCreatingCamera;
 
 		static Scene* mainScene;
+		static Light* mainLight;
 		
 		static string selectedModel; // 当前选择的模组
 		static GameObject* helperGameObj; // 辅助游戏物体
 		static GameObject* selectedGameObj; // 光标移动过程中选中的游戏物体
 
 		static MousePicker mousePicker;
+		static int RECURSION_COUNT;
 
 		// 全局信号：由GUI模块或键鼠输入写入，被其他模块读取
 	public:
@@ -60,6 +65,7 @@ namespace KooNan
 		static CreatingMode creatingMode; // 创造模式子模式
 		static bool isRecordingLast; // 上一次循环是否正在录制
 		static bool isRecording; // 是否正在录制
+		static Model::ModelType modelType; // 模型列表的类型
 		// 常量
 	public:
 		const static unsigned int EDGE_WIDTH = 50;
@@ -156,20 +162,28 @@ namespace KooNan
 			}
 				
 		}
-		static void changeGameModeTo(GameMode newmode) {
+		static void changeGameModeTo(GameMode newmode) 
+		{
 			lastGameMode = gameMode;
 			gameMode = newmode;
 
 			if (gameMode == GameMode::Wandering) {
 				altPressedLast = true;
 			}
-			else if (gameMode == GameMode::Creating) {
+			else if (gameMode == GameMode::Creating) 
+			{
 				GameController::mainCamera = GameController::oriCreatingCamera;
 				GameController::creatingMode = CreatingMode::Selecting;
 			}
 		}
-		static void revertGameMode() {
+		static void revertGameMode() 
+		{
 			changeGameModeTo(lastGameMode);
+		}
+		static void addLightToMainLight(const PointLight& pl) 
+		{
+			if (mainLight == NULL)return;
+			mainLight->AddPointLight(pl);
 		}
 	private:
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -180,6 +194,8 @@ namespace KooNan
 
 		// 找到光标射线与地形的交点
 		static glm::vec3 findFocusInScene();
+		static glm::vec3 binarySearch(int count, float start, float finish, glm::vec3 ray);
+		static bool intersectionInRange(float start, float finish, glm::vec3 ray);
 	};
 
 	// 状态与信号初始化
@@ -203,16 +219,21 @@ namespace KooNan
 	bool GameController::isRecordingLast = false;
 	bool GameController::isRecording = false;
 
+	Model::ModelType GameController::modelType = Model::ModelType::ComplexModel;
+
 	bool GameController::firstMouse = true;
 	bool GameController::ctrlPressedLast = false;
 	bool GameController::altPressedLast = false;
 	bool GameController::midBtnPressedLast = false;
 
 	Scene* GameController::mainScene = NULL;
+	Light* GameController::mainLight = NULL;
 
 	string GameController::selectedModel = "";
 	GameObject* GameController::helperGameObj = NULL;
 	GameObject* GameController::selectedGameObj = NULL;
+
+	int GameController::RECURSION_COUNT = 64;
 
 	// 函数定义
 	void GameController::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -303,22 +324,22 @@ namespace KooNan
 				static float scalStepWise = 1.1f;
 				if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 					if (helperGameObj)
-						helperGameObj->sca.y *= scalStepWise;
+						helperGameObj->sca.z *= scalStepWise;
 				if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 					if (helperGameObj)
-						helperGameObj->sca.y /= scalStepWise;
+						helperGameObj->sca.z /= scalStepWise;
 				if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 					if (helperGameObj)
-					{
 						helperGameObj->sca.x /= scalStepWise;
-						helperGameObj->sca.z /= scalStepWise;
-					}
 				if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 					if (helperGameObj)
-					{
 						helperGameObj->sca.x *= scalStepWise;
-						helperGameObj->sca.z *= scalStepWise;
-					}
+				if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+					if (helperGameObj)
+						helperGameObj->sca.y *= scalStepWise;
+				if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+					if (helperGameObj)
+						helperGameObj->sca.y /= scalStepWise;
 
 
 				if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -405,26 +426,32 @@ namespace KooNan
 
 		mousePicker.update(cursorX, cursorY);
 		glm::vec3 d3 = mousePicker.getCurrentRay();
-
-		static int maxStep = 100;
-		static float stepWise = 2.0f, curH;
-		int step;
-		glm::vec3 curPosition = glm::vec3(mainCamera.Position);
-		for (step = 0; step < maxStep; step++)
-		{
-			try {
-				curH = mainScene->getTerrainHeight(curPosition.x, curPosition.z);
-			}
-			catch (const char* msg) {
-				return mainCamera.Position;
-			}
-			if (curPosition.y <= curH)
-				break;
-			curPosition += stepWise * d3;
+		float MAX_PICKING_DISTANCE = 1000.0f;
+		return GameController::binarySearch(0, 0, MAX_PICKING_DISTANCE, d3);
+	}
+	glm::vec3 GameController::binarySearch(int count, float start, float finish, glm::vec3 ray)
+	{
+		float half = start + ((finish - start) / 2.0f);
+		if (count >= RECURSION_COUNT) {
+			glm::vec3 endPoint = mainCamera.Position + ray*half;
+			return glm::vec3(endPoint.x, mainScene->getTerrainHeight(endPoint.x, endPoint.z), endPoint.z);
 		}
-
-		if (step == maxStep)
-			return mainCamera.Position;
-		return curPosition - stepWise * d3;
+		if (GameController::intersectionInRange(start, half, ray)) {
+			return binarySearch(count + 1, start, half, ray);
+		}
+		else {
+			return binarySearch(count + 1, half, finish, ray);
+		}
+	}
+	bool GameController::intersectionInRange(float start, float finish, glm::vec3 ray)
+	{
+		glm::vec3 startPoint = mainCamera.Position + ray*start;
+		glm::vec3 endPoint = mainCamera.Position + ray*finish;
+		float terrainHeightStart = mainScene->getTerrainHeight(startPoint.x, startPoint.z);
+		float terrainHeightEnd = mainScene->getTerrainHeight(endPoint.x, endPoint.z);
+		if (startPoint.y > terrainHeightStart&& endPoint.y < terrainHeightEnd)
+			return true;
+		else
+			return false;
 	}
 }

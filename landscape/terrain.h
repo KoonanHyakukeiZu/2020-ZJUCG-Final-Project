@@ -47,9 +47,9 @@ namespace KooNan
 			float relativeX = x - world_x + size / 2;
 			float relativeZ = z - world_z + size / 2;
 			if (!(relativeX >= 0 && relativeX <= size))
-				throw "Bad";
+				return 0;
 			if (!(relativeZ >= 0 && relativeZ <= size))
-				throw "Bad";
+				return 0;
 			float gridSqaureSize = size / (vertex_count - 1);
 			int gridX = (int)(relativeX / gridSqaureSize);
 			int gridZ = (int)(relativeZ / gridSqaureSize);
