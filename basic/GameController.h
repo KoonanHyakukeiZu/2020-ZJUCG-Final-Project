@@ -144,7 +144,11 @@ namespace KooNan
 				}
 				catch (const char* msg)
 				{
+					float h = mainScene->getTerrainHeight(mainCamera.Position.x, mainCamera.Position.z);
+					h = mainScene->getWaterHeight() > h ? mainScene->getWaterHeight() : h;
 					mainCamera = oriCreatingCamera;
+					if (gameMode == GameMode::Wandering)
+						mainCamera.Position.y = h + border;
 				}
 			}
 
@@ -352,7 +356,7 @@ namespace KooNan
 	double GameController::lastCursorX = .0;
 	double GameController::lastCursorY = .0;
 
-	Camera GameController::oriCreatingCamera = Camera(0.f, 2.f, 2.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
+	Camera GameController::oriCreatingCamera = Camera(0.f, 10.0f, 40.f, 0.f, 0.f, 30.f, 0.f, 1.f, 0.f);
 	Camera GameController::mainCamera = GameController::oriCreatingCamera;
 
 	MousePicker GameController::mousePicker = MousePicker(GameController::mainCamera);

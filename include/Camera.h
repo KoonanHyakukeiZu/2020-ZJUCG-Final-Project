@@ -63,13 +63,18 @@ public:
 	
 	// Added two constructors 
 	// constructor with the traditional "gluLookAt" style (vector)
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f)) : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+	Camera(glm::vec3 position = glm::vec3(0.0f, 0.1f, 1.0f), glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f)) : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{
 		Position = position;
 		Front = glm::normalize(center - position);
 		WorldUp = up;
 		Pitch = asin(Front.y) * 180.0 / PI;
-		Yaw = asin(Front.z / cos(Pitch / 180.0 * PI)) * 180.0 / PI;
+		float tmp = Front.z / cos(Pitch / 180.0 * PI);
+		if (tmp > 1)
+			tmp = 0.999;
+		if (tmp < -1)
+			tmp = -0.999;
+		Yaw = asin(tmp) * 180.0 / PI;
 		updateCameraVectors();
 	}
 	// constructor with the traditional "gluLookAt" style (scalar)
@@ -79,7 +84,12 @@ public:
 		Front = glm::normalize(glm::vec3(centerX, centerY, centerZ) - Position);
 		WorldUp = glm::vec3(upX, upY, upZ);
 		Pitch = asin(Front.y) * 180.0 / PI;
-		Yaw = asin(Front.z / cos(Pitch / 180.0 * PI)) * 180.0 / PI;
+		float tmp = Front.z / cos(Pitch / 180.0 * PI);
+		if (tmp > 1)
+			tmp = 0.999;
+		if (tmp < -1)
+			tmp = -0.999;
+		Yaw = asin(tmp) * 180.0 / PI;
 		updateCameraVectors();
 	}
 	// constructor with vectors

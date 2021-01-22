@@ -11,8 +11,8 @@ namespace KooNan
 	class Water_Frame_Buffer
 	{
 	private:
-		const int REFLECTION_WIDTH = 3840;
-		const int REFLECTION_HEIGHT = 2160;
+		const int REFLECTION_WIDTH = 1920;
+		const int REFLECTION_HEIGHT = 1080;
 		const int REFRACTION_WIDTH = 1920;
 		const int REFRACTION_HEIGHT = 1080;
 		unsigned int reflectionFrameBuffer;

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\imgui">
-      <UniqueIdentifier>{c41c7e6b-5bc4-41f0-8f8a-826e028a85a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\imgui">
       <UniqueIdentifier>{64f98789-95c8-4f37-82d1-e7e9e1e4fafe}</UniqueIdentifier>
     </Filter>
@@ -30,6 +27,9 @@
     </Filter>
     <Filter Include="头文件\landscape">
       <UniqueIdentifier>{875dfd14-5c25-4092-94d9-1bf90551c03d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\gui\imgui">
+      <UniqueIdentifier>{c41c7e6b-5bc4-41f0-8f8a-826e028a85a7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,28 +63,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\imgui\imconfig.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imgui.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imgui_impl_glfw.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imgui_impl_opengl3.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imgui_internal.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_rectpack.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_textedit.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_truetype.h">
-      <Filter>头文件\imgui</Filter>
+      <Filter>头文件\gui\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\Camera.h">
       <Filter>头文件</Filter>
