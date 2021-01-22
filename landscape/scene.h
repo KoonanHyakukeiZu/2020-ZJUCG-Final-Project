@@ -159,7 +159,10 @@ namespace KooNan
 			int gridZ = (int)(relativeZ / chunk_size);
 			if (gridX != 0 || gridZ != 0)
 				return 0;
-			return all_terrain_chunks[gridX * width + gridZ].GetTerrainHeight(x, z);
+			float height = all_terrain_chunks[gridX * width + gridZ].GetTerrainHeight(x, z);
+			if (height < getWaterHeight())
+				height = getWaterHeight();
+			return height;
 			
 		}
 	private:
