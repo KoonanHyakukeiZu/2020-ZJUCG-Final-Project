@@ -19,14 +19,16 @@ namespace KooNan
 		glm::vec3 sca; // 缩放
 		glm::mat4 modelMat;
 		bool IsPickable;//是否可被拾取
+		string modelPath;
 	private:
 		Model* model;
 	public:
-		GameObject(const std::string& modelPath, const glm::mat4& modelMat = glm::mat4(1.0f), bool IsPickable = false)
-			: pos(glm::vec3(0.0f)), rotY(0.0f), sca(glm::vec3(0.2f))
+		GameObject(const std::string& modelPath, const glm::mat4& modelMat = glm::mat4(1.0f), bool IsPickable = false, const glm::vec3 position = glm::vec3(0.0f), const float rotateY = 0.0f, const glm::vec3 scale = glm::vec3(0.2f))
+			: pos(position), rotY(rotateY), sca(scale)
 		{
 			this->modelMat = modelMat;
 			this->IsPickable = IsPickable;
+			this->modelPath = modelPath;
 			if (Model::modelList.find(FileSystem::getPath(modelPath)) == Model::modelList.end())
 			{
 				// 该模型未加载到List

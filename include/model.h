@@ -104,7 +104,7 @@ private:
 		for (auto& it : fileList1) {
 			path curPath = it.path();
 			if (directory_entry(curPath).status().type() != file_type::regular) continue;
-			if (curPath.extension() == ".obj" && curPath.filename()!="Bridge-2.obj") modelFilename = curPath.string();
+			if (curPath.extension() == ".obj" && curPath.filename()!="Bridge-2.obj" && curPath.filename()!="Building-1.obj" && curPath.filename() != "Light-2.obj" && curPath.filename() != "Light-3.obj") modelFilename = curPath.string();
 			else if (curPath.filename() == "preview.png") previewFilename = curPath.string();
 		}
 		if (modelFilename != "") {

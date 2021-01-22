@@ -14,6 +14,27 @@
 #include <mousepicker.h>
 
 #include <unordered_map>
+#include <fstream>
+#include <json.hpp>
+using nlohmann::json;
+
+#define SAVEJSON_GAMEOBJLIST "GameObjectList"
+#define SAVEJSON_GAMEOBJ_PATH "path"
+#define SAVEJSON_GAMEOBJ_MAT "mat"
+#define SAVEJSON_GAMEOBJ_PICKABLE "pickable"
+#define SAVEJSON_GAMEOBJ_SCALE "scale"
+#define SAVEJSON_GAMEOBJ_POSITION "position"
+#define SAVEJSON_GAMEOBJ_ROTY "rotateY"
+#define SAVEJSON_POINTLIGHTLIST "PointLightList"
+#define SAVEJSON_PARALLELLIGHT "ParallelLight"
+#define SAVEJSON_LIGHT_POSITION "position"
+#define SAVEJSON_LIGHT_DIRECTION "direction"
+#define SAVEJSON_LIGHT_AMBIENT "ambient"
+#define SAVEJSON_LIGHT_DIFFUSE "diffuse"
+#define SAVEJSON_LIGHT_SPECULAR "specular"
+#define SAVEJSON_LIGHT_CONSTANT "constant"
+#define SAVEJSON_LIGHT_LINEAR "linear"
+#define SAVEJSON_LIGHT_QUADRATIC "quadratic"
 
 namespace KooNan
 {
@@ -185,6 +206,129 @@ namespace KooNan
 		{
 			if (mainLight == NULL)return;
 			mainLight->AddPointLight(pl);
+		}
+		static bool LoadGameFromFile()
+		try {
+			ifstream fin;
+			fin.open(Common::saveFileName);
+			if (fin.is_open()) {
+				json gameInfo;
+				fin >> gameInfo;
+				if (gameInfo.is_null()) return false;
+				for (auto& it : gameInfo[SAVEJSON_GAMEOBJLIST]) {
+					string modelPath = it[SAVEJSON_GAMEOBJ_PATH];
+					bool isPickable = it[SAVEJSON_GAMEOBJ_PICKABLE] != 0;
+					float rotY = it[SAVEJSON_GAMEOBJ_ROTY];
+					glm::vec3 pos;
+					for (int i = 0; i < 3; ++i) pos[i] = it[SAVEJSON_GAMEOBJ_POSITION][i];
+					glm::vec3 scale;
+					for (int i = 0; i < 3; ++i) scale[i] = it[SAVEJSON_GAMEOBJ_SCALE][i];
+					glm::mat4 mat;
+					for (int i = 0; i < 16; ++i) mat[i / 4][i % 4] = it[SAVEJSON_GAMEOBJ_MAT][i];
+					new GameObject(modelPath, mat, isPickable, pos, rotY, scale);
+				}
+				// lighting
+				// parallel light
+				glm::vec3 pdir, pambient, pdiffuse, pspecular;
+				for (int i = 0; i < 3; ++i) {
+					pdir[i] = gameInfo[SAVEJSON_PARALLELLIGHT][SAVEJSON_LIGHT_DIRECTION][i];
+					pambient[i] = gameInfo[SAVEJSON_PARALLELLIGHT][SAVEJSON_LIGHT_AMBIENT][i];
+					pdiffuse[i] = gameInfo[SAVEJSON_PARALLELLIGHT][SAVEJSON_LIGHT_DIFFUSE][i];
+					pspecular[i] = gameInfo[SAVEJSON_PARALLELLIGHT][SAVEJSON_LIGHT_SPECULAR][i];
+				}
+				DirLight* parallel = mainLight->getDirectionLight();
+				parallel->direction = pdir;
+				parallel->ambient = pambient;
+				parallel->diffuse = pdiffuse;
+				parallel->specular = pspecular;
+
+				for (auto& it : gameInfo[SAVEJSON_POINTLIGHTLIST]) {
+					glm::vec3 pos, ambient, diffuse, specular;
+					for (int i = 0; i < 3; ++i) {
+						pos[i] = it[SAVEJSON_LIGHT_POSITION][i];
+						ambient[i] = it[SAVEJSON_LIGHT_AMBIENT][i];
+						diffuse[i] = it[SAVEJSON_LIGHT_DIFFUSE][i];
+						specular[i] = it[SAVEJSON_LIGHT_SPECULAR][i];
+					}
+					float constant, linear, quadratic;
+					constant = it[SAVEJSON_LIGHT_CONSTANT];
+					linear = it[SAVEJSON_LIGHT_LINEAR];
+					quadratic = it[SAVEJSON_LIGHT_QUADRATIC];
+					mainLight->AddPointLight(PointLight{ pos,constant,linear,quadratic,ambient,diffuse,specular });
+				}
+
+			}
+			else {
+				cout << "Failed to open save file!" << endl;
+			}
+			return true;
+		}
+		catch (...) {
+			cout << "Failed to load from save file!" << endl;
+			return false;
+		}
+		static void SaveGameToFile()
+		{
+			ofstream fout;
+			fout.open(Common::saveFileName);
+			if (fout.is_open()) {
+				json gameInfo;
+				gameInfo[SAVEJSON_GAMEOBJLIST] = json::array();
+				for (GameObject* p : GameObject::gameObjList) {
+					json gameobj;
+					gameobj[SAVEJSON_GAMEOBJ_PATH] = p->modelPath;
+					gameobj[SAVEJSON_GAMEOBJ_PICKABLE] = (int)(p->IsPickable);
+					gameobj[SAVEJSON_GAMEOBJ_ROTY] = p->rotY;
+					gameobj[SAVEJSON_GAMEOBJ_SCALE] = json::array();
+					for (int i = 0; i < 3; ++i) gameobj[SAVEJSON_GAMEOBJ_SCALE].push_back(p->sca[i]);
+					gameobj[SAVEJSON_GAMEOBJ_POSITION] = json::array();
+					for (int i = 0; i < 3; ++i) gameobj[SAVEJSON_GAMEOBJ_POSITION].push_back(p->pos[i]);
+					gameobj[SAVEJSON_GAMEOBJ_MAT] = json::array();
+					for (int i = 0; i < 4; ++i) for (int j = 0; j < 4; ++j) gameobj[SAVEJSON_GAMEOBJ_MAT].push_back(p->modelMat[i][j]);
+					gameInfo[SAVEJSON_GAMEOBJLIST].push_back(gameobj);
+				}
+				// lighting
+				// parallel
+				json parallelLight;
+				DirLight* dL = mainLight->getDirectionLight();
+				parallelLight[SAVEJSON_LIGHT_DIRECTION] = json::array();
+				for (int i = 0; i < 3; ++i) parallelLight[SAVEJSON_LIGHT_DIRECTION].push_back(dL->direction[i]);
+				parallelLight[SAVEJSON_LIGHT_AMBIENT] = json::array();
+				for (int i = 0; i < 3; ++i) parallelLight[SAVEJSON_LIGHT_AMBIENT].push_back(dL->ambient[i]);
+				parallelLight[SAVEJSON_LIGHT_DIFFUSE] = json::array();
+				for (int i = 0; i < 3; ++i) parallelLight[SAVEJSON_LIGHT_DIFFUSE].push_back(dL->diffuse[i]);
+				parallelLight[SAVEJSON_LIGHT_SPECULAR] = json::array();
+				for (int i = 0; i < 3; ++i) parallelLight[SAVEJSON_LIGHT_SPECULAR].push_back(dL->specular[i]);
+				gameInfo[SAVEJSON_PARALLELLIGHT] = parallelLight;
+
+				// point
+				json pointLights = json::array();
+				int npls = mainLight->numOfPointLight();
+				for (int i = 0; i < npls; ++i) {
+					json Light;
+					PointLight* pl = mainLight->getPointLightAt(i);
+					Light[SAVEJSON_LIGHT_POSITION] = json::array();
+					for (int i = 0; i < 3; ++i) Light[SAVEJSON_LIGHT_POSITION].push_back(pl->position[i]);
+					Light[SAVEJSON_LIGHT_AMBIENT] = json::array();
+					for (int i = 0; i < 3; ++i) Light[SAVEJSON_LIGHT_AMBIENT].push_back(pl->ambient[i]);
+					Light[SAVEJSON_LIGHT_DIFFUSE] = json::array();
+					for (int i = 0; i < 3; ++i) Light[SAVEJSON_LIGHT_DIFFUSE].push_back(pl->diffuse[i]);
+					Light[SAVEJSON_LIGHT_SPECULAR] = json::array();
+					for (int i = 0; i < 3; ++i) Light[SAVEJSON_LIGHT_SPECULAR].push_back(pl->specular[i]);
+					Light[SAVEJSON_LIGHT_CONSTANT] = pl->constant;
+					Light[SAVEJSON_LIGHT_LINEAR] = pl->linear;
+					Light[SAVEJSON_LIGHT_QUADRATIC] = pl->quadratic;
+					
+					pointLights.push_back(Light);
+				}
+				gameInfo[SAVEJSON_POINTLIGHTLIST] = pointLights;
+
+				fout << gameInfo.dump(4);
+				fout.close();
+				cout << "Saving successfully done." << endl;
+			}
+			else cout << "Failed to open save file!" << endl;
+			return;
 		}
 	private:
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);

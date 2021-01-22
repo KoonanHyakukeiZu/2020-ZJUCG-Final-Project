@@ -128,5 +128,8 @@
     <ClInclude Include="landscape\light.h">
       <Filter>头文件\landscape</Filter>
     </ClInclude>
+    <ClInclude Include="include\json.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

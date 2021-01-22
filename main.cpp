@@ -137,18 +137,6 @@ int main()
 	Scene main_scene(256.0f, 1, 1, -0.7f, terrainShader, waterShader, skyShader, groundPaths, skyboxPaths);
 	GameController::mainScene = &main_scene; // 这个设计实在是不行
 
-	// Instantiate the light(with only "parallel" light component)
-	// ------------------------------------
-	DirLight parallel{
-		glm::vec3(0.3f, -0.7f, 1.0f),
-		glm::vec3(0.3f, 0.3f, 0.3f),
-		glm::vec3(0.3f, 0.3f, 0.3f),
-		glm::vec3(0.4f, 0.4f, 0.4f)
-	};
-	Light main_light(parallel, lightShader);
-	GameController::mainLight = &main_light; // 这个设计实在不行
-	addlights(main_light);// Add four point lights
-
 
 
 
@@ -161,14 +149,32 @@ int main()
 	Model::loadModelsFromPath("model\\rsc\\", Model::ModelType::ComplexModel);
 	Model::loadModelsFromPath("model\\basic voxel\\", Model::ModelType::BasicVoxel);
 
+	// Instantiate the light(with only "parallel" light component)
+	// ------------------------------------
+	DirLight parallel{
+		glm::vec3(0.3f, -0.7f, 1.0f),
+		glm::vec3(0.3f, 0.3f, 0.3f),
+		glm::vec3(0.3f, 0.3f, 0.3f),
+		glm::vec3(0.4f, 0.4f, 0.4f)
+	};
+	Light main_light(parallel, lightShader);
+	GameController::mainLight = &main_light; // 这个设计实在不行
+
+	if (!GameController::LoadGameFromFile()) {
+		addlights(main_light);// Add four point lights
+
+		GameObject* p3 = new GameObject("model/rsc/Temple1/Temple1.obj",
+			scale(translate(mat4(1.0f), vec3(-7.0f, main_scene.getTerrainHeight(-7.0f, -7.0f), -7.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
+	}
 	// Object
 	// ------------------------------------
 	//GameObject* p1 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
 	//GameObject* p2 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f)), vec3(0.5f, 0.5f, 0.5f)), true);
+	/*
 	GameObject* p3 = new GameObject("model/rsc/Temple1/Temple1.obj",
-		scale(translate(mat4(1.0f), vec3(-7.0f, main_scene.getTerrainHeight(-7.0f, -7.0f), -7.0f)), vec3(0.2f, 0.2f, 0.2f)), true);
+		scale(translate(mat4(1.0f), vec3(-7.0f, main_scene.getTerrainHeight(-7.0f, -7.0f), -7.0f)), vec3(0.2f, 0.2f, 0.2f)), true);*/
 	//GameObject* p3 = new GameObject(string("model/rsc/planet/planet.obj"),
 		//scale(translate(mat4(1.0f), vec3(7.0f, 5.0f, 6.0f)), vec3(0.5f, 0.5f, 0.5f)));
 	//GameObject* p4 = new GameObject(string("model/rsc/planet/planet.obj"),
@@ -182,7 +188,7 @@ int main()
 	PickingTexture mouse_picking;
 	Water_Frame_Buffer waterfb;
 	Shadow_Frame_Buffer shadowfb;
-	Render main_renderer(main_scene, main_light, waterfb, mouse_picking, shadowfb);
+	Render main_renderer(main_scene, *GameController::mainLight, waterfb, mouse_picking, shadowfb);
 
 	
 	// render loop

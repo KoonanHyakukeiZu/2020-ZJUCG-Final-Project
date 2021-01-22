@@ -133,7 +133,7 @@ namespace KooNan
 					GameController::changeGameModeTo(GameMode::Pause);
 				}
 				if (ImGui::Button("Save", shotcutButtonSize)) {
-					// todo
+					GameController::SaveGameToFile();
 				}
 				if (GameController::creatingMode == CreatingMode::Placing)
 					if (GameController::modelType == Model::ModelType::ComplexModel &&
@@ -172,6 +172,7 @@ namespace KooNan
 				}
 				if (ImGui::Button("Save and Quit to Title", menuButtonSize)) {
 					// todo：检查当前是否选中了建筑且位置不合法
+					GameController::SaveGameToFile();
 					if (1) {
 						GameController::changeGameModeTo(GameMode::Title);
 					}

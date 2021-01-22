@@ -13,6 +13,7 @@ namespace KooNan
 		static unsigned int SCR_WIDTH, SCR_HEIGHT;
 		static float perspective_clipping_near;
 		static float perspective_clipping_far;
+		static const string saveFileName;
 		static glm::mat4 GetPerspectiveMat(Camera& cam)
 		{
 			return glm::perspective(glm::radians(cam.Zoom),
@@ -26,6 +27,7 @@ namespace KooNan
 	unsigned int Common::SCR_HEIGHT = 1080;
 	float Common::perspective_clipping_near = 0.1f;
 	float Common::perspective_clipping_far = 1000.0f;
+	const string Common::saveFileName = "Save.json";
 }
 
 #endif
